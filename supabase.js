@@ -156,18 +156,20 @@ const DEFAULT_MENU_CATEGORIES = [
 
 /** * Pastikan restoran punya minimal satu kategori. Kalau kosong, isi otomatis dengan kategori default * supaya dropdown kategori tidak kosong melompong untuk restoran baru. */
 async function ensureDefaultCategories(restoId) {
-  const { count } = await db
+  const { count, error: countErr } = await db
     .from("menu_categories")
     .select("id", { count: "exact", head: true })
     .eq("restaurant_id", restoId);
-  if (count && count > 0) return false;
+
+  if (countErr) return { seeded: false, error: countErr };
+  if (count && count > 0) return { seeded: false, error: null };
 
   const rows = DEFAULT_MENU_CATEGORIES.map((c) => ({
     ...c,
     restaurant_id: restoId,
   }));
   const { error } = await db.from("menu_categories").insert(rows);
-  return !error;
+  return { seeded: !error, error: error || null };
 }
 
 // ============================================
