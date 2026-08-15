@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Transaksi - RestoranKu</title>
+<link rel="stylesheet" href="css/style.css">
+<style>
+  .summary-row { display: grid; grid-template-columns: repeat(auto-fit,minmax(180px,1fr)); gap: 16px; margin-bottom: 24px; }
+  .summary-box { background: white; border-radius: var(--radius); border: 1px solid var(--border); padding: 18px 20px; }
+  .summary-box .label { font-size: 12px; color: var(--text-muted); margin-bottom: 6px; font-weight: 500; }
+  .summary-box .value { font-size: 20px; font-weight: 800; font-family: 'Plus Jakarta Sans', sans-serif; }
+</style>
+</head>
+<body>
+<div class="layout">
+  <div class="sidebar" id="sidebar">
+    <div class="sidebar-brand">
+      <div class="logo"><div class="logo-icon">🍽️</div><div class="logo-text"><h3>RestoranKu</h3><span id="resto-name-sidebar">-</span></div></div>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="nav-section">
+        <div class="nav-section-label">Menu Utama</div>
+        <a href="dashboard.html" class="nav-item"><span class="nav-icon">📊</span> Dashboard</a>
+        <a href="orders.html" class="nav-item"><span class="nav-icon">🛒</span> Pesanan</a>
+        <a href="menu.html" class="nav-item"><span class="nav-icon">🍽️</span> Kelola Menu</a>
+        <a href="tables.html" class="nav-item"><span class="nav-icon">🪑</span> Kelola Meja</a>
+        <a href="transactions.html" class="nav-item active"><span class="nav-icon">💰</span> Transaksi</a>
+      </div>
+      <div class="nav-section">
+        <a href="settings.html" class="nav-item"><span class="nav-icon">⚙️</span> Pengaturan</a>
+      </div>
+    </nav>
+    <div class="sidebar-footer">
+      <div class="sidebar-user" onclick="Auth.logout()">
+        <div class="user-avatar" id="user-avatar">R</div>
+        <div class="user-info"><div class="user-name" id="user-email">-</div><div class="user-role">Pemilik Restoran</div></div>
+        <span style="color:rgba(255,255,255,0.4)">↩</span>
+      </div>
+    </div>
+  </div>
+  <div class="sidebar-overlay" id="sidebar-overlay" onclick="closeSidebar()"></div>
+
+  <div class="main">
+    <div class="topbar">
+      <div class="topbar-left">
+        <button class="hamburger" onclick="openSidebar()">☰</button>
+        <div class="page-title">Transaksi & Laporan</div>
+      </div>
+      <div class="topbar-right">
+        <button class="btn btn-ghost btn-sm" onclick="exportCSV()">📥 Export CSV</button>
+      </div>
+    </div>
+
+    <div class="content">
+      <!-- FILTER -->
+      <div class="card" style="margin-bottom:20px">
+        <div class="card-body" style="padding:16px 20px">
+          <div style="display:flex;gap:12px;flex-wrap:wrap;align-items:center">
+            <div>
+              <label class="form-label" style="margin-bottom:4px">Dari Tanggal</label>
+              <input type="date" class="form-control" id="date-from" style="width:auto">
+            </div>
+            <div>
+              <label class="form-label" style="margin-bottom:4px">Sampai Tanggal</label>
+              <input type="date" class="form-control" id="date-to" style="width:auto">
+            </div>
+            <div>
+              <label class="form-label" style="margin-bottom:4px">Status</label>
+              <select class="form-control" id="filter-pay" style="width:auto">
+                <option value="">Semua</option>
+                <option value="paid">Lunas</option>
+                <option value="unpaid">Belum Bayar</option>
+                <option value="failed">Gagal</option>
+                <option value="expired">Expired</option>
+              </select>
+            </div>
+            <div style="margin-top:20px">
+              <button class="btn btn-primary" onclick="loadTransactions()">🔍 Cari</button>
+            </div>
+            <div style="margin-top:20px">
+              <button class="btn btn-ghost" onclick="setPreset('today')">Hari Ini</button>
+            </div>
+            <div style="margin-top:20px">
+              <button class="btn btn-ghost" onclick="setPreset('week')">7 Hari</button>
+            </div>
+            <div style="margin-top:20px">
+              <button class="btn btn-ghost" onclick="setPreset('month')">Bulan Ini</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SUMMARY -->
+      <div class="summary-row">
+        <div class="summary-box">
+          <div class="label">💰 Total Pendapatan</div>
+          <div class="value" id="sum-revenue" style="color:var(--success)">Rp 0</div>
+          <div style="font-size:12px;color:var(--text-muted);margin-top:4px" id="sum-revenue-sub"></div>
+        </div>
+        <div class="summary-box">
+          <div class="label">🛒 Total Transaksi</div>
+          <div class="value" id="sum-count">0</div>
+          <div style="font-size:12px;color:var(--text-muted);margin-top:4px" id="sum-count-sub"></div>
+        </div>
+        <div class="summary-box">
+          <div class="label">📊 Rata-rata per Order</div>
+          <div class="value" id="sum-avg">Rp 0</div>
+        </div>
+        <div class="summary-box">
+          <div class="label">🏷️ Platform Fee Dipotong</div>
+          <div class="value" id="sum-fee" style="color:var(--text-muted)">Rp 0</div>
+          <div style="font-size:12px;color:var(--text-muted);margin-top:4px">ke platform RestoranKu</div>
+        </div>
+      </div>
+
+      <!-- TABEL TRANSAKSI -->
+      <div class="card">
+        <div class="card-header">
+          <h3>Riwayat Transaksi</h3>
+          <span style="font-size:13px;color:var(--text-muted)" id="result-count">0 transaksi</span>
+        </div>
+        <div class="card-body" style="padding:0">
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>No Order</th>
+                  <th>Meja</th>
+                  <th>Waktu</th>
+                  <th>Item</th>
+                  <th>Subtotal</th>
+                  <th>Platform Fee</th>
+                  <th>Total Bayar</th>
+                  <th>Metode</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody id="trans-tbody">
+                <tr><td colspan="9" style="text-align:center;padding:40px;color:var(--text-muted)">Pilih periode dan klik Cari</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="js/supabase.js"></script>
+<script>
+let restoId = null, transData = [];
+
+function openSidebar() { document.getElementById('sidebar').classList.add('open'); document.getElementById('sidebar-overlay').classList.add('active'); }
+function closeSidebar() { document.getElementById('sidebar').classList.remove('open'); document.getElementById('sidebar-overlay').classList.remove('active'); }
+
+function setPreset(type) {
+  const now = new Date();
+  const today = now.toISOString().split('T')[0];
+  if (type === 'today') {
+    document.getElementById('date-from').value = today;
+    document.getElementById('date-to').value = today;
+  } else if (type === 'week') {
+    const week = new Date(now); week.setDate(now.getDate() - 6);
+    document.getElementById('date-from').value = week.toISOString().split('T')[0];
+    document.getElementById('date-to').value = today;
+  } else if (type === 'month') {
+    document.getElementById('date-from').value = today.slice(0,7) + '-01';
+    document.getElementById('date-to').value = today;
+  }
+  loadTransactions();
+}
+
+async function init() {
+  const user = await Auth.requireAuth();
+  document.getElementById('user-email').textContent = user.email;
+  document.getElementById('user-avatar').textContent = user.email[0].toUpperCase();
+  const { data: resto } = await db.from('restaurants').select('id,name').eq('user_id', user.id).single();
+  if (!resto) return;
+  restoId = resto.id;
+  document.getElementById('resto-name-sidebar').textContent = resto.name;
+  setPreset('today');
+}
+
+async function loadTransactions() {
+  const from = document.getElementById('date-from').value;
+  const to = document.getElementById('date-to').value;
+  const pay = document.getElementById('filter-pay').value;
+  if (!from || !to) return showToast('Pilih tanggal dulu', 'error');
+
+  let query = db.from('orders').select('*,order_items(name,quantity)').eq('restaurant_id', restoId).gte('created_at', from).lte('created_at', to + 'T23:59:59').order('created_at', { ascending: false });
+  if (pay) query = query.eq('payment_status', pay);
+
+  const { data, error } = await query;
+  if (error) return showToast('Gagal memuat data', 'error');
+  transData = data || [];
+  renderSummary();
+  renderTable();
+}
+
+function renderSummary() {
+  const paid = transData.filter(o => o.payment_status === 'paid');
+  const total = paid.reduce((s, o) => s + o.total, 0);
+  const fee = paid.reduce((s, o) => s + (o.platform_fee || 0), 0);
+  const avg = paid.length ? Math.round(total / paid.length) : 0;
+
+  document.getElementById('sum-revenue').textContent = formatRupiah(total);
+  document.getElementById('sum-revenue-sub').textContent = `Bersih setelah fee: ${formatRupiah(total - fee)}`;
+  document.getElementById('sum-count').textContent = transData.length;
+  document.getElementById('sum-count-sub').textContent = `${paid.length} lunas · ${transData.length - paid.length} lainnya`;
+  document.getElementById('sum-avg').textContent = formatRupiah(avg);
+  document.getElementById('sum-fee').textContent = formatRupiah(fee);
+  document.getElementById('result-count').textContent = `${transData.length} transaksi`;
+}
+
+function renderTable() {
+  const tbody = document.getElementById('trans-tbody');
+  const payColor = { paid: 'badge-success', unpaid: 'badge-warning', pending_payment: 'badge-info', failed: 'badge-danger', expired: 'badge-secondary' };
+  const payLabel = { paid: '✅ Lunas', unpaid: '⏳ Belum', pending_payment: '⏳ Proses', failed: '❌ Gagal', expired: '⏰ Expired' };
+
+  if (!transData.length) {
+    tbody.innerHTML = '<tr><td colspan="9" style="text-align:center;padding:40px;color:var(--text-muted)">Tidak ada transaksi pada periode ini</td></tr>';
+    return;
+  }
+
+  tbody.innerHTML = transData.map(o => `<tr>
+    <td><span style="font-weight:600;font-size:13px">${o.order_number}</span></td>
+    <td>Meja ${o.table_number}</td>
+    <td style="font-size:12px;color:var(--text-muted);white-space:nowrap">${new Date(o.created_at).toLocaleString('id-ID',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'})}</td>
+    <td style="font-size:12px;max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${o.order_items?.map(i=>`${i.name} x${i.quantity}`).join(', ') || '-'}</td>
+    <td>${formatRupiah(o.subtotal || 0)}</td>
+    <td style="color:var(--text-muted)">${formatRupiah(o.platform_fee || 0)}</td>
+    <td><strong>${formatRupiah(o.total)}</strong></td>
+    <td style="font-size:12px">${o.payment_method || '-'}</td>
+    <td><span class="badge ${payColor[o.payment_status] || 'badge-secondary'}">${payLabel[o.payment_status] || o.payment_status}</span></td>
+  </tr>`).join('');
+}
+
+function exportCSV() {
+  if (!transData.length) return showToast('Tidak ada data untuk diexport', 'error');
+  const headers = ['No Order','Meja','Waktu','Item','Subtotal','Platform Fee','Total','Metode','Status'];
+  const rows = transData.map(o => [
+    o.order_number, `Meja ${o.table_number}`,
+    new Date(o.created_at).toLocaleString('id-ID'),
+    o.order_items?.map(i=>`${i.name} x${i.quantity}`).join(' | ') || '-',
+    o.subtotal || 0, o.platform_fee || 0, o.total,
+    o.payment_method || '-', o.payment_status
+  ]);
+  const csv = [headers, ...rows].map(r => r.map(v => `"${v}"`).join(',')).join('\n');
+  const blob = new Blob([csv], { type: 'text/csv' });
+  const link = document.createElement('a');
+  link.href = URL.createObjectURL(blob);
+  link.download = `transaksi-${new Date().toISOString().split('T')[0]}.csv`;
+  link.click();
+  showToast('File CSV berhasil didownload', 'success');
+}
+
+init();
+</script>
+</body>
+</html>

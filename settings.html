@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pengaturan - RestoranKu</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div class="layout">
+  <div class="sidebar" id="sidebar">
+    <div class="sidebar-brand">
+      <div class="logo"><div class="logo-icon">🍽️</div><div class="logo-text"><h3>RestoranKu</h3><span id="resto-name-sidebar">-</span></div></div>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="nav-section">
+        <div class="nav-section-label">Menu Utama</div>
+        <a href="dashboard.html" class="nav-item"><span class="nav-icon">📊</span> Dashboard</a>
+        <a href="orders.html" class="nav-item"><span class="nav-icon">🛒</span> Pesanan</a>
+        <a href="menu.html" class="nav-item"><span class="nav-icon">🍽️</span> Kelola Menu</a>
+        <a href="tables.html" class="nav-item"><span class="nav-icon">🪑</span> Kelola Meja</a>
+        <a href="transactions.html" class="nav-item"><span class="nav-icon">💰</span> Transaksi</a>
+      </div>
+      <div class="nav-section">
+        <a href="settings.html" class="nav-item active"><span class="nav-icon">⚙️</span> Pengaturan</a>
+      </div>
+    </nav>
+    <div class="sidebar-footer">
+      <div class="sidebar-user" onclick="Auth.logout()">
+        <div class="user-avatar" id="user-avatar">R</div>
+        <div class="user-info"><div class="user-name" id="user-email">-</div><div class="user-role">Pemilik Restoran</div></div>
+        <span style="color:rgba(255,255,255,0.4)">↩</span>
+      </div>
+    </div>
+  </div>
+  <div class="sidebar-overlay" id="sidebar-overlay" onclick="closeSidebar()"></div>
+
+  <div class="main">
+    <div class="topbar">
+      <div class="topbar-left">
+        <button class="hamburger" onclick="openSidebar()">☰</button>
+        <div class="page-title">Pengaturan Restoran</div>
+      </div>
+    </div>
+
+    <div class="content">
+      <div class="tabs">
+        <button class="tab-btn active" onclick="switchTab('profil',this)">🏪 Profil Restoran</button>
+        <button class="tab-btn" onclick="switchTab('rekening',this)">🏦 Rekening Bank</button>
+        <button class="tab-btn" onclick="switchTab('jam',this)">🕐 Jam Operasional</button>
+        <button class="tab-btn" onclick="switchTab('akun',this)">👤 Akun & Keamanan</button>
+      </div>
+
+      <!-- TAB PROFIL -->
+      <div class="tab-content active" id="tab-profil">
+        <div class="card" style="max-width:600px">
+          <div class="card-header"><h3>Profil Restoran</h3></div>
+          <div class="card-body">
+            <div class="form-group" style="text-align:center;margin-bottom:24px">
+              <div id="logo-preview" style="width:80px;height:80px;border-radius:16px;background:var(--primary-light);display:flex;align-items:center;justify-content:center;font-size:36px;margin:0 auto 12px;border:2px dashed var(--border)">🍽️</div>
+              <div class="form-group">
+                <label class="form-label">URL Logo Restoran</label>
+                <input type="url" class="form-control" id="resto-logo" placeholder="https://...logo.png" oninput="previewLogo(this.value)">
+                <div class="form-hint">Gunakan URL gambar dari internet atau imgbb.com</div>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Nama Restoran *</label>
+              <input type="text" class="form-control" id="resto-name" placeholder="Warung Pak Budi">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Deskripsi Restoran</label>
+              <textarea class="form-control" id="resto-desc" rows="3" placeholder="Restoran dengan cita rasa khas Indonesia..."></textarea>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Alamat</label>
+              <textarea class="form-control" id="resto-address" rows="2" placeholder="Jl. Raya No. 1, Kota..."></textarea>
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+              <div class="form-group">
+                <label class="form-label">No. HP / WA</label>
+                <input type="text" class="form-control" id="resto-phone" placeholder="08xxx">
+              </div>
+              <div class="form-group">
+                <label class="form-label">Email Restoran</label>
+                <input type="email" class="form-control" id="resto-email" placeholder="email@restoran.com">
+              </div>
+            </div>
+            <button class="btn btn-primary" onclick="saveProfil()" id="btn-save-profil">💾 Simpan Profil</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB REKENING -->
+      <div class="tab-content" id="tab-rekening">
+        <div class="card" style="max-width:600px">
+          <div class="card-header">
+            <h3>🏦 Rekening Bank</h3>
+            <span class="badge" id="bank-status-tag">Belum Setup</span>
+          </div>
+          <div class="card-body">
+            <div class="alert alert-info" style="margin-bottom:20px">
+              🔒 <strong>Keamanan:</strong> Perubahan rekening memerlukan konfirmasi password. Semua perubahan dicatat dan diverifikasi oleh Xendit secara otomatis. Uang langsung masuk ke rekening ini setelah pembayaran.
+            </div>
+
+            <div id="bank-current" style="display:none;background:var(--success-light);border:1px solid #9AE6B4;border-radius:var(--radius-sm);padding:16px;margin-bottom:20px">
+              <div style="font-weight:600;color:var(--success);margin-bottom:8px">✅ Rekening Terdaftar</div>
+              <div id="bank-display"></div>
+            </div>
+
+            <div id="bank-form">
+              <div class="form-group">
+                <label class="form-label">Bank *</label>
+                <select class="form-control" id="bank-name">
+                  <option value="">-- Pilih Bank --</option>
+                  <option value="BCA">BCA</option>
+                  <option value="BRI">BRI</option>
+                  <option value="BNI">BNI</option>
+                  <option value="MANDIRI">Bank Mandiri</option>
+                  <option value="BSI">BSI (Bank Syariah Indonesia)</option>
+                  <option value="CIMB">CIMB Niaga</option>
+                  <option value="PERMATA">Permata Bank</option>
+                  <option value="DANAMON">Danamon</option>
+                  <option value="BTN">BTN</option>
+                  <option value="OCBC">OCBC NISP</option>
+                  <option value="MEGA">Bank Mega</option>
+                  <option value="SEABANK">SeaBank</option>
+                  <option value="JAGO">Bank Jago</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Nomor Rekening *</label>
+                <input type="text" class="form-control" id="bank-number" placeholder="1234567890" maxlength="20">
+              </div>
+              <div class="form-group">
+                <label class="form-label">Nama Pemilik Rekening *</label>
+                <input type="text" class="form-control" id="bank-holder" placeholder="Sesuai buku tabungan">
+                <div class="form-hint">⚠️ Nama harus sama persis dengan nama di rekening bank. Xendit akan memverifikasi otomatis.</div>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Konfirmasi Password Akun *</label>
+                <input type="password" class="form-control" id="bank-password" placeholder="Password akun kamu untuk konfirmasi">
+                <div class="form-hint">Wajib diisi untuk keamanan perubahan rekening</div>
+              </div>
+              <button class="btn btn-primary" onclick="saveBank()" id="btn-save-bank">🏦 Simpan & Verifikasi Rekening</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB JAM OPERASIONAL -->
+      <div class="tab-content" id="tab-jam">
+        <div class="card" style="max-width:500px">
+          <div class="card-header"><h3>🕐 Jam Operasional</h3></div>
+          <div class="card-body">
+            <div class="form-group">
+              <label class="form-label">Jam Buka</label>
+              <input type="time" class="form-control" id="jam-buka" value="08:00">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Jam Tutup</label>
+              <input type="time" class="form-control" id="jam-tutup" value="22:00">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Status Restoran Sekarang</label>
+              <div style="display:flex;align-items:center;gap:12px;margin-top:8px;padding:14px;background:var(--bg);border-radius:var(--radius-sm)">
+                <label class="toggle">
+                  <input type="checkbox" id="is-open" checked>
+                  <span class="toggle-slider"></span>
+                </label>
+                <span id="open-label" style="font-weight:600">🟢 Restoran Buka</span>
+              </div>
+            </div>
+            <button class="btn btn-primary" onclick="saveJam()" id="btn-save-jam">💾 Simpan Pengaturan</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB AKUN -->
+      <div class="tab-content" id="tab-akun">
+        <div style="display:flex;flex-direction:column;gap:20px;max-width:500px">
+          <div class="card">
+            <div class="card-header"><h3>👤 Info Akun</h3></div>
+            <div class="card-body">
+              <div style="display:flex;align-items:center;gap:16px;padding:16px;background:var(--bg);border-radius:var(--radius-sm)">
+                <div style="width:56px;height:56px;background:var(--primary);border-radius:50%;display:flex;align-items:center;justify-content:center;color:white;font-size:22px;font-weight:700" id="akun-avatar">R</div>
+                <div>
+                  <div style="font-weight:700;font-size:16px" id="akun-email">-</div>
+                  <div style="font-size:12px;color:var(--text-muted)">Pemilik Restoran</div>
+                  <div style="font-size:12px;color:var(--text-muted)" id="akun-since">-</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-header"><h3>🔑 Ganti Password</h3></div>
+            <div class="card-body">
+              <div class="form-group">
+                <label class="form-label">Password Lama</label>
+                <input type="password" class="form-control" id="pass-old" placeholder="Password saat ini">
+              </div>
+              <div class="form-group">
+                <label class="form-label">Password Baru</label>
+                <input type="password" class="form-control" id="pass-new" placeholder="Minimal 8 karakter">
+              </div>
+              <div class="form-group">
+                <label class="form-label">Konfirmasi Password Baru</label>
+                <input type="password" class="form-control" id="pass-confirm" placeholder="Ulangi password baru">
+              </div>
+              <button class="btn btn-primary" onclick="changePassword()" id="btn-change-pass">🔑 Ganti Password</button>
+            </div>
+          </div>
+
+          <div class="card" style="border-color:var(--danger)">
+            <div class="card-header"><h3 style="color:var(--danger)">⚠️ Zona Berbahaya</h3></div>
+            <div class="card-body">
+              <p style="color:var(--text-muted);margin-bottom:16px;font-size:14px">Logout dari semua perangkat dan akhiri sesi saat ini.</p>
+              <button class="btn btn-danger" onclick="Auth.logout()">↩ Logout dari Akun</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="js/supabase.js"></script>
+<script>
+let restoId = null, restoData = null;
+
+function openSidebar() { document.getElementById('sidebar').classList.add('open'); document.getElementById('sidebar-overlay').classList.add('active'); }
+function closeSidebar() { document.getElementById('sidebar').classList.remove('open'); document.getElementById('sidebar-overlay').classList.remove('active'); }
+
+function switchTab(tab, el) {
+  document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(t => t.classList.remove('active'));
+  document.getElementById('tab-' + tab).classList.add('active');
+  el.classList.add('active');
+}
+
+document.getElementById('is-open').addEventListener('change', function() {
+  document.getElementById('open-label').textContent = this.checked ? '🟢 Restoran Buka' : '🔴 Restoran Tutup';
+});
+
+async function init() {
+  const user = await Auth.requireAuth();
+  document.getElementById('user-email').textContent = user.email;
+  document.getElementById('user-avatar').textContent = user.email[0].toUpperCase();
+  document.getElementById('akun-email').textContent = user.email;
+  document.getElementById('akun-avatar').textContent = user.email[0].toUpperCase();
+  document.getElementById('akun-since').textContent = 'Bergabung: ' + new Date(user.created_at).toLocaleDateString('id-ID', { day:'2-digit', month:'long', year:'numeric' });
+
+  const { data: resto } = await db.from('restaurants').select('*').eq('user_id', user.id).single();
+  if (!resto) return;
+  restoId = resto.id; restoData = resto;
+
+  document.getElementById('resto-name-sidebar').textContent = resto.name;
+  document.getElementById('resto-name').value = resto.name || '';
+  document.getElementById('resto-desc').value = resto.description || '';
+  document.getElementById('resto-address').value = resto.address || '';
+  document.getElementById('resto-phone').value = resto.phone || '';
+  document.getElementById('resto-email').value = resto.email || '';
+  document.getElementById('resto-logo').value = resto.logo_url || '';
+  if (resto.logo_url) previewLogo(resto.logo_url);
+
+  document.getElementById('jam-buka').value = resto.opening_time || '08:00';
+  document.getElementById('jam-tutup').value = resto.closing_time || '22:00';
+  document.getElementById('is-open').checked = resto.is_open !== false;
+  document.getElementById('open-label').textContent = resto.is_open !== false ? '🟢 Restoran Buka' : '🔴 Restoran Tutup';
+
+  // Bank info
+  const tag = document.getElementById('bank-status-tag');
+  if (resto.bank_verified) {
+    tag.textContent = '✅ Terverifikasi'; tag.className = 'badge badge-success';
+    document.getElementById('bank-current').style.display = 'block';
+    document.getElementById('bank-display').innerHTML = `<div style="font-size:14px"><strong>${resto.bank_name}</strong> · ${resto.bank_account_number}<br><span style="color:var(--text-muted)">${resto.bank_account_name}</span></div>`;
+  } else if (resto.bank_account_number) {
+    tag.textContent = '⏳ Pending Verifikasi'; tag.className = 'badge badge-warning';
+    document.getElementById('bank-name').value = resto.bank_name || '';
+    document.getElementById('bank-number').value = resto.bank_account_number || '';
+    document.getElementById('bank-holder').value = resto.bank_account_name || '';
+  } else {
+    tag.textContent = '❌ Belum Setup'; tag.className = 'badge badge-danger';
+  }
+}
+
+function previewLogo(url) {
+  const el = document.getElementById('logo-preview');
+  if (url) el.innerHTML = `<img src="${url}" style="width:80px;height:80px;border-radius:14px;object-fit:cover" onerror="this.parentElement.innerHTML='🍽️'">`;
+  else el.innerHTML = '🍽️';
+}
+
+async function saveProfil() {
+  const name = document.getElementById('resto-name').value.trim();
+  if (!name) return showToast('Nama restoran wajib diisi', 'error');
+  const btn = document.getElementById('btn-save-profil');
+  setLoading(btn, true);
+  const { error } = await db.from('restaurants').update({
+    name,
+    description: document.getElementById('resto-desc').value.trim() || null,
+    address: document.getElementById('resto-address').value.trim() || null,
+    phone: document.getElementById('resto-phone').value.trim() || null,
+    email: document.getElementById('resto-email').value.trim() || null,
+    logo_url: document.getElementById('resto-logo').value.trim() || null,
+  }).eq('id', restoId);
+  setLoading(btn, false);
+  if (error) return showToast('Gagal simpan: ' + error.message, 'error');
+  document.getElementById('resto-name-sidebar').textContent = name;
+  showToast('Profil berhasil disimpan', 'success');
+}
+
+async function saveBank() {
+  const bank = document.getElementById('bank-name').value;
+  const number = document.getElementById('bank-number').value.trim();
+  const holder = document.getElementById('bank-holder').value.trim();
+  const password = document.getElementById('bank-password').value;
+  if (!bank || !number || !holder) return showToast('Semua field rekening wajib diisi', 'error');
+  if (!password) return showToast('Konfirmasi password wajib diisi', 'error');
+
+  const btn = document.getElementById('btn-save-bank');
+  setLoading(btn, true);
+
+  // Verifikasi password terlebih dahulu
+  try {
+    const { error: authErr } = await db.auth.signInWithPassword({ email: restoData.email || (await Auth.getUser()).email, password });
+    if (authErr) { showToast('Password salah. Perubahan rekening ditolak.', 'error'); setLoading(btn, false); return; }
+  } catch(e) { showToast('Verifikasi gagal', 'error'); setLoading(btn, false); return; }
+
+  // Simpan ke database (status pending - menunggu verifikasi Xendit)
+  const { error } = await db.from('restaurants').update({
+    bank_name: bank, bank_account_number: number, bank_account_name: holder, bank_verified: false
+  }).eq('id', restoId);
+
+  setLoading(btn, false);
+  if (error) return showToast('Gagal simpan rekening', 'error');
+
+  // Update tag
+  const tag = document.getElementById('bank-status-tag');
+  tag.textContent = '⏳ Pending Verifikasi'; tag.className = 'badge badge-warning';
+  document.getElementById('bank-password').value = '';
+
+  showToast('Rekening disimpan! Menunggu verifikasi Xendit (1-2 menit)', 'success');
+}
+
+async function saveJam() {
+  const btn = document.getElementById('btn-save-jam');
+  setLoading(btn, true);
+  const { error } = await db.from('restaurants').update({
+    opening_time: document.getElementById('jam-buka').value,
+    closing_time: document.getElementById('jam-tutup').value,
+    is_open: document.getElementById('is-open').checked,
+  }).eq('id', restoId);
+  setLoading(btn, false);
+  if (error) return showToast('Gagal simpan', 'error');
+  showToast('Jam operasional disimpan', 'success');
+}
+
+async function changePassword() {
+  const oldPass = document.getElementById('pass-old').value;
+  const newPass = document.getElementById('pass-new').value;
+  const confirm = document.getElementById('pass-confirm').value;
+  if (!oldPass || !newPass || !confirm) return showToast('Semua field wajib diisi', 'error');
+  if (newPass.length < 8) return showToast('Password baru minimal 8 karakter', 'error');
+  if (newPass !== confirm) return showToast('Konfirmasi password tidak cocok', 'error');
+
+  const btn = document.getElementById('btn-change-pass');
+  setLoading(btn, true);
+
+  // Verifikasi password lama dulu
+  try {
+    const user = await Auth.getUser();
+    const { error: authErr } = await db.auth.signInWithPassword({ email: user.email, password: oldPass });
+    if (authErr) { showToast('Password lama salah', 'error'); setLoading(btn, false); return; }
+    const { error } = await db.auth.updateUser({ password: newPass });
+    if (error) throw error;
+    showToast('Password berhasil diubah', 'success');
+    document.getElementById('pass-old').value = '';
+    document.getElementById('pass-new').value = '';
+    document.getElementById('pass-confirm').value = '';
+  } catch(e) {
+    showToast('Gagal ganti password: ' + e.message, 'error');
+  } finally { setLoading(btn, false); }
+}
+
+init();
+</script>
+</body>
+</html>

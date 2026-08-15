@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Menu - RestoranKu</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap');
+* { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color: transparent; }
+:root {
+  --primary: #FF6B35; --primary-dark: #E55A26; --primary-light: #FFF0EB;
+  --success: #38A169; --danger: #E53E3E; --bg: #F7F8FA;
+  --card: #fff; --border: #E2E8F0; --text: #1A202C; --muted: #718096;
+  --shadow: 0 2px 12px rgba(0,0,0,0.08);
+}
+body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; padding-bottom: 100px; }
+
+/* HEADER */
+.resto-header { background: var(--primary); color: white; padding: 0; position: relative; }
+.resto-hero { padding: 24px 20px 20px; }
+.resto-logo { width: 56px; height: 56px; border-radius: 14px; background: rgba(255,255,255,0.2); display: flex; align-items: center; justify-content: center; font-size: 26px; margin-bottom: 12px; overflow:hidden; }
+.resto-logo img { width:56px; height:56px; object-fit:cover; border-radius:14px; }
+.resto-name { font-size: 22px; font-weight: 800; margin-bottom: 4px; }
+.resto-meta { font-size: 13px; opacity: 0.85; display: flex; align-items: center; gap: 12px; flex-wrap:wrap; }
+.meja-badge { background: rgba(255,255,255,0.25); padding: 4px 12px; border-radius: 999px; font-weight: 700; font-size: 13px; }
+.status-open { background: rgba(56,161,105,0.3); color: #C6F6D5; padding: 4px 10px; border-radius: 999px; font-size: 12px; font-weight: 600; }
+.status-closed { background: rgba(229,62,62,0.3); color: #FED7D7; padding: 4px 10px; border-radius: 999px; font-size: 12px; font-weight: 600; }
+
+/* CATEGORY TABS */
+.cat-tabs { background: white; border-bottom: 1px solid var(--border); padding: 0 16px; display: flex; gap: 4px; overflow-x: auto; position: sticky; top: 0; z-index: 100; }
+.cat-tabs::-webkit-scrollbar { display: none; }
+.cat-tab { padding: 14px 16px; font-size: 13px; font-weight: 600; white-space: nowrap; cursor: pointer; border-bottom: 2px solid transparent; color: var(--muted); transition: all 0.2s; flex-shrink: 0; }
+.cat-tab.active { color: var(--primary); border-bottom-color: var(--primary); }
+
+/* SEARCH */
+.search-wrap { padding: 12px 16px; background: white; border-bottom: 1px solid var(--border); }
+.search-input { width: 100%; padding: 10px 16px 10px 40px; border: 1px solid var(--border); border-radius: 999px; font-size: 14px; font-family: inherit; background: var(--bg); }
+.search-input:focus { outline: none; border-color: var(--primary); }
+.search-wrap-inner { position: relative; }
+.search-icon { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: var(--muted); font-size: 16px; }
+
+/* MENU SECTION */
+.menu-section { padding: 16px; }
+.section-title { font-size: 16px; font-weight: 800; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
+
+/* MENU ITEM */
+.menu-item { background: white; border-radius: 14px; margin-bottom: 12px; overflow: hidden; border: 1px solid var(--border); display: flex; box-shadow: var(--shadow); transition: transform 0.15s; }
+.menu-item:active { transform: scale(0.98); }
+.menu-item.habis { opacity: 0.55; }
+.menu-img { width: 110px; min-height: 110px; background: var(--bg); flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 40px; }
+.menu-img img { width: 110px; min-height: 110px; object-fit: cover; }
+.menu-body { flex: 1; padding: 12px 14px; display: flex; flex-direction: column; justify-content: space-between; min-height: 110px; }
+.menu-title { font-size: 15px; font-weight: 700; margin-bottom: 4px; line-height: 1.3; }
+.menu-desc { font-size: 12px; color: var(--muted); margin-bottom: 8px; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
+.menu-footer { display: flex; align-items: center; justify-content: space-between; }
+.menu-price { font-size: 16px; font-weight: 800; color: var(--primary); }
+.habis-label { font-size: 12px; font-weight: 600; color: var(--danger); background: #FFF5F5; padding: 4px 10px; border-radius: 999px; }
+.rec-badge { font-size: 10px; background: #FFF9C4; color: #B7791F; padding: 2px 6px; border-radius: 999px; font-weight: 700; margin-bottom: 4px; display: inline-block; }
+
+/* QTY CONTROL */
+.qty-ctrl { display: flex; align-items: center; gap: 8px; }
+.qty-btn { width: 30px; height: 30px; border-radius: 50%; border: none; font-size: 18px; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.15s; }
+.qty-btn.minus { background: #EDF2F7; color: var(--text); }
+.qty-btn.plus { background: var(--primary); color: white; }
+.qty-btn:active { transform: scale(0.9); }
+.qty-num { font-size: 15px; font-weight: 700; min-width: 20px; text-align: center; }
+
+/* CART BUTTON (sticky bottom) */
+.cart-btn-wrap { position: fixed; bottom: 0; left: 0; right: 0; padding: 12px 16px; background: white; border-top: 1px solid var(--border); z-index: 200; }
+.cart-btn { width: 100%; padding: 16px; background: var(--primary); color: white; border: none; border-radius: 14px; font-size: 16px; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: space-between; font-family: inherit; transition: all 0.2s; }
+.cart-btn:active { background: var(--primary-dark); transform: scale(0.99); }
+.cart-btn-left { display: flex; align-items: center; gap: 10px; }
+.cart-count { background: rgba(255,255,255,0.3); border-radius: 999px; padding: 2px 10px; font-size: 14px; }
+
+/* MODAL CART */
+.modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 300; display: flex; align-items: flex-end; opacity: 0; visibility: hidden; transition: all 0.3s; }
+.modal-overlay.active { opacity: 1; visibility: visible; }
+.sheet { background: white; border-radius: 20px 20px 0 0; width: 100%; max-height: 90vh; overflow-y: auto; transform: translateY(100%); transition: transform 0.3s; }
+.modal-overlay.active .sheet { transform: translateY(0); }
+.sheet-handle { width: 40px; height: 4px; background: var(--border); border-radius: 2px; margin: 12px auto 0; }
+.sheet-header { padding: 16px 20px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
+.sheet-header h3 { font-size: 18px; }
+.sheet-close { width: 32px; height: 32px; border: none; background: var(--bg); border-radius: 50%; font-size: 16px; cursor: pointer; }
+.sheet-body { padding: 16px 20px; }
+
+/* CART ITEM */
+.cart-item { display: flex; align-items: center; gap: 12px; padding: 12px 0; border-bottom: 1px solid var(--border); }
+.cart-item:last-child { border-bottom: none; }
+.cart-item-info { flex: 1; }
+.cart-item-name { font-weight: 600; font-size: 14px; }
+.cart-item-price { font-size: 13px; color: var(--muted); margin-top: 2px; }
+.cart-item-total { font-weight: 700; color: var(--primary); font-size: 14px; }
+
+/* SUMMARY */
+.order-summary { background: var(--bg); border-radius: 12px; padding: 14px; margin: 16px 0; }
+.summary-row { display: flex; justify-content: space-between; font-size: 13px; padding: 4px 0; }
+.summary-row.total { font-weight: 700; font-size: 16px; padding-top: 10px; border-top: 1px solid var(--border); margin-top: 6px; color: var(--primary); }
+
+/* FORM ORDER */
+.form-group { margin-bottom: 14px; }
+.form-label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 6px; color: var(--text); }
+.form-control { width: 100%; padding: 11px 14px; border: 1px solid var(--border); border-radius: 10px; font-size: 14px; font-family: inherit; }
+.form-control:focus { outline: none; border-color: var(--primary); }
+
+/* PAYMENT RESULT */
+.result-page { min-height: 100vh; display: flex; align-items: center; justify-content: center; flex-direction: column; padding: 40px 20px; text-align: center; background: var(--bg); }
+.result-icon { font-size: 72px; margin-bottom: 20px; }
+.result-title { font-size: 26px; font-weight: 800; margin-bottom: 8px; }
+.result-sub { color: var(--muted); font-size: 15px; margin-bottom: 28px; line-height: 1.6; }
+
+/* LOADING */
+.loading { display: flex; align-items: center; justify-content: center; min-height: 200px; flex-direction: column; gap: 12px; }
+.spinner-lg { width: 40px; height: 40px; border: 3px solid var(--border); border-top-color: var(--primary); border-radius: 50%; animation: spin 0.7s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* EMPTY */
+.empty { text-align: center; padding: 48px 20px; color: var(--muted); }
+.empty .icon { font-size: 48px; margin-bottom: 12px; }
+</style>
+</head>
+<body>
+
+<div id="app">
+  <div class="loading"><div class="spinner-lg"></div><p style="color:var(--muted)">Memuat menu...</p></div>
+</div>
+
+<!-- MODAL CART -->
+<div class="modal-overlay" id="modal-cart">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-header">
+      <h3>🛒 Keranjang Pesanan</h3>
+      <button class="sheet-close" onclick="closeCart()">✕</button>
+    </div>
+    <div class="sheet-body" id="cart-body"></div>
+  </div>
+</div>
+
+<!-- MODAL PEMBAYARAN BERHASIL -->
+<div class="modal-overlay" id="modal-success">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-body" style="text-align:center;padding:40px 24px">
+      <div style="font-size:64px;margin-bottom:16px">✅</div>
+      <h2 style="font-size:22px;margin-bottom:8px">Pembayaran Berhasil!</h2>
+      <p style="color:var(--muted);margin-bottom:8px" id="success-order-num"></p>
+      <p style="color:var(--muted);margin-bottom:24px">Pesananmu sedang diproses oleh dapur. Terima kasih!</p>
+      <div style="background:var(--bg);border-radius:12px;padding:16px;margin-bottom:20px;text-align:left" id="success-detail"></div>
+      <button onclick="resetOrder()" style="width:100%;padding:14px;background:var(--primary);color:white;border:none;border-radius:12px;font-size:15px;font-weight:700;cursor:pointer;font-family:inherit">🍽️ Pesan Lagi</button>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+const SUPABASE_URL = 'https://rjxhijozmznqvkxqbywr.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_v-FyoWoz05KpYt1gA1k96A_IZiQnpXB';
+const { createClient } = supabase;
+const db = createClient(SUPABASE_URL, SUPABASE_KEY);
+
+// Parse URL params
+const params = new URLSearchParams(window.location.search);
+const restoSlug = params.get('resto');
+const mejaNum = parseInt(params.get('meja') || '1');
+
+let restoData = null, menuItems = [], categories = [], cart = {}, activeCat = 'all';
+
+function formatRp(n) { return new Intl.NumberFormat('id-ID', { style:'currency', currency:'IDR', minimumFractionDigits:0 }).format(n); }
+
+async function init() {
+  if (!restoSlug) { showError('QR Code tidak valid. Silakan scan ulang.'); return; }
+
+  const { data: resto } = await db.from('restaurants').select('*').eq('slug', restoSlug).single();
+  if (!resto) { showError('Restoran tidak ditemukan.'); return; }
+  restoData = resto;
+
+  const [{ data: cats }, { data: menus }] = await Promise.all([
+    db.from('menu_categories').select('*').eq('restaurant_id', resto.id).eq('is_active', true).order('sort_order'),
+    db.from('menu_items').select('*').eq('restaurant_id', resto.id).order('sort_order').order('name')
+  ]);
+
+  categories = cats || [];
+  menuItems = menus || [];
+  renderPage();
+}
+
+function showError(msg) {
+  document.getElementById('app').innerHTML = `<div class="result-page"><div class="result-icon">❌</div><div class="result-title">Oops!</div><div class="result-sub">${msg}</div></div>`;
+}
+
+function renderPage() {
+  const isOpen = restoData.is_open;
+  const filtered = activeCat === 'all' ? menuItems : menuItems.filter(m => m.category_id === activeCat);
+
+  // Group by category
+  const grouped = {};
+  if (activeCat === 'all') {
+    categories.forEach(c => { grouped[c.id] = { name: c.name, icon: c.icon, items: [] }; });
+    grouped['_none'] = { name: 'Lainnya', icon: '🍽️', items: [] };
+    menuItems.forEach(m => {
+      if (m.category_id && grouped[m.category_id]) grouped[m.category_id].items.push(m);
+      else grouped['_none'].items.push(m);
+    });
+  }
+
+  const searchQuery = document.getElementById('search-q')?.value?.toLowerCase() || '';
+  const displayItems = filtered.filter(m => !searchQuery || m.name.toLowerCase().includes(searchQuery) || (m.description||'').toLowerCase().includes(searchQuery));
+
+  const totalItems = Object.values(cart).reduce((s, q) => s + q, 0);
+  const totalPrice = Object.entries(cart).reduce((s, [id, q]) => {
+    const m = menuItems.find(x => x.id === id); return s + (m ? m.price * q : 0);
+  }, 0);
+
+  let html = `
+    <div class="resto-header">
+      <div class="resto-hero">
+        <div class="resto-logo">${restoData.logo_url ? `<img src="${restoData.logo_url}" onerror="this.parentElement.innerHTML='🍽️'">` : '🍽️'}</div>
+        <div class="resto-name">${restoData.name}</div>
+        <div class="resto-meta">
+          <span class="meja-badge">🪑 Meja ${mejaNum}</span>
+          <span class="${isOpen ? 'status-open' : 'status-closed'}">${isOpen ? '🟢 Buka' : '🔴 Tutup'}</span>
+          ${restoData.opening_time ? `<span>🕐 ${restoData.opening_time.slice(0,5)}-${(restoData.closing_time||'22:00').slice(0,5)}</span>` : ''}
+        </div>
+      </div>
+    </div>
+
+    <div class="cat-tabs">
+      <div class="cat-tab ${activeCat==='all'?'active':''}" onclick="setCat('all')">✨ Semua</div>
+      ${categories.map(c => `<div class="cat-tab ${activeCat===c.id?'active':''}" onclick="setCat('${c.id}')">${c.icon} ${c.name}</div>`).join('')}
+    </div>
+
+    <div class="search-wrap">
+      <div class="search-wrap-inner">
+        <span class="search-icon">🔍</span>
+        <input type="text" class="search-input" id="search-q" placeholder="Cari menu..." value="${searchQuery}" oninput="renderPage()">
+      </div>
+    </div>
+
+    <div id="menu-content">`;
+
+  if (!isOpen) {
+    html += `<div class="empty"><div class="icon">🔴</div><p style="font-weight:700;font-size:16px">Restoran sedang tutup</p><p>Silakan kembali pada jam ${(restoData.opening_time||'08:00').slice(0,5)} - ${(restoData.closing_time||'22:00').slice(0,5)}</p></div>`;
+  } else if (activeCat === 'all') {
+    let hasItems = false;
+    Object.entries(grouped).forEach(([catId, group]) => {
+      const items = group.items.filter(m => !searchQuery || m.name.toLowerCase().includes(searchQuery) || (m.description||'').toLowerCase().includes(searchQuery));
+      if (!items.length) return;
+      hasItems = true;
+      html += `<div class="menu-section"><div class="section-title">${group.icon} ${group.name}</div>`;
+      html += items.map(m => menuItemHTML(m)).join('');
+      html += `</div>`;
+    });
+    if (!hasItems) html += `<div class="empty"><div class="icon">🔍</div><p>Menu tidak ditemukan</p></div>`;
+  } else {
+    if (!displayItems.length) {
+      html += `<div class="empty"><div class="icon">🍽️</div><p>Tidak ada menu di kategori ini</p></div>`;
+    } else {
+      html += `<div class="menu-section">${displayItems.map(m => menuItemHTML(m)).join('')}</div>`;
+    }
+  }
+
+  html += `</div>`;
+
+  if (totalItems > 0) {
+    html += `<div class="cart-btn-wrap">
+      <button class="cart-btn" onclick="openCart()">
+        <div class="cart-btn-left"><span class="cart-count">${totalItems}</span><span>Lihat Keranjang</span></div>
+        <span>${formatRp(totalPrice)}</span>
+      </button>
+    </div>`;
+  }
+
+  document.getElementById('app').innerHTML = html;
+}
+
+function menuItemHTML(m) {
+  const isHabis = !m.is_available || m.stock === 0;
+  const qty = cart[m.id] || 0;
+  return `<div class="menu-item ${isHabis?'habis':''}">
+    <div class="menu-img">${m.image_url ? `<img src="${m.image_url}" loading="lazy" onerror="this.parentElement.innerHTML='🍽️'">` : '🍽️'}</div>
+    <div class="menu-body">
+      <div>
+        ${m.is_recommended ? `<span class="rec-badge">⭐ Rekomendasi</span>` : ''}
+        <div class="menu-title">${m.name}</div>
+        ${m.description ? `<div class="menu-desc">${m.description}</div>` : ''}
+      </div>
+      <div class="menu-footer">
+        <div class="menu-price">${formatRp(m.price)}</div>
+        ${isHabis ? `<span class="habis-label">Habis</span>` :
+          qty > 0 ?
+          `<div class="qty-ctrl">
+            <button class="qty-btn minus" onclick="updateCart('${m.id}',-1)">−</button>
+            <span class="qty-num">${qty}</span>
+            <button class="qty-btn plus" onclick="updateCart('${m.id}',1)">+</button>
+          </div>` :
+          `<button class="qty-btn plus" onclick="updateCart('${m.id}',1)" style="width:36px;height:36px;font-size:20px">+</button>`
+        }
+      </div>
+    </div>
+  </div>`;
+}
+
+function updateCart(id, delta) {
+  const m = menuItems.find(x => x.id === id);
+  if (!m) return;
+  const current = cart[id] || 0;
+  const newQty = Math.max(0, Math.min(current + delta, m.stock));
+  if (newQty === 0) delete cart[id];
+  else cart[id] = newQty;
+  renderPage();
+}
+
+function setCat(catId) { activeCat = catId; renderPage(); }
+
+function openCart() {
+  const items = Object.entries(cart).map(([id, qty]) => {
+    const m = menuItems.find(x => x.id === id);
+    return m ? { ...m, qty, sub: m.price * qty } : null;
+  }).filter(Boolean);
+
+  const subtotal = items.reduce((s, i) => s + i.sub, 0);
+  const platformFee = 1000;
+  const total = subtotal + platformFee;
+
+  document.getElementById('cart-body').innerHTML = `
+    <div id="cart-items">
+      ${items.map(i => `<div class="cart-item">
+        <div class="cart-item-info">
+          <div class="cart-item-name">${i.name}</div>
+          <div class="cart-item-price">${formatRp(i.price)} × ${i.qty}</div>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px">
+          <div class="qty-ctrl">
+            <button class="qty-btn minus" style="width:26px;height:26px;font-size:16px" onclick="updateCart('${i.id}',-1);openCart()">−</button>
+            <span class="qty-num" style="font-size:13px">${i.qty}</span>
+            <button class="qty-btn plus" style="width:26px;height:26px;font-size:16px" onclick="updateCart('${i.id}',1);openCart()">+</button>
+          </div>
+          <div class="cart-item-total">${formatRp(i.sub)}</div>
+        </div>
+      </div>`).join('')}
+    </div>
+
+    <div class="order-summary">
+      <div class="summary-row"><span>Subtotal</span><span>${formatRp(subtotal)}</span></div>
+      <div class="summary-row"><span>Platform Fee</span><span>${formatRp(platformFee)}</span></div>
+      <div class="summary-row total"><span>Total</span><span>${formatRp(total)}</span></div>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Nama (opsional)</label>
+      <input type="text" class="form-control" id="cust-name" placeholder="Nama kamu">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Catatan untuk dapur (opsional)</label>
+      <textarea class="form-control" id="cust-note" rows="2" placeholder="Misal: tidak pedas, tanpa bawang..."></textarea>
+    </div>
+
+    <button onclick="placeOrder()" id="btn-order" style="width:100%;padding:16px;background:var(--primary);color:white;border:none;border-radius:12px;font-size:16px;font-weight:700;cursor:pointer;font-family:inherit;margin-top:4px">
+      💳 Lanjut Bayar — ${formatRp(total)}
+    </button>
+  `;
+  document.getElementById('modal-cart').classList.add('active');
+}
+
+function closeCart() { document.getElementById('modal-cart').classList.remove('active'); }
+
+async function placeOrder() {
+  const items = Object.entries(cart).map(([id, qty]) => {
+    const m = menuItems.find(x => x.id === id);
+    return m ? { menu_item_id: id, name: m.name, price: m.price, quantity: qty, subtotal: m.price * qty } : null;
+  }).filter(Boolean);
+
+  if (!items.length) return;
+
+  const btn = document.getElementById('btn-order');
+  btn.disabled = true; btn.innerHTML = '<span class="spinner-lg" style="width:20px;height:20px;border-width:2px;display:inline-block;margin-right:8px"></span> Memproses...';
+
+  const subtotal = items.reduce((s, i) => s + i.subtotal, 0);
+  const platformFee = 1000;
+  const total = subtotal + platformFee;
+  const customerName = document.getElementById('cust-name').value.trim();
+  const customerNote = document.getElementById('cust-note').value.trim();
+
+  // Cari table_id dari meja
+  const { data: tableData } = await db.from('restaurant_tables').select('id').eq('restaurant_id', restoData.id).eq('table_number', mejaNum).single();
+
+  // Buat order
+  const { data: order, error } = await db.from('orders').insert({
+    restaurant_id: restoData.id,
+    table_id: tableData?.id || null,
+    table_number: mejaNum,
+    customer_name: customerName || null,
+    customer_note: customerNote || null,
+    subtotal, platform_fee: platformFee, total,
+    status: 'pending',
+    payment_status: 'unpaid'
+  }).select().single();
+
+  if (error) {
+    alert('Gagal membuat pesanan. Coba lagi.');
+    btn.disabled = false; btn.innerHTML = `💳 Lanjut Bayar — ${formatRp(total)}`;
+    return;
+  }
+
+  // Insert order items
+  const orderItems = items.map(i => ({ ...i, order_id: order.id }));
+  await db.from('order_items').insert(orderItems);
+
+  // Simulasi Xendit Invoice (dalam produksi ganti dengan API Xendit sungguhan)
+  // Update order ke payment_status = 'pending_payment' dan simpan invoice url
+  await db.from('orders').update({
+    payment_status: 'pending_payment',
+    xendit_invoice_url: `#simulasi-${order.id}` // Ganti dengan URL Xendit sungguhan
+  }).eq('id', order.id);
+
+  // Redirect ke Xendit Payment Page (SIMULASI - dalam produksi gunakan Xendit API)
+  showPaymentPage(order, items, total, platformFee);
+}
+
+function showPaymentPage(order, items, total, platformFee) {
+  closeCart();
+  // Dalam produksi: window.location.href = xenditInvoiceUrl;
+  // Untuk simulasi, tampilkan halaman pembayaran sederhana
+  document.getElementById('app').innerHTML = `
+    <div style="min-height:100vh;background:var(--bg)">
+      <div style="background:var(--primary);padding:20px;text-align:center;color:white">
+        <div style="font-size:28px;margin-bottom:8px">💳</div>
+        <h2 style="font-size:18px">Selesaikan Pembayaran</h2>
+        <p style="opacity:0.85;font-size:13px">${order.order_number}</p>
+      </div>
+      <div style="padding:20px">
+        <div style="background:white;border-radius:14px;padding:20px;margin-bottom:16px;border:1px solid var(--border)">
+          <div style="font-size:13px;color:var(--muted);margin-bottom:4px">Total Pembayaran</div>
+          <div style="font-size:32px;font-weight:800;color:var(--primary)">${formatRp(total)}</div>
+          <div style="font-size:12px;color:var(--muted);margin-top:4px">Meja ${mejaNum} · ${items.length} item · Fee Rp1.000</div>
+        </div>
+
+        <div style="background:white;border-radius:14px;padding:20px;margin-bottom:16px;border:1px solid var(--border)">
+          <div style="font-weight:700;margin-bottom:12px">Pilih Metode Bayar</div>
+          <div style="display:flex;flex-direction:column;gap:10px">
+            <button onclick="simulatePayment('QRIS','${order.id}')" style="padding:14px;border:2px solid var(--border);border-radius:10px;background:white;font-family:inherit;font-size:14px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:10px;text-align:left">
+              📱 <span><div>QRIS</div><div style="font-size:11px;font-weight:400;color:var(--muted)">GoPay, OVO, Dana, LinkAja, ShopeePay</div></span>
+            </button>
+            <button onclick="simulatePayment('TRANSFER','${order.id}')" style="padding:14px;border:2px solid var(--border);border-radius:10px;background:white;font-family:inherit;font-size:14px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:10px;text-align:left">
+              🏦 <span><div>Transfer Bank</div><div style="font-size:11px;font-weight:400;color:var(--muted)">BCA, BRI, BNI, Mandiri, dll</div></span>
+            </button>
+          </div>
+        </div>
+
+        <div style="text-align:center">
+          <button onclick="init()" style="background:none;border:none;color:var(--muted);font-size:13px;cursor:pointer;font-family:inherit">← Kembali ke Menu</button>
+        </div>
+      </div>
+    </div>`;
+}
+
+async function simulatePayment(method, orderId) {
+  // CATATAN: Ini simulasi. Dalam produksi ganti dengan Xendit Payment API + webhook
+  // Xendit akan otomatis kirim webhook ke endpoint kamu saat pembayaran berhasil
+
+  document.getElementById('app').innerHTML = `<div class="result-page"><div class="spinner-lg"></div><p style="color:var(--muted);margin-top:16px">Memproses pembayaran...</p></div>`;
+
+  await new Promise(r => setTimeout(r, 2000));
+
+  // Update status order jadi paid (dalam produksi ini dilakukan oleh webhook Xendit)
+  await db.from('orders').update({
+    payment_status: 'paid',
+    payment_method: method,
+    status: 'confirmed',
+    paid_at: new Date().toISOString()
+  }).eq('id', orderId);
+
+  // Kurangi stok (sudah dilakukan via trigger saat order_items diinsert)
+  showSuccess(orderId);
+}
+
+async function showSuccess(orderId) {
+  const { data: order } = await db.from('orders').select('*,order_items(name,quantity,subtotal)').eq('id', orderId).single();
+  if (!order) return;
+
+  cart = {};
+  document.getElementById('modal-success').classList.add('active');
+  document.getElementById('success-order-num').textContent = `No. Pesanan: ${order.order_number}`;
+  document.getElementById('success-detail').innerHTML = `
+    ${order.order_items?.map(i => `<div style="display:flex;justify-content:space-between;font-size:13px;padding:4px 0">${i.name} x${i.quantity}<span>${formatRp(i.subtotal)}</span></div>`).join('')}
+    <div style="display:flex;justify-content:space-between;font-weight:700;font-size:15px;padding-top:10px;border-top:1px solid var(--border);margin-top:8px;color:var(--primary)">Total<span>${formatRp(order.total)}</span></div>
+  `;
+  renderPage();
+}
+
+function resetOrder() {
+  cart = {};
+  document.getElementById('modal-success').classList.remove('active');
+  renderPage();
+}
+
+init();
+</script>
+</body>
+</html>

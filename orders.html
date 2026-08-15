@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pesanan - RestoranKu</title>
+<link rel="stylesheet" href="css/style.css">
+<style>
+  .order-columns { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; }
+  .order-col { background: var(--bg); border-radius: var(--radius); padding: 16px; min-height: 400px; }
+  .order-col-header { font-weight: 700; font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 12px; display: flex; align-items: center; justify-content: space-between; }
+  .order-col-header .count { background: white; border: 1px solid var(--border); border-radius: 999px; padding: 2px 10px; font-size: 12px; }
+  .order-card2 { background: white; border-radius: var(--radius-sm); border: 1px solid var(--border); margin-bottom: 10px; overflow: hidden; cursor: pointer; transition: all 0.2s; }
+  .order-card2:hover { box-shadow: var(--shadow); }
+  .order-card2.new { border-color: var(--warning); animation: slideIn 0.4s ease; }
+  .order-card2 .oc-header { padding: 12px 14px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
+  .order-card2 .oc-body { padding: 10px 14px; }
+  .order-card2 .oc-footer { padding: 8px 14px; background: var(--bg); display: flex; gap: 6px; }
+  .filter-tabs { display: flex; gap: 8px; margin-bottom: 20px; flex-wrap: wrap; }
+  .filter-tab { padding: 7px 16px; border-radius: 999px; border: 1px solid var(--border); font-size: 13px; cursor: pointer; font-weight: 500; transition: all 0.2s; background: white; }
+  .filter-tab.active { background: var(--primary); color: white; border-color: var(--primary); }
+</style>
+</head>
+<body>
+<div class="layout">
+  <div class="sidebar" id="sidebar">
+    <div class="sidebar-brand">
+      <div class="logo"><div class="logo-icon">🍽️</div><div class="logo-text"><h3>RestoranKu</h3><span id="resto-name-sidebar">-</span></div></div>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="nav-section">
+        <div class="nav-section-label">Menu Utama</div>
+        <a href="dashboard.html" class="nav-item"><span class="nav-icon">📊</span> Dashboard</a>
+        <a href="orders.html" class="nav-item active"><span class="nav-icon">🛒</span> Pesanan</a>
+        <a href="menu.html" class="nav-item"><span class="nav-icon">🍽️</span> Kelola Menu</a>
+        <a href="tables.html" class="nav-item"><span class="nav-icon">🪑</span> Kelola Meja</a>
+        <a href="transactions.html" class="nav-item"><span class="nav-icon">💰</span> Transaksi</a>
+      </div>
+      <div class="nav-section">
+        <a href="settings.html" class="nav-item"><span class="nav-icon">⚙️</span> Pengaturan</a>
+      </div>
+    </nav>
+    <div class="sidebar-footer">
+      <div class="sidebar-user" onclick="Auth.logout()">
+        <div class="user-avatar" id="user-avatar">R</div>
+        <div class="user-info"><div class="user-name" id="user-email">-</div><div class="user-role">Pemilik Restoran</div></div>
+        <span style="color:rgba(255,255,255,0.4)">↩</span>
+      </div>
+    </div>
+  </div>
+  <div class="sidebar-overlay" id="sidebar-overlay" onclick="closeSidebar()"></div>
+
+  <div class="main">
+    <div class="topbar">
+      <div class="topbar-left">
+        <button class="hamburger" onclick="openSidebar()">☰</button>
+        <div class="page-title">Pesanan Masuk</div>
+      </div>
+      <div class="topbar-right">
+        <div class="realtime-indicator"><div class="pulse"></div> Realtime</div>
+        <div style="display:flex;gap:8px">
+          <input type="date" class="form-control" id="filter-date" style="width:auto" onchange="loadOrders()">
+          <select class="form-control" id="view-mode" style="width:auto" onchange="toggleView()">
+            <option value="kanban">Tampilan Kanban</option>
+            <option value="list">Tampilan List</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <div class="content">
+      <div class="filter-tabs" id="status-tabs">
+        <div class="filter-tab active" onclick="filterStatus('',this)">Semua</div>
+        <div class="filter-tab" onclick="filterStatus('pending',this)">⏳ Menunggu</div>
+        <div class="filter-tab" onclick="filterStatus('confirmed',this)">✅ Dikonfirmasi</div>
+        <div class="filter-tab" onclick="filterStatus('preparing',this)">🍳 Dimasak</div>
+        <div class="filter-tab" onclick="filterStatus('ready',this)">✔️ Siap</div>
+        <div class="filter-tab" onclick="filterStatus('completed',this)">🎉 Selesai</div>
+        <div class="filter-tab" onclick="filterStatus('cancelled',this)">❌ Dibatal</div>
+      </div>
+
+      <!-- KANBAN VIEW -->
+      <div id="kanban-view">
+        <div class="order-columns">
+          <div class="order-col">
+            <div class="order-col-header" style="color:var(--warning)">⏳ Menunggu <span class="count" id="cnt-pending">0</span></div>
+            <div id="col-pending"></div>
+          </div>
+          <div class="order-col">
+            <div class="order-col-header" style="color:var(--info)">🍳 Diproses <span class="count" id="cnt-preparing">0</span></div>
+            <div id="col-preparing"></div>
+          </div>
+          <div class="order-col">
+            <div class="order-col-header" style="color:var(--success)">✔️ Siap Antar <span class="count" id="cnt-ready">0</span></div>
+            <div id="col-ready"></div>
+          </div>
+          <div class="order-col">
+            <div class="order-col-header" style="color:var(--text-muted)">🎉 Selesai <span class="count" id="cnt-completed">0</span></div>
+            <div id="col-completed"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- LIST VIEW -->
+      <div id="list-view" style="display:none">
+        <div class="card">
+          <div class="card-body" style="padding:0">
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>No Order</th><th>Meja</th><th>Item</th><th>Total</th><th>Pembayaran</th><th>Status</th><th>Waktu</th><th>Aksi</th>
+                  </tr>
+                </thead>
+                <tbody id="order-table-body">
+                  <tr><td colspan="8" style="text-align:center;padding:40px;color:var(--text-muted)">Memuat...</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL DETAIL ORDER -->
+<div class="modal-overlay" id="modal-order">
+  <div class="modal" style="max-width:520px">
+    <div class="modal-header">
+      <h3 id="detail-order-num">Detail Pesanan</h3>
+      <button class="modal-close" onclick="closeOrderModal()">✕</button>
+    </div>
+    <div class="modal-body" id="detail-order-body">
+    </div>
+    <div class="modal-footer" id="detail-order-footer">
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="js/supabase.js"></script>
+<script>
+let restoId = null, allOrders = [], currentStatus = '', channel = null;
+
+function openSidebar() { document.getElementById('sidebar').classList.add('open'); document.getElementById('sidebar-overlay').classList.add('active'); }
+function closeSidebar() { document.getElementById('sidebar').classList.remove('open'); document.getElementById('sidebar-overlay').classList.remove('active'); }
+
+// Set default date to today
+document.getElementById('filter-date').value = new Date().toISOString().split('T')[0];
+
+async function init() {
+  const user = await Auth.requireAuth();
+  document.getElementById('user-email').textContent = user.email;
+  document.getElementById('user-avatar').textContent = user.email[0].toUpperCase();
+  const { data: resto } = await db.from('restaurants').select('id,name').eq('user_id', user.id).single();
+  if (!resto) return;
+  restoId = resto.id;
+  document.getElementById('resto-name-sidebar').textContent = resto.name;
+  await loadOrders();
+  subscribeOrders();
+}
+
+async function loadOrders() {
+  const date = document.getElementById('filter-date').value;
+  const { data } = await db.from('orders').select('*,order_items(id,name,price,quantity,subtotal,note)').eq('restaurant_id', restoId).gte('created_at', date).lte('created_at', date + 'T23:59:59').order('created_at', { ascending: false });
+  allOrders = data || [];
+  renderAll();
+}
+
+function filterStatus(status, el) {
+  currentStatus = status;
+  document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  renderAll();
+}
+
+function renderAll() {
+  const filtered = currentStatus ? allOrders.filter(o => o.status === currentStatus) : allOrders;
+  const viewMode = document.getElementById('view-mode').value;
+  if (viewMode === 'kanban') renderKanban(filtered);
+  else renderList(filtered);
+}
+
+function toggleView() { renderAll(); }
+
+const statusFlow = { pending: 'confirmed', confirmed: 'preparing', preparing: 'ready', ready: 'completed' };
+const statusLabel = { pending: '⏳ Menunggu', confirmed: '✅ Konfirmasi', preparing: '🍳 Dimasak', ready: '✔️ Siap', completed: '🎉 Selesai', cancelled: '❌ Batal' };
+const statusColor = { pending: 'badge-warning', confirmed: 'badge-info', preparing: 'badge-primary', ready: 'badge-success', completed: 'badge-secondary', cancelled: 'badge-danger' };
+const payColor = { paid: 'badge-success', unpaid: 'badge-warning', pending_payment: 'badge-info', failed: 'badge-danger', expired: 'badge-secondary' };
+const payLabel = { paid: '💰 Lunas', unpaid: '⏳ Belum Bayar', pending_payment: '⏳ Memproses', failed: '❌ Gagal', expired: '⏰ Expired' };
+
+function orderCard(o, compact = false) {
+  const items = o.order_items || [];
+  const nextStatus = statusFlow[o.status];
+  const nextLabel = nextStatus ? { confirmed: 'Konfirmasi', preparing: 'Mulai Masak', ready: 'Siap Antar', completed: 'Selesai' }[nextStatus] : null;
+
+  return `<div class="order-card2" onclick="showDetail('${o.id}')">
+    <div class="oc-header">
+      <div>
+        <div style="font-weight:700;font-size:13px">${o.order_number}</div>
+        <div style="font-size:12px;color:var(--text-muted)">🪑 Meja ${o.table_number} ${o.customer_name ? '· ' + o.customer_name : ''}</div>
+      </div>
+      <span class="badge ${payColor[o.payment_status] || 'badge-secondary'}">${payLabel[o.payment_status] || o.payment_status}</span>
+    </div>
+    <div class="oc-body">
+      ${items.slice(0,3).map(i => `<div style="display:flex;justify-content:space-between;font-size:12px;padding:2px 0">
+        <span>${i.name} x${i.quantity}</span>
+        <span style="color:var(--text-muted)">${formatRupiah(i.subtotal)}</span>
+      </div>`).join('')}
+      ${items.length > 3 ? `<div style="font-size:11px;color:var(--text-muted)">+${items.length - 3} item lainnya</div>` : ''}
+      <div style="display:flex;justify-content:space-between;margin-top:8px;padding-top:8px;border-top:1px solid var(--border)">
+        <span style="font-size:12px;color:var(--text-muted)">${new Date(o.created_at).toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit'})}</span>
+        <span style="font-weight:700;font-size:14px;color:var(--primary)">${formatRupiah(o.total)}</span>
+      </div>
+      ${o.customer_note ? `<div style="font-size:11px;background:var(--warning-light);padding:6px 8px;border-radius:4px;margin-top:6px;color:#744210">📝 ${o.customer_note}</div>` : ''}
+    </div>
+    ${nextLabel ? `<div class="oc-footer" onclick="event.stopPropagation()">
+      <button class="btn btn-primary btn-sm btn-block" onclick="updateStatus('${o.id}','${nextStatus}')">${nextLabel} →</button>
+      ${o.status === 'pending' ? `<button class="btn btn-sm" style="background:var(--danger-light);color:var(--danger);border:none" onclick="updateStatus('${o.id}','cancelled')">Batalkan</button>` : ''}
+    </div>` : ''}
+  </div>`;
+}
+
+function renderKanban(orders) {
+  document.getElementById('kanban-view').style.display = 'block';
+  document.getElementById('list-view').style.display = 'none';
+  const cols = { pending: [], preparing: [], ready: [], completed: [] };
+  orders.forEach(o => {
+    if (o.status === 'confirmed') cols.preparing.unshift(o);
+    else if (cols[o.status]) cols[o.status].unshift(o);
+  });
+
+  const pending = orders.filter(o => o.status === 'pending' || o.status === 'confirmed');
+  document.getElementById('cnt-pending').textContent = pending.length;
+  document.getElementById('cnt-preparing').textContent = cols.preparing.length;
+  document.getElementById('cnt-ready').textContent = cols.ready.length;
+  document.getElementById('cnt-completed').textContent = cols.completed.length;
+
+  document.getElementById('col-pending').innerHTML = pending.length ? pending.map(o => orderCard(o)).join('') : '<div style="text-align:center;color:var(--text-muted);padding:20px;font-size:13px">Tidak ada pesanan</div>';
+  document.getElementById('col-preparing').innerHTML = cols.preparing.length ? cols.preparing.map(o => orderCard(o)).join('') : '<div style="text-align:center;color:var(--text-muted);padding:20px;font-size:13px">Tidak ada</div>';
+  document.getElementById('col-ready').innerHTML = cols.ready.length ? cols.ready.map(o => orderCard(o)).join('') : '<div style="text-align:center;color:var(--text-muted);padding:20px;font-size:13px">Tidak ada</div>';
+  document.getElementById('col-completed').innerHTML = cols.completed.length ? cols.completed.map(o => orderCard(o)).join('') : '<div style="text-align:center;color:var(--text-muted);padding:20px;font-size:13px">Tidak ada</div>';
+}
+
+function renderList(orders) {
+  document.getElementById('kanban-view').style.display = 'none';
+  document.getElementById('list-view').style.display = 'block';
+  const tbody = document.getElementById('order-table-body');
+  if (!orders.length) { tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;padding:40px;color:var(--text-muted)">Tidak ada pesanan</td></tr>'; return; }
+  tbody.innerHTML = orders.map(o => `<tr>
+    <td><span style="font-weight:600;font-size:13px">${o.order_number}</span></td>
+    <td>Meja ${o.table_number}</td>
+    <td style="font-size:12px">${o.order_items?.map(i=>`${i.name} x${i.quantity}`).join(', ') || '-'}</td>
+    <td><strong>${formatRupiah(o.total)}</strong></td>
+    <td><span class="badge ${payColor[o.payment_status] || 'badge-secondary'}">${payLabel[o.payment_status] || o.payment_status}</span></td>
+    <td><span class="badge ${statusColor[o.status] || 'badge-secondary'}">${statusLabel[o.status] || o.status}</span></td>
+    <td style="font-size:12px;color:var(--text-muted)">${new Date(o.created_at).toLocaleString('id-ID',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'})}</td>
+    <td><button class="btn btn-ghost btn-sm" onclick="showDetail('${o.id}')">Detail</button></td>
+  </tr>`).join('');
+}
+
+async function updateStatus(orderId, newStatus) {
+  const { error } = await db.from('orders').update({ status: newStatus, ...(newStatus === 'completed' ? { completed_at: new Date().toISOString() } : {}) }).eq('id', orderId).eq('restaurant_id', restoId);
+  if (error) return showToast('Gagal update status', 'error');
+  showToast(`Status diupdate ke: ${statusLabel[newStatus]}`, 'success');
+  await loadOrders();
+}
+
+function showDetail(orderId) {
+  const o = allOrders.find(x => x.id === orderId);
+  if (!o) return;
+  const items = o.order_items || [];
+  document.getElementById('detail-order-num').textContent = o.order_number;
+  document.getElementById('detail-order-body').innerHTML = `
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px">
+      <div style="background:var(--bg);padding:12px;border-radius:var(--radius-sm)">
+        <div style="font-size:11px;color:var(--text-muted);margin-bottom:4px">MEJA</div>
+        <div style="font-weight:700">Meja ${o.table_number}</div>
+      </div>
+      <div style="background:var(--bg);padding:12px;border-radius:var(--radius-sm)">
+        <div style="font-size:11px;color:var(--text-muted);margin-bottom:4px">WAKTU</div>
+        <div style="font-weight:600;font-size:13px">${new Date(o.created_at).toLocaleString('id-ID')}</div>
+      </div>
+      <div style="background:var(--bg);padding:12px;border-radius:var(--radius-sm)">
+        <div style="font-size:11px;color:var(--text-muted);margin-bottom:4px">STATUS BAYAR</div>
+        <span class="badge ${payColor[o.payment_status] || 'badge-secondary'}">${payLabel[o.payment_status] || o.payment_status}</span>
+      </div>
+      <div style="background:var(--bg);padding:12px;border-radius:var(--radius-sm)">
+        <div style="font-size:11px;color:var(--text-muted);margin-bottom:4px">STATUS PESANAN</div>
+        <span class="badge ${statusColor[o.status] || 'badge-secondary'}">${statusLabel[o.status] || o.status}</span>
+      </div>
+    </div>
+    ${o.customer_name ? `<p style="margin-bottom:12px"><strong>Pelanggan:</strong> ${o.customer_name}</p>` : ''}
+    ${o.customer_note ? `<div class="alert alert-warning" style="margin-bottom:16px">📝 <strong>Catatan:</strong> ${o.customer_note}</div>` : ''}
+    <div style="background:var(--bg);border-radius:var(--radius-sm);overflow:hidden">
+      ${items.map(i => `<div style="display:flex;justify-content:space-between;padding:10px 14px;border-bottom:1px solid var(--border)">
+        <div><div style="font-weight:500">${i.name}</div>${i.note ? `<div style="font-size:11px;color:var(--text-muted)">${i.note}</div>` : ''}</div>
+        <div style="text-align:right">
+          <div style="font-size:12px;color:var(--text-muted)">x${i.quantity} × ${formatRupiah(i.price)}</div>
+          <div style="font-weight:600">${formatRupiah(i.subtotal)}</div>
+        </div>
+      </div>`).join('')}
+      <div style="display:flex;justify-content:space-between;padding:12px 14px">
+        <span style="color:var(--text-muted);font-size:13px">Subtotal</span>
+        <span>${formatRupiah(o.subtotal)}</span>
+      </div>
+      <div style="display:flex;justify-content:space-between;padding:8px 14px;border-top:1px solid var(--border)">
+        <span style="color:var(--text-muted);font-size:13px">Platform Fee</span>
+        <span style="color:var(--text-muted)">${formatRupiah(o.platform_fee || 0)}</span>
+      </div>
+      <div style="display:flex;justify-content:space-between;padding:12px 14px;border-top:2px solid var(--border);background:white">
+        <span style="font-weight:700">Total</span>
+        <span style="font-weight:700;font-size:18px;color:var(--primary)">${formatRupiah(o.total)}</span>
+      </div>
+    </div>
+  `;
+
+  const footer = document.getElementById('detail-order-footer');
+  const nextStatus = statusFlow[o.status];
+  const nextLabels = { confirmed: 'Konfirmasi Pesanan', preparing: 'Mulai Dimasak', ready: 'Siap Diantar', completed: 'Selesai' };
+  footer.innerHTML = `<button class="btn btn-ghost" onclick="closeOrderModal()">Tutup</button>
+    ${nextStatus ? `<button class="btn btn-primary" onclick="updateStatus('${o.id}','${nextStatus}');closeOrderModal()">${nextLabels[nextStatus]} →</button>` : ''}
+    ${o.status === 'pending' ? `<button class="btn btn-danger" onclick="updateStatus('${o.id}','cancelled');closeOrderModal()">Batalkan</button>` : ''}`;
+
+  document.getElementById('modal-order').classList.add('active');
+}
+
+function closeOrderModal() { document.getElementById('modal-order').classList.remove('active'); }
+
+function subscribeOrders() {
+  channel = db.channel('orders-realtime').on('postgres_changes', { event: '*', schema: 'public', table: 'orders', filter: `restaurant_id=eq.${restoId}` }, async (payload) => {
+    if (payload.eventType === 'INSERT') {
+      showToast(`🛒 Pesanan baru masuk! Meja ${payload.new.table_number}`, 'info');
+      // Play notification sound
+      try { const ctx = new AudioContext(); const osc = ctx.createOscillator(); const gain = ctx.createGain(); osc.connect(gain); gain.connect(ctx.destination); osc.frequency.setValueAtTime(880, ctx.currentTime); gain.gain.setValueAtTime(0.3, ctx.currentTime); gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.3); osc.start(ctx.currentTime); osc.stop(ctx.currentTime + 0.3); } catch(e) {}
+    }
+    await loadOrders();
+  }).subscribe();
+}
+
+init();
+</script>
+</body>
+</html>

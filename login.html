@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Login - RestoranKu</title>
+<link rel="stylesheet" href="css/style.css">
+<style>
+  body { background: linear-gradient(135deg, #FF6B35 0%, #E55A26 50%, #2D3748 100%); min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px; }
+  .auth-card { background: white; border-radius: 20px; width: 100%; max-width: 420px; box-shadow: 0 20px 60px rgba(0,0,0,0.3); overflow: hidden; }
+  .auth-header { background: linear-gradient(135deg, #FF6B35, #E55A26); padding: 32px; text-align: center; }
+  .auth-header .logo-icon { width: 60px; height: 60px; background: rgba(255,255,255,0.2); border-radius: 16px; display: flex; align-items: center; justify-content: center; font-size: 28px; margin: 0 auto 16px; }
+  .auth-header h1 { color: white; font-size: 24px; }
+  .auth-header p { color: rgba(255,255,255,0.8); font-size: 14px; }
+  .auth-body { padding: 32px; }
+  .auth-tabs { display: flex; border-bottom: 1px solid var(--border); margin-bottom: 28px; }
+  .auth-tab { flex: 1; padding: 12px; text-align: center; cursor: pointer; font-weight: 600; font-size: 14px; color: var(--text-muted); border-bottom: 2px solid transparent; transition: all 0.2s; }
+  .auth-tab.active { color: var(--primary); border-bottom-color: var(--primary); }
+  .auth-form { display: none; }
+  .auth-form.active { display: block; }
+  .divider { display: flex; align-items: center; gap: 12px; margin: 20px 0; color: var(--text-muted); font-size: 13px; }
+  .divider::before, .divider::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+</style>
+</head>
+<body>
+<div class="auth-card">
+  <div class="auth-header">
+    <div class="logo-icon">🍽️</div>
+    <h1>RestoranKu</h1>
+    <p>Platform pemesanan digital untuk restoran modern</p>
+  </div>
+  <div class="auth-body">
+    <div class="auth-tabs">
+      <div class="auth-tab active" onclick="switchTab('login')">Masuk</div>
+      <div class="auth-tab" onclick="switchTab('register')">Daftar</div>
+    </div>
+
+    <!-- LOGIN FORM -->
+    <div class="auth-form active" id="form-login">
+      <div class="form-group">
+        <label class="form-label">Email</label>
+        <input type="email" class="form-control" id="login-email" placeholder="email@restoran.com">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Password</label>
+        <div style="position:relative">
+          <input type="password" class="form-control" id="login-password" placeholder="Password kamu" onkeypress="if(event.key==='Enter')doLogin()">
+          <span onclick="togglePass('login-password',this)" style="position:absolute;right:12px;top:50%;transform:translateY(-50%);cursor:pointer;color:var(--text-muted)">👁</span>
+        </div>
+      </div>
+      <button class="btn btn-primary btn-block btn-lg" onclick="doLogin()" id="btn-login">Masuk ke Dashboard</button>
+      <div style="text-align:center;margin-top:16px">
+        <a href="#" onclick="switchTab('forgot')" style="color:var(--primary);font-size:13px">Lupa password?</a>
+      </div>
+    </div>
+
+    <!-- REGISTER FORM -->
+    <div class="auth-form" id="form-register">
+      <div class="form-group">
+        <label class="form-label">Nama Restoran</label>
+        <input type="text" class="form-control" id="reg-name" placeholder="Warung Pak Budi">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Email</label>
+        <input type="email" class="form-control" id="reg-email" placeholder="email@restoran.com">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Password</label>
+        <div style="position:relative">
+          <input type="password" class="form-control" id="reg-password" placeholder="Minimal 8 karakter">
+          <span onclick="togglePass('reg-password',this)" style="position:absolute;right:12px;top:50%;transform:translateY(-50%);cursor:pointer;color:var(--text-muted)">👁</span>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Konfirmasi Password</label>
+        <input type="password" class="form-control" id="reg-confirm" placeholder="Ulangi password">
+      </div>
+      <div class="alert alert-info" style="font-size:13px">
+        <span>ℹ️</span> Dengan mendaftar, kamu setuju dengan syarat & ketentuan layanan RestoranKu. Platform fee Rp1.000/transaksi akan dipotong otomatis.
+      </div>
+      <button class="btn btn-primary btn-block btn-lg" onclick="doRegister()" id="btn-register">Daftar Sekarang</button>
+    </div>
+
+    <!-- FORGOT PASSWORD FORM -->
+    <div class="auth-form" id="form-forgot">
+      <p style="color:var(--text-muted);margin-bottom:20px;font-size:14px">Masukkan email kamu dan kami akan mengirimkan link reset password.</p>
+      <div class="form-group">
+        <label class="form-label">Email</label>
+        <input type="email" class="form-control" id="forgot-email" placeholder="email@restoran.com">
+      </div>
+      <button class="btn btn-primary btn-block" onclick="doForgot()" id="btn-forgot">Kirim Link Reset</button>
+      <div style="text-align:center;margin-top:16px">
+        <a href="#" onclick="switchTab('login')" style="color:var(--primary);font-size:13px">← Kembali ke login</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="js/supabase.js"></script>
+<script>
+function switchTab(tab) {
+  document.querySelectorAll('.auth-form').forEach(f => f.classList.remove('active'));
+  document.querySelectorAll('.auth-tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('form-' + tab).classList.add('active');
+  if(tab === 'login') document.querySelectorAll('.auth-tab')[0].classList.add('active');
+  if(tab === 'register') document.querySelectorAll('.auth-tab')[1].classList.add('active');
+}
+
+function togglePass(id, el) {
+  const input = document.getElementById(id);
+  input.type = input.type === 'password' ? 'text' : 'password';
+  el.textContent = input.type === 'password' ? '👁' : '🙈';
+}
+
+async function doLogin() {
+  const email = document.getElementById('login-email').value.trim();
+  const password = document.getElementById('login-password').value;
+  if (!email || !password) return showToast('Isi email dan password dulu', 'error');
+  const btn = document.getElementById('btn-login');
+  setLoading(btn, true);
+  try {
+    await Auth.login(email, password);
+    showToast('Login berhasil! Mengalihkan...', 'success');
+    setTimeout(() => window.location.href = 'dashboard.html', 1000);
+  } catch(e) {
+    showToast('Email atau password salah', 'error');
+    setLoading(btn, false);
+  }
+}
+
+async function doRegister() {
+  const name = document.getElementById('reg-name').value.trim();
+  const email = document.getElementById('reg-email').value.trim();
+  const password = document.getElementById('reg-password').value;
+  const confirm = document.getElementById('reg-confirm').value;
+  if (!name || !email || !password) return showToast('Semua field wajib diisi', 'error');
+  if (password.length < 8) return showToast('Password minimal 8 karakter', 'error');
+  if (password !== confirm) return showToast('Password tidak cocok', 'error');
+  const btn = document.getElementById('btn-register');
+  setLoading(btn, true);
+  try {
+    const { user } = await Auth.register(email, password);
+    // Buat slug dari nama restoran
+    const slug = name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') + '-' + Date.now().toString().slice(-4);
+    // Insert data restoran
+    const { error } = await db.from('restaurants').insert({ user_id: user.id, name, slug, email });
+    if (error) throw error;
+    showToast('Pendaftaran berhasil! Silakan login', 'success');
+    setTimeout(() => switchTab('login'), 1500);
+  } catch(e) {
+    showToast(e.message || 'Gagal mendaftar', 'error');
+  } finally { setLoading(btn, false); }
+}
+
+async function doForgot() {
+  const email = document.getElementById('forgot-email').value.trim();
+  if (!email) return showToast('Masukkan email dulu', 'error');
+  const btn = document.getElementById('btn-forgot');
+  setLoading(btn, true);
+  try {
+    await db.auth.resetPasswordForEmail(email, { redirectTo: window.location.origin + '/reset-password.html' });
+    showToast('Link reset dikirim ke email kamu', 'success');
+  } catch(e) {
+    showToast('Gagal kirim email', 'error');
+  } finally { setLoading(btn, false); }
+}
+
+// Cek jika sudah login
+(async () => {
+  const user = await Auth.getUser();
+  if (user) window.location.href = 'dashboard.html';
+})();
+</script>
+</body>
+</html>

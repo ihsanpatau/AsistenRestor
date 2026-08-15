@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kelola Menu - RestoranKu</title>
+<link rel="stylesheet" href="css/style.css">
+<style>
+  .menu-grid { display: grid; grid-template-columns: repeat(auto-fill,minmax(280px,1fr)); gap: 16px; }
+  .menu-card { background: white; border-radius: var(--radius); border: 1px solid var(--border); overflow: hidden; transition: all 0.2s; }
+  .menu-card:hover { box-shadow: var(--shadow); transform: translateY(-2px); }
+  .menu-img { width: 100%; height: 160px; object-fit: cover; background: var(--bg); display: flex; align-items: center; justify-content: center; font-size: 48px; }
+  .menu-img img { width: 100%; height: 160px; object-fit: cover; }
+  .menu-info { padding: 14px; }
+  .menu-name { font-weight: 700; font-size: 15px; margin-bottom: 4px; }
+  .menu-cat { font-size: 12px; color: var(--text-muted); margin-bottom: 8px; }
+  .menu-price { font-size: 16px; font-weight: 800; color: var(--primary); }
+  .menu-footer { padding: 10px 14px; border-top: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
+  .stock-badge { display: flex; align-items: center; gap: 6px; font-size: 13px; }
+  .cat-chip { display: inline-flex; align-items: center; gap: 6px; padding: 6px 14px; border-radius: 999px; border: 1px solid var(--border); cursor: pointer; font-size: 13px; font-weight: 500; transition: all 0.2s; white-space: nowrap; }
+  .cat-chip.active { background: var(--primary); color: white; border-color: var(--primary); }
+  .cat-scroll { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 4px; }
+  .cat-scroll::-webkit-scrollbar { height: 3px; }
+  .cat-scroll::-webkit-scrollbar-track { background: var(--bg); }
+  .cat-scroll::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+</style>
+</head>
+<body>
+<div class="layout">
+  <!-- SIDEBAR (sama dengan dashboard) -->
+  <div class="sidebar" id="sidebar">
+    <div class="sidebar-brand">
+      <div class="logo"><div class="logo-icon">🍽️</div><div class="logo-text"><h3>RestoranKu</h3><span id="resto-name-sidebar">-</span></div></div>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="nav-section">
+        <div class="nav-section-label">Menu Utama</div>
+        <a href="dashboard.html" class="nav-item"><span class="nav-icon">📊</span> Dashboard</a>
+        <a href="orders.html" class="nav-item"><span class="nav-icon">🛒</span> Pesanan</a>
+        <a href="menu.html" class="nav-item active"><span class="nav-icon">🍽️</span> Kelola Menu</a>
+        <a href="tables.html" class="nav-item"><span class="nav-icon">🪑</span> Kelola Meja</a>
+        <a href="transactions.html" class="nav-item"><span class="nav-icon">💰</span> Transaksi</a>
+      </div>
+      <div class="nav-section">
+        <a href="settings.html" class="nav-item"><span class="nav-icon">⚙️</span> Pengaturan</a>
+      </div>
+    </nav>
+    <div class="sidebar-footer">
+      <div class="sidebar-user" onclick="Auth.logout()">
+        <div class="user-avatar" id="user-avatar">R</div>
+        <div class="user-info"><div class="user-name" id="user-email">-</div><div class="user-role">Pemilik Restoran</div></div>
+        <span style="color:rgba(255,255,255,0.4)">↩</span>
+      </div>
+    </div>
+  </div>
+  <div class="sidebar-overlay" id="sidebar-overlay" onclick="closeSidebar()"></div>
+
+  <div class="main">
+    <div class="topbar">
+      <div class="topbar-left">
+        <button class="hamburger" onclick="openSidebar()">☰</button>
+        <div class="page-title">Kelola Menu</div>
+      </div>
+      <div class="topbar-right">
+        <button class="btn btn-ghost btn-sm" onclick="openCatModal()">🏷️ Kategori</button>
+        <button class="btn btn-primary" onclick="openMenuModal()">➕ Tambah Menu</button>
+      </div>
+    </div>
+
+    <div class="content">
+      <!-- FILTER & SEARCH -->
+      <div class="card" style="margin-bottom:20px">
+        <div class="card-body" style="padding:16px 20px">
+          <div style="display:flex;gap:12px;flex-wrap:wrap;align-items:center">
+            <div class="search-box" style="flex:1;min-width:200px">
+              <span class="search-icon">🔍</span>
+              <input type="text" class="form-control" id="search-menu" placeholder="Cari menu..." oninput="filterMenu()">
+            </div>
+            <select class="form-control" id="filter-avail" style="width:auto" onchange="filterMenu()">
+              <option value="">Semua Status</option>
+              <option value="available">Tersedia</option>
+              <option value="habis">Habis</option>
+            </select>
+          </div>
+          <div class="cat-scroll" style="margin-top:12px" id="cat-filter">
+            <div class="cat-chip active" onclick="filterCat('', this)">Semua</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- STATS ROW -->
+      <div style="display:flex;gap:12px;margin-bottom:16px;flex-wrap:wrap">
+        <div style="background:white;border:1px solid var(--border);border-radius:var(--radius-sm);padding:10px 16px;font-size:13px">
+          📋 Total: <strong id="stat-total">0</strong>
+        </div>
+        <div style="background:var(--success-light);border:1px solid #9AE6B4;border-radius:var(--radius-sm);padding:10px 16px;font-size:13px;color:var(--success)">
+          ✅ Tersedia: <strong id="stat-avail">0</strong>
+        </div>
+        <div style="background:var(--danger-light);border:1px solid #FEB2B2;border-radius:var(--radius-sm);padding:10px 16px;font-size:13px;color:var(--danger)">
+          ❌ Habis: <strong id="stat-habis">0</strong>
+        </div>
+      </div>
+
+      <!-- MENU GRID -->
+      <div class="menu-grid" id="menu-grid">
+        <div style="grid-column:1/-1;text-align:center;padding:60px;color:var(--text-muted)">
+          <div style="font-size:48px;margin-bottom:12px">🍽️</div>
+          <p>Memuat menu...</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL TAMBAH/EDIT MENU -->
+<div class="modal-overlay" id="modal-menu">
+  <div class="modal" style="max-width:600px">
+    <div class="modal-header">
+      <h3 id="modal-menu-title">Tambah Menu Baru</h3>
+      <button class="modal-close" onclick="closeMenuModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="menu-id">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+        <div class="form-group" style="grid-column:1/-1">
+          <label class="form-label">Nama Menu *</label>
+          <input type="text" class="form-control" id="menu-name" placeholder="Nasi Goreng Spesial">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Harga (Rp) *</label>
+          <input type="number" class="form-control" id="menu-price" placeholder="25000" min="0">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Stok *</label>
+          <input type="number" class="form-control" id="menu-stock" placeholder="50" min="0">
+        </div>
+        <div class="form-group" style="grid-column:1/-1">
+          <label class="form-label">Kategori</label>
+          <select class="form-control" id="menu-category">
+            <option value="">-- Pilih Kategori --</option>
+          </select>
+        </div>
+        <div class="form-group" style="grid-column:1/-1">
+          <label class="form-label">Deskripsi</label>
+          <textarea class="form-control" id="menu-desc" rows="2" placeholder="Deskripsi singkat menu..."></textarea>
+        </div>
+        <div class="form-group" style="grid-column:1/-1">
+          <label class="form-label">URL Foto (opsional)</label>
+          <input type="url" class="form-control" id="menu-image" placeholder="https://...foto.jpg">
+          <div class="form-hint">Masukkan URL foto menu dari internet atau upload ke imgbb.com</div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Menu Rekomendasi?</label>
+          <div style="display:flex;align-items:center;gap:10px;margin-top:6px">
+            <label class="toggle"><input type="checkbox" id="menu-recommended"><span class="toggle-slider"></span></label>
+            <span style="font-size:13px;color:var(--text-muted)">Tampilkan sebagai rekomendasi</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeMenuModal()">Batal</button>
+      <button class="btn btn-primary" onclick="saveMenu()" id="btn-save-menu">Simpan Menu</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL KATEGORI -->
+<div class="modal-overlay" id="modal-cat">
+  <div class="modal" style="max-width:440px">
+    <div class="modal-header">
+      <h3>Kelola Kategori</h3>
+      <button class="modal-close" onclick="closeCatModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div style="display:flex;gap:10px;margin-bottom:16px">
+        <input type="text" class="form-control" id="cat-name" placeholder="Nama kategori (misal: Makanan)">
+        <input type="text" class="form-control" id="cat-icon" placeholder="🍽️" style="width:70px">
+        <button class="btn btn-primary btn-sm" onclick="addCategory()" style="flex-shrink:0">Tambah</button>
+      </div>
+      <div id="cat-list" style="display:flex;flex-direction:column;gap:8px">
+        <div style="text-align:center;color:var(--text-muted);padding:20px">Memuat...</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL EDIT STOK -->
+<div class="modal-overlay" id="modal-stock">
+  <div class="modal" style="max-width:360px">
+    <div class="modal-header">
+      <h3>Update Stok</h3>
+      <button class="modal-close" onclick="document.getElementById('modal-stock').classList.remove('active')">✕</button>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="stock-menu-id">
+      <p style="margin-bottom:16px;color:var(--text-muted)" id="stock-menu-name"></p>
+      <div class="form-group">
+        <label class="form-label">Jumlah Stok Baru</label>
+        <input type="number" class="form-control" id="stock-value" min="0" placeholder="0">
+      </div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <button class="btn btn-ghost btn-sm" onclick="quickStock(10)">+10</button>
+        <button class="btn btn-ghost btn-sm" onclick="quickStock(20)">+20</button>
+        <button class="btn btn-ghost btn-sm" onclick="quickStock(50)">+50</button>
+        <button class="btn btn-ghost btn-sm" onclick="quickStock(100)">+100</button>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="document.getElementById('modal-stock').classList.remove('active')">Batal</button>
+      <button class="btn btn-primary" onclick="saveStock()">Simpan Stok</button>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="js/supabase.js"></script>
+<script>
+let restoId = null, allMenus = [], allCats = [], activeCat = '', editMenuId = null;
+
+function openSidebar() { document.getElementById('sidebar').classList.add('open'); document.getElementById('sidebar-overlay').classList.add('active'); }
+function closeSidebar() { document.getElementById('sidebar').classList.remove('open'); document.getElementById('sidebar-overlay').classList.remove('active'); }
+
+async function init() {
+  const user = await Auth.requireAuth();
+  document.getElementById('user-email').textContent = user.email;
+  document.getElementById('user-avatar').textContent = user.email[0].toUpperCase();
+  const { data: resto } = await db.from('restaurants').select('id,name').eq('user_id', user.id).single();
+  if (!resto) return window.location.href = 'login.html';
+  restoId = resto.id;
+  document.getElementById('resto-name-sidebar').textContent = resto.name;
+  await loadCategories();
+  await loadMenus();
+}
+
+async function loadCategories() {
+  const { data } = await db.from('menu_categories').select('*').eq('restaurant_id', restoId).order('sort_order');
+  allCats = data || [];
+
+  // Filter chips
+  const catFilter = document.getElementById('cat-filter');
+  catFilter.innerHTML = `<div class="cat-chip active" onclick="filterCat('',this)">Semua</div>` +
+    allCats.map(c => `<div class="cat-chip" onclick="filterCat('${c.id}',this)">${c.icon} ${c.name}</div>`).join('');
+
+  // Dropdown in modal
+  const sel = document.getElementById('menu-category');
+  sel.innerHTML = `<option value="">-- Pilih Kategori --</option>` + allCats.map(c => `<option value="${c.id}">${c.icon} ${c.name}</option>`).join('');
+}
+
+async function loadMenus() {
+  const { data } = await db.from('menu_items').select('*,menu_categories(name,icon)').eq('restaurant_id', restoId).order('sort_order').order('created_at', { ascending: false });
+  allMenus = data || [];
+  renderMenus(allMenus);
+}
+
+function renderMenus(menus) {
+  const avail = menus.filter(m => m.is_available && m.stock > 0).length;
+  const habis = menus.filter(m => !m.is_available || m.stock === 0).length;
+  document.getElementById('stat-total').textContent = menus.length;
+  document.getElementById('stat-avail').textContent = avail;
+  document.getElementById('stat-habis').textContent = habis;
+
+  const el = document.getElementById('menu-grid');
+  if (!menus.length) {
+    el.innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:60px">
+      <div style="font-size:56px;margin-bottom:16px">🍽️</div>
+      <h3>Belum ada menu</h3>
+      <p style="color:var(--text-muted);margin-bottom:20px">Mulai tambahkan menu untuk restoranmu</p>
+      <button class="btn btn-primary" onclick="openMenuModal()">➕ Tambah Menu Pertama</button>
+    </div>`;
+    return;
+  }
+
+  el.innerHTML = menus.map(m => {
+    const isHabis = !m.is_available || m.stock === 0;
+    const catName = m.menu_categories ? `${m.menu_categories.icon} ${m.menu_categories.name}` : 'Tanpa Kategori';
+    return `<div class="menu-card" style="${isHabis ? 'opacity:0.7' : ''}">
+      <div class="menu-img" onclick="openMenuModal('${m.id}')" style="cursor:pointer">
+        ${m.image_url ? `<img src="${m.image_url}" onerror="this.parentElement.innerHTML='🍽️'">` : '🍽️'}
+      </div>
+      <div class="menu-info">
+        <div style="display:flex;align-items:center;gap:6px;margin-bottom:4px">
+          <div class="menu-name">${m.name}</div>
+          ${m.is_recommended ? '<span style="font-size:10px;background:#FFF9C4;color:#B7791F;padding:2px 6px;border-radius:999px;font-weight:600">⭐ Rekomendasi</span>' : ''}
+        </div>
+        <div class="menu-cat">${catName}</div>
+        ${m.description ? `<div style="font-size:12px;color:var(--text-muted);margin-bottom:8px;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical">${m.description}</div>` : ''}
+        <div class="menu-price">${formatRupiah(m.price)}</div>
+      </div>
+      <div class="menu-footer">
+        <div class="stock-badge" onclick="openStockModal('${m.id}','${m.name}',${m.stock})" style="cursor:pointer" title="Klik untuk update stok">
+          <span>${isHabis ? '❌' : '✅'}</span>
+          <span style="font-weight:600;color:${isHabis ? 'var(--danger)' : 'var(--success)'}">Stok: ${m.stock}</span>
+          <span style="font-size:11px;color:var(--text-muted)">✏️</span>
+        </div>
+        <div style="display:flex;gap:6px">
+          <button class="btn btn-ghost btn-sm" onclick="openMenuModal('${m.id}')">✏️ Edit</button>
+          <button class="btn btn-sm" style="background:var(--danger-light);color:var(--danger);border:none" onclick="deleteMenu('${m.id}','${m.name}')">🗑️</button>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function filterMenu() {
+  const q = document.getElementById('search-menu').value.toLowerCase();
+  const avail = document.getElementById('filter-avail').value;
+  let filtered = allMenus.filter(m => {
+    const matchQ = m.name.toLowerCase().includes(q) || (m.description || '').toLowerCase().includes(q);
+    const matchCat = !activeCat || m.category_id === activeCat;
+    const matchAvail = !avail || (avail === 'available' ? (m.is_available && m.stock > 0) : (!m.is_available || m.stock === 0));
+    return matchQ && matchCat && matchAvail;
+  });
+  renderMenus(filtered);
+}
+
+function filterCat(catId, el) {
+  activeCat = catId;
+  document.querySelectorAll('.cat-chip').forEach(c => c.classList.remove('active'));
+  el.classList.add('active');
+  filterMenu();
+}
+
+async function openMenuModal(id = null) {
+  editMenuId = id;
+  document.getElementById('modal-menu-title').textContent = id ? 'Edit Menu' : 'Tambah Menu Baru';
+  if (id) {
+    const menu = allMenus.find(m => m.id === id);
+    if (menu) {
+      document.getElementById('menu-id').value = menu.id;
+      document.getElementById('menu-name').value = menu.name;
+      document.getElementById('menu-price').value = menu.price;
+      document.getElementById('menu-stock').value = menu.stock;
+      document.getElementById('menu-category').value = menu.category_id || '';
+      document.getElementById('menu-desc').value = menu.description || '';
+      document.getElementById('menu-image').value = menu.image_url || '';
+      document.getElementById('menu-recommended').checked = menu.is_recommended;
+    }
+  } else {
+    document.getElementById('menu-id').value = '';
+    document.getElementById('menu-name').value = '';
+    document.getElementById('menu-price').value = '';
+    document.getElementById('menu-stock').value = '';
+    document.getElementById('menu-category').value = '';
+    document.getElementById('menu-desc').value = '';
+    document.getElementById('menu-image').value = '';
+    document.getElementById('menu-recommended').checked = false;
+  }
+  document.getElementById('modal-menu').classList.add('active');
+}
+
+function closeMenuModal() { document.getElementById('modal-menu').classList.remove('active'); }
+
+async function saveMenu() {
+  const name = document.getElementById('menu-name').value.trim();
+  const price = parseInt(document.getElementById('menu-price').value);
+  const stock = parseInt(document.getElementById('menu-stock').value);
+  if (!name) return showToast('Nama menu wajib diisi', 'error');
+  if (!price || price < 0) return showToast('Harga tidak valid', 'error');
+  if (isNaN(stock) || stock < 0) return showToast('Stok tidak valid', 'error');
+
+  const btn = document.getElementById('btn-save-menu');
+  setLoading(btn, true);
+  const payload = {
+    restaurant_id: restoId, name, price, stock,
+    category_id: document.getElementById('menu-category').value || null,
+    description: document.getElementById('menu-desc').value.trim() || null,
+    image_url: document.getElementById('menu-image').value.trim() || null,
+    is_recommended: document.getElementById('menu-recommended').checked,
+    is_available: stock > 0
+  };
+
+  try {
+    if (editMenuId) {
+      const { error } = await db.from('menu_items').update(payload).eq('id', editMenuId).eq('restaurant_id', restoId);
+      if (error) throw error;
+      showToast('Menu berhasil diperbarui', 'success');
+    } else {
+      const { error } = await db.from('menu_items').insert(payload);
+      if (error) throw error;
+      showToast('Menu berhasil ditambahkan', 'success');
+    }
+    closeMenuModal();
+    await loadMenus();
+  } catch(e) { showToast('Gagal simpan: ' + e.message, 'error'); }
+  finally { setLoading(btn, false); }
+}
+
+async function deleteMenu(id, name) {
+  if (!confirm(`Hapus menu "${name}"? Data tidak bisa dikembalikan.`)) return;
+  const { error } = await db.from('menu_items').delete().eq('id', id).eq('restaurant_id', restoId);
+  if (error) return showToast('Gagal hapus menu', 'error');
+  showToast('Menu dihapus', 'success');
+  await loadMenus();
+}
+
+function openStockModal(id, name, stock) {
+  document.getElementById('stock-menu-id').value = id;
+  document.getElementById('stock-menu-name').textContent = `Menu: ${name}`;
+  document.getElementById('stock-value').value = stock;
+  document.getElementById('modal-stock').classList.add('active');
+}
+
+function quickStock(add) {
+  const el = document.getElementById('stock-value');
+  el.value = parseInt(el.value || 0) + add;
+}
+
+async function saveStock() {
+  const id = document.getElementById('stock-menu-id').value;
+  const stock = parseInt(document.getElementById('stock-value').value);
+  if (isNaN(stock) || stock < 0) return showToast('Stok tidak valid', 'error');
+  const { error } = await db.from('menu_items').update({ stock, is_available: stock > 0 }).eq('id', id).eq('restaurant_id', restoId);
+  if (error) return showToast('Gagal update stok', 'error');
+  document.getElementById('modal-stock').classList.remove('active');
+  showToast('Stok berhasil diupdate', 'success');
+  await loadMenus();
+}
+
+function openCatModal() { loadCatList(); document.getElementById('modal-cat').classList.add('active'); }
+function closeCatModal() { document.getElementById('modal-cat').classList.remove('active'); loadCategories(); }
+
+async function loadCatList() {
+  const { data } = await db.from('menu_categories').select('*').eq('restaurant_id', restoId).order('sort_order');
+  const el = document.getElementById('cat-list');
+  if (!data?.length) { el.innerHTML = '<div style="text-align:center;color:var(--text-muted);padding:20px">Belum ada kategori</div>'; return; }
+  el.innerHTML = data.map(c => `<div style="display:flex;align-items:center;gap:10px;padding:10px;background:var(--bg);border-radius:var(--radius-sm)">
+    <span style="font-size:20px">${c.icon}</span>
+    <span style="flex:1;font-weight:500">${c.name}</span>
+    <button class="btn btn-sm" style="background:var(--danger-light);color:var(--danger);border:none" onclick="deleteCategory('${c.id}','${c.name}')">🗑️</button>
+  </div>`).join('');
+}
+
+async function addCategory() {
+  const name = document.getElementById('cat-name').value.trim();
+  const icon = document.getElementById('cat-icon').value.trim() || '🍽️';
+  if (!name) return showToast('Nama kategori wajib diisi', 'error');
+  const { error } = await db.from('menu_categories').insert({ restaurant_id: restoId, name, icon });
+  if (error) return showToast('Gagal tambah kategori', 'error');
+  document.getElementById('cat-name').value = '';
+  document.getElementById('cat-icon').value = '';
+  showToast('Kategori ditambahkan', 'success');
+  await loadCatList();
+}
+
+async function deleteCategory(id, name) {
+  if (!confirm(`Hapus kategori "${name}"?`)) return;
+  await db.from('menu_categories').delete().eq('id', id);
+  showToast('Kategori dihapus', 'success');
+  await loadCatList();
+}
+
+init();
+</script>
+</body>
+</html>
