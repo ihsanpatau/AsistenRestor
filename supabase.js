@@ -145,6 +145,24 @@ async function deleteMenuImage(publicUrl) {
   }
 }
 
+/** * Upload BEBERAPA foto menu sekaligus (dipakai fitur multi-foto di menu.html). * @param {File[]} files * @param {string} restoId * @returns {Promise<string[]>} array public URL, urutan sama seperti input */
+async function uploadMenuImages(files, restoId) {
+  const list = Array.from(files || []);
+  const urls = [];
+  for (const file of list) {
+    // Diupload berurutan (bukan Promise.all) supaya kalau salah satu gagal,
+    // pesan error jelas menyebut foto keberapa yang bermasalah.
+    urls.push(await uploadMenuImage(file, restoId));
+  }
+  return urls;
+}
+
+/** * Hapus BEBERAPA foto lama dari storage sekaligus (best-effort, tidak melempar error). */
+async function deleteMenuImages(publicUrls) {
+  const list = Array.from(publicUrls || []).filter(Boolean);
+  await Promise.all(list.map((url) => deleteMenuImage(url)));
+}
+
 // Kategori default yang otomatis dibuat untuk restoran baru yang belum punya kategori sama sekali
 const DEFAULT_MENU_CATEGORIES = [
   { name: "Makanan Utama", icon: "🍛", sort_order: 1 },
