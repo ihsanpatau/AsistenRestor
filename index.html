@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, viewport-fit=cover">
 <title>RestoranKu - Platform Pemesanan Digital</title>
 <link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#2D3748">
+<meta name="theme-color" content="#21262F">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="RestoranKu">
@@ -16,8 +16,8 @@
 @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800;900&display=swap');
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html,body{height:100%;overflow:hidden;overscroll-behavior:none}
-body{font-family:'Plus Jakarta Sans',sans-serif;background:#2D3748;color:#fff}
-:root{--primary:#FF6B35;--secondary:#2D3748}
+body{font-family:'Plus Jakarta Sans',sans-serif;background:#21262F;color:#fff}
+:root{--primary:#C2531F;--secondary:#21262F}
 
 #loading-gate{position:fixed;inset:0;background:var(--secondary);display:flex;align-items:center;justify-content:center;z-index:999;transition:opacity .3s}
 #loading-gate .spin{width:36px;height:36px;border:3px solid rgba(255,255,255,.2);border-top-color:var(--primary);border-radius:50%;animation:spin .7s linear infinite}
@@ -38,8 +38,9 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:#2D3748;color:#fff}
   flex:0 0 100%; scroll-snap-align:center; display:flex; flex-direction:column;
   align-items:center; justify-content:center; text-align:center; padding:20px 32px;
 }
-.slide-emoji{font-size:88px; margin-bottom:28px; filter:drop-shadow(0 8px 20px rgba(0,0,0,.3))}
-.slide-badge{background:rgba(255,107,53,0.2);color:#FF9466;padding:6px 16px;border-radius:999px;font-size:12px;font-weight:700;margin-bottom:18px;border:1px solid rgba(255,107,53,0.3)}
+.slide-emoji{width:96px;height:96px;margin:0 auto 28px;border-radius:50%;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);display:flex;align-items:center;justify-content:center;color:var(--primary)}
+.slide-emoji svg{width:38px;height:38px}
+.slide-badge{background:rgba(194,83,31,0.18);color:#E39169;padding:6px 16px;border-radius:999px;font-size:11.5px;font-weight:700;letter-spacing:.3px;margin-bottom:18px;border:1px solid rgba(194,83,31,0.3)}
 .slide h1{font-size:clamp(26px,7vw,34px);font-weight:900;line-height:1.2;margin-bottom:14px}
 .slide h1 span{color:var(--primary)}
 .slide p{font-size:15px;color:rgba(255,255,255,.65);line-height:1.6;max-width:340px}
@@ -71,23 +72,23 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:#2D3748;color:#fff}
 
   <div class="slides" id="slides">
     <div class="slide">
-      <div class="slide-emoji">🍽️</div>
-      <div class="slide-badge">🚀 Platform QR Order #1</div>
+      <div class="slide-emoji"><svg class="i" width="38" height="38" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 2.5v6a1.6 1.6 0 0 0 3.2 0v-6"/><path d="M8.6 2.5v18"/><path d="M16.5 2.5c-1.8 0-2.8 2.1-2.8 5s1 4 2 4v9"/></svg></div>
+      <div class="slide-badge">Platform QR Order #1</div>
       <h1>Selamat Datang di<br><span>RestoranKu</span></h1>
       <p>Restoran digital dengan QR Code. Pelanggan scan, pilih menu, bayar digital — tanpa antri, tanpa ribet.</p>
     </div>
     <div class="slide">
-      <div class="slide-emoji">📱</div>
+      <div class="slide-emoji"><svg class="i" width="38" height="38" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="7" y="2.5" width="10" height="19" rx="2"/><path d="M11 18h2"/></svg></div>
       <h1>QR Code <span>Otomatis</span></h1>
       <p>Generate QR per meja secara otomatis. Download &amp; print langsung dari dashboard, tempel di meja, selesai.</p>
     </div>
     <div class="slide">
-      <div class="slide-emoji">🔴</div>
+      <div class="slide-emoji"><svg class="i" width="38" height="38" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6.2 9.2a5.8 5.8 0 0 1 11.6 0c0 4.8 1.9 5.8 1.9 5.8H4.3s1.9-1 1.9-5.8Z"/><path d="M10.2 18.6a1.9 1.9 0 0 0 3.6 0"/></svg></div>
       <h1>Pesanan <span>Realtime</span></h1>
       <p>Pesanan masuk langsung tampil tanpa refresh, lengkap dengan notifikasi. Pembayaran QRIS &amp; transfer otomatis masuk ke rekeningmu.</p>
     </div>
     <div class="slide">
-      <div class="slide-emoji">🚀</div>
+      <div class="slide-emoji"><svg class="i" width="38" height="38" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12h16"/><path d="M14 6.2 20 12l-6 5.8"/></svg></div>
       <h1>Siap Digitalkan<br><span>Restoranmu?</span></h1>
       <p>Daftar gratis, buat menu, pasang QR — restoranmu online dalam 10 menit.</p>
     </div>
@@ -99,10 +100,10 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:#2D3748;color:#fff}
 
   <div class="bottom-cta">
     <div class="next-row" id="next-row">
-      <button class="btn-app btn-app-next" onclick="nextSlide()">Lanjut →</button>
+      <button class="btn-app btn-app-next" onclick="nextSlide()">Lanjut &rarr;</button>
     </div>
     <div class="cta-row" id="cta-row">
-      <a href="login.html" class="btn-app btn-app-primary" id="cta-primary">🍽️ Mulai Gratis Sekarang</a>
+      <a href="login.html" class="btn-app btn-app-primary" id="cta-primary">Mulai Gratis Sekarang</a>
       <a href="login.html" class="btn-app btn-app-outline">Sudah punya akun? Masuk</a>
     </div>
   </div>

@@ -6,7 +6,7 @@
 <title>Kelola Menu - RestoranKu</title>
 <link rel="stylesheet" href="style.css">
 <link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#FF6B35">
+<meta name="theme-color" content="#C2531F">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="RestoranKu">
@@ -17,7 +17,8 @@
   .menu-grid { display: grid; grid-template-columns: repeat(auto-fill,minmax(280px,1fr)); gap: 16px; }
   .menu-card { background: white; border-radius: var(--radius); border: 1px solid var(--border); overflow: hidden; transition: all 0.2s; }
   .menu-card:hover { box-shadow: var(--shadow); transform: translateY(-2px); }
-  .menu-img { width: 100%; height: 160px; object-fit: cover; background: var(--bg); display: flex; align-items: center; justify-content: center; font-size: 48px; }
+  .menu-img { width: 100%; height: 160px; object-fit: cover; background: var(--bg); color: var(--border); display: flex; align-items: center; justify-content: center; }
+  .menu-img svg { width: 40px; height: 40px; }
   .menu-img img { width: 100%; height: 160px; object-fit: cover; }
   .menu-info { padding: 14px; }
   .menu-name { font-weight: 700; font-size: 15px; margin-bottom: 4px; }
@@ -38,7 +39,7 @@
   .img-tile .img-tile-cover { position: absolute; bottom: 4px; left: 4px; background: rgba(0,0,0,0.6); color: #fff; font-size: 10px; padding: 2px 6px; border-radius: 999px; }
   .img-add-tile { width: 92px; height: 92px; border: 2px dashed var(--border); border-radius: var(--radius-sm); background: var(--bg); display: flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0; transition: all 0.2s; }
   .img-add-tile:hover { border-color: var(--primary); background: var(--primary-light); }
-  .img-add-tile .icon { font-size: 22px; text-align: center; color: var(--text-muted); pointer-events: none; }
+  .img-add-tile .icon { display: flex; align-items: center; justify-content: center; color: var(--text-muted); pointer-events: none; }
   .cat-row { display: flex; align-items: center; gap: 10px; padding: 10px; background: var(--bg); border-radius: var(--radius-sm); }
   .cat-row input.form-control { padding: 6px 10px; font-size: 13px; }
 </style>
@@ -53,8 +54,8 @@
       </div>
       <div class="topbar-right">
         <button type="button" class="topbar-avatar-btn" onclick="toggleMoreSheet()" id="topbar-avatar-btn">R</button>
-        <button class="btn btn-ghost btn-sm" onclick="openCatModal()">🏷️ Kategori</button>
-        <button class="btn btn-primary" onclick="openMenuModal()">➕ Tambah Menu</button>
+        <button class="btn btn-ghost btn-sm" onclick="openCatModal()"><svg class="i" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M11.3 3H4v7.3L13.3 19.6a1.9 1.9 0 0 0 2.7 0l4.9-4.9a1.9 1.9 0 0 0 0-2.7L11.3 3Z"/><circle cx="8" cy="7.8" r="1.2"/></svg> Kategori</button>
+        <button class="btn btn-primary" onclick="openMenuModal()"><svg class="i" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg> Tambah Menu</button>
       </div>
     </div>
 
@@ -64,7 +65,7 @@
         <div class="card-body" style="padding:16px 20px">
           <div style="display:flex;gap:12px;flex-wrap:wrap;align-items:center">
             <div class="search-box" style="flex:1;min-width:200px">
-              <span class="search-icon">🔍</span>
+              <span class="search-icon"><svg class="i" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="10.3" cy="10.3" r="6.3"/><path d="M20 20l-4.3-4.3"/></svg></span>
               <input type="text" class="form-control" id="search-menu" placeholder="Cari menu..." oninput="filterMenu()">
             </div>
             <select class="form-control" id="filter-avail" style="width:auto" onchange="filterMenu()">
@@ -82,20 +83,20 @@
       <!-- STATS ROW -->
       <div style="display:flex;gap:12px;margin-bottom:16px;flex-wrap:wrap">
         <div style="background:white;border:1px solid var(--border);border-radius:var(--radius-sm);padding:10px 16px;font-size:13px">
-          📋 Total: <strong id="stat-total">0</strong>
+          <svg class="i" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6.2 2.5h8.6l4.2 4.2v14.8H6.2Z"/><path d="M9 12h6M9 15.4h6M9 8.5h2.6"/></svg> Total: <strong id="stat-total">0</strong>
         </div>
         <div style="background:var(--success-light);border:1px solid #9AE6B4;border-radius:var(--radius-sm);padding:10px 16px;font-size:13px;color:var(--success)">
-          ✅ Tersedia: <strong id="stat-avail">0</strong>
+          <svg class="i" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M8.3 12.5l2.5 2.5L16 9.5"/></svg> Tersedia: <strong id="stat-avail">0</strong>
         </div>
         <div style="background:var(--danger-light);border:1px solid #FEB2B2;border-radius:var(--radius-sm);padding:10px 16px;font-size:13px;color:var(--danger)">
-          ❌ Habis: <strong id="stat-habis">0</strong>
+          <svg class="i" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M9 9l6 6M15 9l-6 6"/></svg> Habis: <strong id="stat-habis">0</strong>
         </div>
       </div>
 
       <!-- MENU GRID -->
       <div class="menu-grid" id="menu-grid">
         <div style="grid-column:1/-1;text-align:center;padding:60px;color:var(--text-muted)">
-          <div style="font-size:48px;margin-bottom:12px">🍽️</div>
+          <div style="color:var(--border);margin-bottom:12px"><svg class="i" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 2.5v6a1.6 1.6 0 0 0 3.2 0v-6"/><path d="M8.6 2.5v18"/><path d="M16.5 2.5c-1.8 0-2.8 2.1-2.8 5s1 4 2 4v9"/></svg></div>
           <p>Memuat menu...</p>
         </div>
       </div>
@@ -108,7 +109,7 @@
   <div class="modal" style="max-width:600px">
     <div class="modal-header">
       <h3 id="modal-menu-title">Tambah Menu Baru</h3>
-      <button class="modal-close" onclick="closeMenuModal()">✕</button>
+      <button class="modal-close" onclick="closeMenuModal()"><svg class="i" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
     </div>
     <div class="modal-body">
       <input type="hidden" id="menu-id">
@@ -162,7 +163,7 @@
   <div class="modal" style="max-width:440px">
     <div class="modal-header">
       <h3>Kelola Kategori</h3>
-      <button class="modal-close" onclick="closeCatModal()">✕</button>
+      <button class="modal-close" onclick="closeCatModal()"><svg class="i" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
     </div>
     <div class="modal-body">
       <div style="display:flex;gap:10px;margin-bottom:16px">
@@ -182,7 +183,7 @@
   <div class="modal" style="max-width:360px">
     <div class="modal-header">
       <h3>Update Stok</h3>
-      <button class="modal-close" onclick="document.getElementById('modal-stock').classList.remove('active')">✕</button>
+      <button class="modal-close" onclick="document.getElementById('modal-stock').classList.remove('active')"><svg class="i" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
     </div>
     <div class="modal-body">
       <input type="hidden" id="stock-menu-id">
@@ -257,10 +258,10 @@ function renderMenus(menus) {
   const el = document.getElementById('menu-grid');
   if (!menus.length) {
     el.innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:60px">
-      <div style="font-size:56px;margin-bottom:16px">🍽️</div>
+      <div style="color:var(--border);margin-bottom:16px"><svg class="i" width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 2.5v6a1.6 1.6 0 0 0 3.2 0v-6"/><path d="M8.6 2.5v18"/><path d="M16.5 2.5c-1.8 0-2.8 2.1-2.8 5s1 4 2 4v9"/></svg></div>
       <h3>Belum ada menu</h3>
       <p style="color:var(--text-muted);margin-bottom:20px">Mulai tambahkan menu untuk restoranmu</p>
-      <button class="btn btn-primary" onclick="openMenuModal()">➕ Tambah Menu Pertama</button>
+      <button class="btn btn-primary" onclick="openMenuModal()"><svg class="i" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg> Tambah Menu Pertama</button>
     </div>`;
     return;
   }
@@ -270,12 +271,12 @@ function renderMenus(menus) {
     const catName = m.menu_categories ? `${m.menu_categories.icon} ${m.menu_categories.name}` : 'Tanpa Kategori';
     return `<div class="menu-card" style="${isHabis ? 'opacity:0.7' : ''}">
       <div class="menu-img" onclick="openMenuModal('${m.id}')" style="cursor:pointer">
-        ${m.image_url ? `<img src="${m.image_url}" onerror="this.parentElement.innerHTML='🍽️'">` : '🍽️'}
+        ${m.image_url ? `<img src="${m.image_url}" onerror="this.parentElement.innerHTML='<svg class=&quot;i&quot; width=&quot;34&quot; height=&quot;34&quot; viewBox=&quot;0 0 24 24&quot; fill=&quot;none&quot; stroke=&quot;currentColor&quot; stroke-width=&quot;1.8&quot; stroke-linecap=&quot;round&quot; stroke-linejoin=&quot;round&quot;><path d=&quot;M7 2.5v6a1.6 1.6 0 0 0 3.2 0v-6&quot;/><path d=&quot;M8.6 2.5v18&quot;/><path d=&quot;M16.5 2.5c-1.8 0-2.8 2.1-2.8 5s1 4 2 4v9&quot;/></svg>'">` : `<svg class="i" width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 2.5v6a1.6 1.6 0 0 0 3.2 0v-6"/><path d="M8.6 2.5v18"/><path d="M16.5 2.5c-1.8 0-2.8 2.1-2.8 5s1 4 2 4v9"/></svg>`}
       </div>
       <div class="menu-info">
         <div style="display:flex;align-items:center;gap:6px;margin-bottom:4px">
           <div class="menu-name">${m.name}</div>
-          ${m.is_recommended ? '<span style="font-size:10px;background:#FFF9C4;color:#B7791F;padding:2px 6px;border-radius:999px;font-weight:600">⭐ Rekomendasi</span>' : ''}
+          ${m.is_recommended ? '<span style="font-size:10px;background:#FBF4E0;color:#9C6B18;padding:2px 7px;border-radius:999px;font-weight:600;display:inline-flex;align-items:center;gap:3px"><svg class="i" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.3l2.6 5.5 6 .8-4.4 4.2 1.1 6-5.3-2.9-5.3 2.9 1.1-6-4.4-4.2 6-.8L12 3.3Z"/></svg> Rekomendasi</span>' : ''}
         </div>
         <div class="menu-cat">${catName}</div>
         ${m.description ? `<div style="font-size:12px;color:var(--text-muted);margin-bottom:8px;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical">${m.description}</div>` : ''}
@@ -283,13 +284,13 @@ function renderMenus(menus) {
       </div>
       <div class="menu-footer">
         <div class="stock-badge" onclick="openStockModal('${m.id}','${m.name}',${m.stock})" style="cursor:pointer" title="Klik untuk update stok">
-          <span>${isHabis ? '❌' : '✅'}</span>
+          <span style="display:inline-flex">${isHabis ? '<svg class="i" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M9 9l6 6M15 9l-6 6"/></svg>' : '<svg class="i" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M8.3 12.5l2.5 2.5L16 9.5"/></svg>'}</span>
           <span style="font-weight:600;color:${isHabis ? 'var(--danger)' : 'var(--success)'}">Stok: ${m.stock}</span>
-          <span style="font-size:11px;color:var(--text-muted)">✏️</span>
+          <span style="font-size:11px;color:var(--text-muted);display:inline-flex"><svg class="i" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20l4.3-.5 10-10-3.8-3.8-10 10L4 20Z"/><path d="M13.6 6.6l3.8 3.8"/></svg></span>
         </div>
         <div style="display:flex;gap:6px">
-          <button class="btn btn-ghost btn-sm" onclick="openMenuModal('${m.id}')">✏️ Edit</button>
-          <button class="btn btn-sm" style="background:var(--danger-light);color:var(--danger);border:none" onclick="deleteMenu('${m.id}','${m.name}')">🗑️</button>
+          <button class="btn btn-ghost btn-sm" onclick="openMenuModal('${m.id}')"><svg class="i" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20l4.3-.5 10-10-3.8-3.8-10 10L4 20Z"/><path d="M13.6 6.6l3.8 3.8"/></svg> Edit</button>
+          <button class="btn btn-sm" style="background:var(--danger-light);color:var(--danger);border:none" onclick="deleteMenu('${m.id}','${m.name}')"><svg class="i" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 7h15"/><path d="M9.2 7V4.8c0-.6.5-1.1 1-1.1h3.6c.5 0 1 .5 1 1.1V7"/><path d="M6.3 7l1 13c0 .7.6 1.3 1.4 1.3h6.6c.8 0 1.4-.6 1.4-1.3l1-13"/><path d="M10.2 11v6.5M13.8 11v6.5"/></svg></button>
         </div>
       </div>
     </div>`;
@@ -342,7 +343,7 @@ function renderImageGallery() {
     tiles.push(`<div class="img-tile">
       <img src="${url}">
       ${idx === 0 ? '<span class="img-tile-cover">Sampul</span>' : ''}
-      <button type="button" class="img-tile-remove" onclick="removeExistingImage(${idx})" title="Hapus foto">✕</button>
+      <button type="button" class="img-tile-remove" onclick="removeExistingImage(${idx})" title="Hapus foto"><svg class="i" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
     </div>`);
   });
 
@@ -351,13 +352,13 @@ function renderImageGallery() {
     tiles.push(`<div class="img-tile">
       <img src="${item.previewUrl}">
       ${isCover ? '<span class="img-tile-cover">Sampul</span>' : ''}
-      <button type="button" class="img-tile-remove" onclick="removeNewImage(${idx})" title="Hapus foto">✕</button>
+      <button type="button" class="img-tile-remove" onclick="removeNewImage(${idx})" title="Hapus foto"><svg class="i" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
     </div>`);
   });
 
   if (totalPhotoCount() < MAX_MENU_PHOTOS) {
     tiles.push(`<div class="img-add-tile" onclick="document.getElementById('menu-image-file').click()">
-      <span class="icon">📷+</span>
+      <span class="icon"><svg class="i" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8.3h3.2l1.4-1.9h6.8l1.4 1.9H20v11.2H4Z"/><circle cx="12" cy="14" r="3.3"/></svg></span>
     </div>`);
   }
 
@@ -521,15 +522,15 @@ async function loadCatList() {
       return `<div class="cat-row">
         <input type="text" class="form-control" id="cat-edit-icon-${c.id}" value="${c.icon}" style="width:56px;text-align:center">
         <input type="text" class="form-control" id="cat-edit-name-${c.id}" value="${c.name}" style="flex:1">
-        <button class="btn btn-sm btn-primary" onclick="saveEditCategory('${c.id}')">✓</button>
-        <button class="btn btn-sm btn-ghost" onclick="cancelEditCategory()">✕</button>
+        <button class="btn btn-sm btn-primary" onclick="saveEditCategory('${c.id}')"><svg class="i" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.3 4.3L19 7"/></svg></button>
+        <button class="btn btn-sm btn-ghost" onclick="cancelEditCategory()"><svg class="i" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
       </div>`;
     }
     return `<div class="cat-row">
       <span style="font-size:20px">${c.icon}</span>
       <span style="flex:1;font-weight:500">${c.name}</span>
-      <button class="btn btn-sm btn-ghost" onclick="editCategory('${c.id}')" title="Edit">✏️</button>
-      <button class="btn btn-sm" style="background:var(--danger-light);color:var(--danger);border:none" onclick="deleteCategory('${c.id}','${c.name}')" title="Hapus">🗑️</button>
+      <button class="btn btn-sm btn-ghost" onclick="editCategory('${c.id}')" title="Edit"><svg class="i" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20l4.3-.5 10-10-3.8-3.8-10 10L4 20Z"/><path d="M13.6 6.6l3.8 3.8"/></svg></button>
+      <button class="btn btn-sm" style="background:var(--danger-light);color:var(--danger);border:none" onclick="deleteCategory('${c.id}','${c.name}')" title="Hapus"><svg class="i" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 7h15"/><path d="M9.2 7V4.8c0-.6.5-1.1 1-1.1h3.6c.5 0 1 .5 1 1.1V7"/><path d="M6.3 7l1 13c0 .7.6 1.3 1.4 1.3h6.6c.8 0 1.4-.6 1.4-1.3l1-13"/><path d="M10.2 11v6.5M13.8 11v6.5"/></svg></button>
     </div>`;
   }).join('');
 }
@@ -576,10 +577,10 @@ async function deleteCategory(id, name) {
 init();
 </script>
   <nav class="bottom-nav">
-    <a href="dashboard.html" class="bottom-nav-item"><span class="bn-icon">📊</span>Beranda</a>
-    <a href="orders.html" class="bottom-nav-item"><span class="bn-icon">🛒</span>Pesanan</a>
-    <a href="menu.html" class="bottom-nav-item active"><span class="bn-icon">🍽️</span>Menu</a>
-    <a href="tables.html" class="bottom-nav-item"><span class="bn-icon">🪑</span>Meja</a>
+    <a href="dashboard.html" class="bottom-nav-item"><span class="bn-icon"><svg class="i" width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11.5 12 4l9 7.5"/><path d="M5.5 10v10h13V10"/><path d="M9.5 20v-6.5h5V20"/></svg></span>Beranda</a>
+    <a href="orders.html" class="bottom-nav-item"><span class="bn-icon"><svg class="i" width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9.5" cy="20" r="1.3"/><circle cx="17.5" cy="20" r="1.3"/><path d="M2.5 3h2l2.3 12a2 2 0 0 0 2 1.6h8a2 2 0 0 0 2-1.6L21 8H6.2"/></svg></span>Pesanan</a>
+    <a href="menu.html" class="bottom-nav-item active"><span class="bn-icon"><svg class="i" width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 2.5v6a1.6 1.6 0 0 0 3.2 0v-6"/><path d="M8.6 2.5v18"/><path d="M16.5 2.5c-1.8 0-2.8 2.1-2.8 5s1 4 2 4v9"/></svg></span>Menu</a>
+    <a href="tables.html" class="bottom-nav-item"><span class="bn-icon"><svg class="i" width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="7.5" width="18" height="3" rx="1"/><path d="M5.5 10.5V20"/><path d="M18.5 10.5V20"/></svg></span>Meja</a>
     <button type="button" class="bottom-nav-item" onclick="toggleMoreSheet()"><span class="bn-icon">⋯</span>Lainnya</button>
   </nav>
   <div class="sheet-overlay" id="more-sheet-overlay" onclick="closeMoreSheet(event)">
@@ -592,8 +593,8 @@ init();
           <div class="sheet-user-email" id="user-email">-</div>
         </div>
       </div>
-      <a href="transactions.html" class="sheet-link">💰 Transaksi & Laporan</a>
-      <a href="settings.html" class="sheet-link">⚙️ Pengaturan</a>
+      <a href="transactions.html" class="sheet-link"><svg class="i" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="6" width="19" height="12" rx="2"/><circle cx="12" cy="12" r="2.6"/><path d="M6 9h.01M18 15h.01"/></svg> Transaksi &amp; Laporan</a>
+      <a href="settings.html" class="sheet-link"><svg class="i" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3.1"/><path d="M12 3v2.6M12 18.4V21M21 12h-2.6M5.6 12H3M18.4 5.6l-1.9 1.9M7.5 16.5l-1.9 1.9M18.4 18.4l-1.9-1.9M7.5 7.5 5.6 5.6"/></svg> Pengaturan</a>
       <button type="button" class="sheet-link sheet-logout" onclick="Auth.logout()">↩ Keluar Akun</button>
     </div>
   </div>

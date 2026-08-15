@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, viewport-fit=cover">
 <title>Menu - RestoranKu</title>
 <link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#FF6B35">
+<meta name="theme-color" content="#C2531F">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
@@ -15,28 +15,32 @@
 @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap');
 * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color: transparent; }
 :root {
-  --primary: #FF6B35; --primary-dark: #E55A26; --primary-light: #FFF0EB;
-  --success: #38A169; --danger: #E53E3E; --bg: #F7F8FA;
-  --card: #fff; --border: #E2E8F0; --text: #1A202C; --muted: #718096;
-  --shadow: 0 2px 12px rgba(0,0,0,0.08);
+  --primary: #C2531F; --primary-dark: #9E4318; --primary-light: #FBEEE6;
+  --success: #2F855A; --danger: #C53030; --bg: #F5F5F3;
+  --card: #fff; --border: #E7E5E1; --text: #21262F; --muted: #767D8A;
+  --shadow: 0 1px 2px rgba(23,20,15,.05), 0 6px 18px rgba(23,20,15,.06);
 }
 body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; padding-bottom: 100px; }
 
 /* HEADER */
 .resto-header { background: var(--primary); color: white; padding: 0; position: relative; }
 .resto-hero { padding: 24px 20px 20px; }
-.resto-logo { width: 56px; height: 56px; border-radius: 14px; background: rgba(255,255,255,0.2); display: flex; align-items: center; justify-content: center; font-size: 26px; margin-bottom: 12px; overflow:hidden; }
+.resto-logo { width: 56px; height: 56px; border-radius: 14px; background: rgba(255,255,255,0.16); border: 1px solid rgba(255,255,255,.2); display: flex; align-items: center; justify-content: center; margin-bottom: 12px; overflow:hidden; }
+.resto-logo svg { width: 24px; height: 24px; }
 .resto-logo img { width:56px; height:56px; object-fit:cover; border-radius:14px; }
 .resto-name { font-size: 22px; font-weight: 800; margin-bottom: 4px; }
 .resto-meta { font-size: 13px; opacity: 0.85; display: flex; align-items: center; gap: 12px; flex-wrap:wrap; }
-.meja-badge { background: rgba(255,255,255,0.25); padding: 4px 12px; border-radius: 999px; font-weight: 700; font-size: 13px; }
-.status-open { background: rgba(56,161,105,0.3); color: #C6F6D5; padding: 4px 10px; border-radius: 999px; font-size: 12px; font-weight: 600; }
-.status-closed { background: rgba(229,62,62,0.3); color: #FED7D7; padding: 4px 10px; border-radius: 999px; font-size: 12px; font-weight: 600; }
+.meja-badge { background: rgba(255,255,255,0.18); border: 1px solid rgba(255,255,255,.22); padding: 4px 12px; border-radius: 999px; font-weight: 700; font-size: 13px; display: inline-flex; align-items: center; gap: 5px; }
+.status-open { background: rgba(56,161,105,0.3); color: #C6F6D5; padding: 4px 10px; border-radius: 999px; font-size: 12px; font-weight: 600; display: inline-flex; align-items: center; }
+.status-closed { background: rgba(229,62,62,0.3); color: #FED7D7; padding: 4px 10px; border-radius: 999px; font-size: 12px; font-weight: 600; display: inline-flex; align-items: center; }
+.status-dot { width: 7px; height: 7px; border-radius: 50%; display: inline-block; }
+.status-dot.green { background: #48D583; }
+.status-dot.red { background: #FF8A8A; }
 
 /* CATEGORY TABS */
 .cat-tabs { background: white; border-bottom: 1px solid var(--border); padding: 0 16px; display: flex; gap: 4px; overflow-x: auto; position: sticky; top: 0; z-index: 100; }
 .cat-tabs::-webkit-scrollbar { display: none; }
-.cat-tab { padding: 14px 16px; font-size: 13px; font-weight: 600; white-space: nowrap; cursor: pointer; border-bottom: 2px solid transparent; color: var(--muted); transition: all 0.2s; flex-shrink: 0; }
+.cat-tab { padding: 14px 16px; font-size: 13px; font-weight: 600; white-space: nowrap; cursor: pointer; border-bottom: 2px solid transparent; color: var(--muted); transition: all 0.2s; flex-shrink: 0; display: flex; align-items: center; gap: 6px; }
 .cat-tab.active { color: var(--primary); border-bottom-color: var(--primary); }
 
 /* SEARCH */
@@ -44,7 +48,7 @@ body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); colo
 .search-input { width: 100%; padding: 10px 16px 10px 40px; border: 1px solid var(--border); border-radius: 999px; font-size: 14px; font-family: inherit; background: var(--bg); }
 .search-input:focus { outline: none; border-color: var(--primary); }
 .search-wrap-inner { position: relative; }
-.search-icon { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: var(--muted); font-size: 16px; }
+.search-icon { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: var(--muted); display: flex; }
 
 /* MENU SECTION */
 .menu-section { padding: 16px; }
@@ -54,7 +58,8 @@ body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); colo
 .menu-item { background: white; border-radius: 14px; margin-bottom: 12px; overflow: hidden; border: 1px solid var(--border); display: flex; box-shadow: var(--shadow); transition: transform 0.15s; }
 .menu-item:active { transform: scale(0.98); }
 .menu-item.habis { opacity: 0.55; }
-.menu-img { width: 110px; min-height: 110px; background: var(--bg); flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 40px; }
+.menu-img { width: 110px; min-height: 110px; background: var(--bg); color: var(--border); flex-shrink: 0; display: flex; align-items: center; justify-content: center; }
+.menu-img svg { width: 34px; height: 34px; }
 .menu-img img { width: 110px; min-height: 110px; object-fit: cover; }
 .menu-body { flex: 1; padding: 12px 14px; display: flex; flex-direction: column; justify-content: space-between; min-height: 110px; }
 .menu-title { font-size: 15px; font-weight: 700; margin-bottom: 4px; line-height: 1.3; }
@@ -62,7 +67,7 @@ body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); colo
 .menu-footer { display: flex; align-items: center; justify-content: space-between; }
 .menu-price { font-size: 16px; font-weight: 800; color: var(--primary); }
 .habis-label { font-size: 12px; font-weight: 600; color: var(--danger); background: #FFF5F5; padding: 4px 10px; border-radius: 999px; }
-.rec-badge { font-size: 10px; background: #FFF9C4; color: #B7791F; padding: 2px 6px; border-radius: 999px; font-weight: 700; margin-bottom: 4px; display: inline-block; }
+.rec-badge { font-size: 10px; background: #FBF4E0; color: #9C6B18; padding: 2px 7px; border-radius: 999px; font-weight: 700; margin-bottom: 4px; display: inline-flex; align-items: center; gap: 3px; }
 
 /* QTY CONTROL */
 .qty-ctrl { display: flex; align-items: center; gap: 8px; }
@@ -111,7 +116,8 @@ body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); colo
 
 /* PAYMENT RESULT */
 .result-page { min-height: 100vh; display: flex; align-items: center; justify-content: center; flex-direction: column; padding: 40px 20px; text-align: center; background: var(--bg); }
-.result-icon { font-size: 72px; margin-bottom: 20px; }
+.result-icon { width: 84px; height: 84px; border-radius: 50%; background: var(--bg); color: var(--muted); display: flex; align-items: center; justify-content: center; margin: 0 auto 20px; }
+.result-icon svg { width: 36px; height: 36px; }
 .result-title { font-size: 26px; font-weight: 800; margin-bottom: 8px; }
 .result-sub { color: var(--muted); font-size: 15px; margin-bottom: 28px; line-height: 1.6; }
 
@@ -122,7 +128,8 @@ body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); colo
 
 /* EMPTY */
 .empty { text-align: center; padding: 48px 20px; color: var(--muted); }
-.empty .icon { font-size: 48px; margin-bottom: 12px; }
+.empty .icon { width: 60px; height: 60px; border-radius: 50%; background: white; color: var(--muted); display: flex; align-items: center; justify-content: center; margin: 0 auto 12px; }
+.empty .icon svg { width: 26px; height: 26px; }
 </style>
 </head>
 <body>
@@ -136,8 +143,8 @@ body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); colo
   <div class="sheet">
     <div class="sheet-handle"></div>
     <div class="sheet-header">
-      <h3>🛒 Keranjang Pesanan</h3>
-      <button class="sheet-close" onclick="closeCart()">✕</button>
+      <h3><svg class="i" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9.5" cy="20" r="1.3"/><circle cx="17.5" cy="20" r="1.3"/><path d="M2.5 3h2l2.3 12a2 2 0 0 0 2 1.6h8a2 2 0 0 0 2-1.6L21 8H6.2"/></svg> Keranjang Pesanan</h3>
+      <button class="sheet-close" onclick="closeCart()"><svg class="i" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
     </div>
     <div class="sheet-body" id="cart-body"></div>
   </div>
@@ -148,12 +155,12 @@ body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); colo
   <div class="sheet">
     <div class="sheet-handle"></div>
     <div class="sheet-body" style="text-align:center;padding:40px 24px">
-      <div style="font-size:64px;margin-bottom:16px">✅</div>
+      <div style="width:76px;height:76px;border-radius:50%;background:var(--success);opacity:.12;position:absolute"></div><div style="width:76px;height:76px;border-radius:50%;background:transparent;color:var(--success);display:flex;align-items:center;justify-content:center;margin:0 auto 16px"><svg class="i" width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M8.3 12.5l2.5 2.5L16 9.5"/></svg></div>
       <h2 style="font-size:22px;margin-bottom:8px">Pembayaran Berhasil!</h2>
       <p style="color:var(--muted);margin-bottom:8px" id="success-order-num"></p>
       <p style="color:var(--muted);margin-bottom:24px">Pesananmu sedang diproses oleh dapur. Terima kasih!</p>
       <div style="background:var(--bg);border-radius:12px;padding:16px;margin-bottom:20px;text-align:left" id="success-detail"></div>
-      <button onclick="resetOrder()" style="width:100%;padding:14px;background:var(--primary);color:white;border:none;border-radius:12px;font-size:15px;font-weight:700;cursor:pointer;font-family:inherit">🍽️ Pesan Lagi</button>
+      <button onclick="resetOrder()" style="width:100%;padding:14px;background:var(--primary);color:white;border:none;border-radius:12px;font-size:15px;font-weight:700;cursor:pointer;font-family:inherit">Pesan Lagi</button>
     </div>
   </div>
 </div>
@@ -192,7 +199,7 @@ async function init() {
 }
 
 function showError(msg) {
-  document.getElementById('app').innerHTML = `<div class="result-page"><div class="result-icon">❌</div><div class="result-title">Oops!</div><div class="result-sub">${msg}</div></div>`;
+  document.getElementById('app').innerHTML = `<div class="result-page"><div class="result-icon"><svg class="i" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M9 9l6 6M15 9l-6 6"/></svg></div><div class="result-title">Oops!</div><div class="result-sub">${msg}</div></div>`;
 }
 
 function renderPage() {
@@ -203,7 +210,7 @@ function renderPage() {
   const grouped = {};
   if (activeCat === 'all') {
     categories.forEach(c => { grouped[c.id] = { name: c.name, icon: c.icon, items: [] }; });
-    grouped['_none'] = { name: 'Lainnya', icon: '🍽️', items: [] };
+    grouped['_none'] = { name: 'Lainnya', icon: '<svg class="i" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 2.5v6a1.6 1.6 0 0 0 3.2 0v-6"/><path d="M8.6 2.5v18"/><path d="M16.5 2.5c-1.8 0-2.8 2.1-2.8 5s1 4 2 4v9"/></svg>', items: [] };
     menuItems.forEach(m => {
       if (m.category_id && grouped[m.category_id]) grouped[m.category_id].items.push(m);
       else grouped['_none'].items.push(m);
@@ -221,24 +228,24 @@ function renderPage() {
   let html = `
     <div class="resto-header">
       <div class="resto-hero">
-        <div class="resto-logo">${restoData.logo_url ? `<img src="${restoData.logo_url}" onerror="this.parentElement.innerHTML='🍽️'">` : '🍽️'}</div>
+        <div class="resto-logo">${restoData.logo_url ? `<img src="${restoData.logo_url}" onerror="this.parentElement.innerHTML='<svg class=&quot;i&quot; width=&quot;24&quot; height=&quot;24&quot; viewBox=&quot;0 0 24 24&quot; fill=&quot;none&quot; stroke=&quot;currentColor&quot; stroke-width=&quot;1.8&quot; stroke-linecap=&quot;round&quot; stroke-linejoin=&quot;round&quot;><path d=&quot;M7 2.5v6a1.6 1.6 0 0 0 3.2 0v-6&quot;/><path d=&quot;M8.6 2.5v18&quot;/><path d=&quot;M16.5 2.5c-1.8 0-2.8 2.1-2.8 5s1 4 2 4v9&quot;/></svg>'">` : `<svg class="i" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 2.5v6a1.6 1.6 0 0 0 3.2 0v-6"/><path d="M8.6 2.5v18"/><path d="M16.5 2.5c-1.8 0-2.8 2.1-2.8 5s1 4 2 4v9"/></svg>`}</div>
         <div class="resto-name">${restoData.name}</div>
         <div class="resto-meta">
-          <span class="meja-badge">🪑 Meja ${mejaNum}</span>
-          <span class="${isOpen ? 'status-open' : 'status-closed'}">${isOpen ? '🟢 Buka' : '🔴 Tutup'}</span>
-          ${restoData.opening_time ? `<span>🕐 ${restoData.opening_time.slice(0,5)}-${(restoData.closing_time||'22:00').slice(0,5)}</span>` : ''}
+          <span class="meja-badge"><svg class="i" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="7.5" width="18" height="3" rx="1"/><path d="M5.5 10.5V20"/><path d="M18.5 10.5V20"/></svg> Meja ${mejaNum}</span>
+          <span class="${isOpen ? 'status-open' : 'status-closed'}">${isOpen ? '<span class="status-dot green" style="margin-right:5px"></span>Buka' : '<span class="status-dot red" style="margin-right:5px"></span>Tutup'}</span>
+          ${restoData.opening_time ? `<span><svg class="i" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7.2v5l3.3 1.9"/></svg> ${restoData.opening_time.slice(0,5)}-${(restoData.closing_time||'22:00').slice(0,5)}</span>` : ''}
         </div>
       </div>
     </div>
 
     <div class="cat-tabs">
-      <div class="cat-tab ${activeCat==='all'?'active':''}" onclick="setCat('all')">✨ Semua</div>
+      <div class="cat-tab ${activeCat==='all'?'active':''}" onclick="setCat('all')">Semua</div>
       ${categories.map(c => `<div class="cat-tab ${activeCat===c.id?'active':''}" onclick="setCat('${c.id}')">${c.icon} ${c.name}</div>`).join('')}
     </div>
 
     <div class="search-wrap">
       <div class="search-wrap-inner">
-        <span class="search-icon">🔍</span>
+        <span class="search-icon"><svg class="i" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="10.3" cy="10.3" r="6.3"/><path d="M20 20l-4.3-4.3"/></svg></span>
         <input type="text" class="search-input" id="search-q" placeholder="Cari menu..." value="${searchQuery}" oninput="renderPage()">
       </div>
     </div>
@@ -246,7 +253,7 @@ function renderPage() {
     <div id="menu-content">`;
 
   if (!isOpen) {
-    html += `<div class="empty"><div class="icon">🔴</div><p style="font-weight:700;font-size:16px">Restoran sedang tutup</p><p>Silakan kembali pada jam ${(restoData.opening_time||'08:00').slice(0,5)} - ${(restoData.closing_time||'22:00').slice(0,5)}</p></div>`;
+    html += `<div class="empty"><div class="icon"><svg class="i" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7.2v5l3.3 1.9"/></svg></div><p style="font-weight:700;font-size:16px">Restoran sedang tutup</p><p>Silakan kembali pada jam ${(restoData.opening_time||'08:00').slice(0,5)} - ${(restoData.closing_time||'22:00').slice(0,5)}</p></div>`;
   } else if (activeCat === 'all') {
     let hasItems = false;
     Object.entries(grouped).forEach(([catId, group]) => {
@@ -257,10 +264,10 @@ function renderPage() {
       html += items.map(m => menuItemHTML(m)).join('');
       html += `</div>`;
     });
-    if (!hasItems) html += `<div class="empty"><div class="icon">🔍</div><p>Menu tidak ditemukan</p></div>`;
+    if (!hasItems) html += `<div class="empty"><div class="icon"><svg class="i" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="10.3" cy="10.3" r="6.3"/><path d="M20 20l-4.3-4.3"/></svg></div><p>Menu tidak ditemukan</p></div>`;
   } else {
     if (!displayItems.length) {
-      html += `<div class="empty"><div class="icon">🍽️</div><p>Tidak ada menu di kategori ini</p></div>`;
+      html += `<div class="empty"><div class="icon"><svg class="i" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 2.5v6a1.6 1.6 0 0 0 3.2 0v-6"/><path d="M8.6 2.5v18"/><path d="M16.5 2.5c-1.8 0-2.8 2.1-2.8 5s1 4 2 4v9"/></svg></div><p>Tidak ada menu di kategori ini</p></div>`;
     } else {
       html += `<div class="menu-section">${displayItems.map(m => menuItemHTML(m)).join('')}</div>`;
     }
@@ -284,10 +291,10 @@ function menuItemHTML(m) {
   const isHabis = !m.is_available || m.stock === 0;
   const qty = cart[m.id] || 0;
   return `<div class="menu-item ${isHabis?'habis':''}">
-    <div class="menu-img">${m.image_url ? `<img src="${m.image_url}" loading="lazy" onerror="this.parentElement.innerHTML='🍽️'">` : '🍽️'}</div>
+    <div class="menu-img">${m.image_url ? `<img src="${m.image_url}" loading="lazy" onerror="this.parentElement.innerHTML='<svg class=&quot;i&quot; width=&quot;22&quot; height=&quot;22&quot; viewBox=&quot;0 0 24 24&quot; fill=&quot;none&quot; stroke=&quot;currentColor&quot; stroke-width=&quot;1.8&quot; stroke-linecap=&quot;round&quot; stroke-linejoin=&quot;round&quot;><path d=&quot;M7 2.5v6a1.6 1.6 0 0 0 3.2 0v-6&quot;/><path d=&quot;M8.6 2.5v18&quot;/><path d=&quot;M16.5 2.5c-1.8 0-2.8 2.1-2.8 5s1 4 2 4v9&quot;/></svg>'">` : `<svg class="i" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 2.5v6a1.6 1.6 0 0 0 3.2 0v-6"/><path d="M8.6 2.5v18"/><path d="M16.5 2.5c-1.8 0-2.8 2.1-2.8 5s1 4 2 4v9"/></svg>`}</div>
     <div class="menu-body">
       <div>
-        ${m.is_recommended ? `<span class="rec-badge">⭐ Rekomendasi</span>` : ''}
+        ${m.is_recommended ? `<span class="rec-badge"><svg class="i" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.3l2.6 5.5 6 .8-4.4 4.2 1.1 6-5.3-2.9-5.3 2.9 1.1-6-4.4-4.2 6-.8L12 3.3Z"/></svg> Rekomendasi</span>` : ''}
         <div class="menu-title">${m.name}</div>
         ${m.description ? `<div class="menu-desc">${m.description}</div>` : ''}
       </div>
@@ -363,7 +370,7 @@ function openCart() {
     </div>
 
     <button onclick="placeOrder()" id="btn-order" style="width:100%;padding:16px;background:var(--primary);color:white;border:none;border-radius:12px;font-size:16px;font-weight:700;cursor:pointer;font-family:inherit;margin-top:4px">
-      💳 Lanjut Bayar — ${formatRp(total)}
+      <svg class="i" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="5" width="19" height="14" rx="2"/><path d="M2.5 9.8h19"/><path d="M6 14.5h4"/></svg> Lanjut Bayar &mdash; ${formatRp(total)}
     </button>
   `;
   document.getElementById('modal-cart').classList.add('active');
@@ -405,7 +412,7 @@ async function placeOrder() {
 
   if (error) {
     alert('Gagal membuat pesanan. Coba lagi.');
-    btn.disabled = false; btn.innerHTML = `💳 Lanjut Bayar — ${formatRp(total)}`;
+    btn.disabled = false; btn.innerHTML = `<svg class="i" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="5" width="19" height="14" rx="2"/><path d="M2.5 9.8h19"/><path d="M6 14.5h4"/></svg> Lanjut Bayar &mdash; ${formatRp(total)}`;
     return;
   }
 
@@ -431,7 +438,7 @@ function showPaymentPage(order, items, total, platformFee) {
   document.getElementById('app').innerHTML = `
     <div style="min-height:100vh;background:var(--bg)">
       <div style="background:var(--primary);padding:20px;text-align:center;color:white">
-        <div style="font-size:28px;margin-bottom:8px">💳</div>
+        <div style="width:48px;height:48px;border-radius:50%;background:rgba(255,255,255,.15);display:flex;align-items:center;justify-content:center;margin:0 auto 10px"><svg class="i" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="5" width="19" height="14" rx="2"/><path d="M2.5 9.8h19"/><path d="M6 14.5h4"/></svg></div>
         <h2 style="font-size:18px">Selesaikan Pembayaran</h2>
         <p style="opacity:0.85;font-size:13px">${order.order_number}</p>
       </div>
@@ -446,16 +453,16 @@ function showPaymentPage(order, items, total, platformFee) {
           <div style="font-weight:700;margin-bottom:12px">Pilih Metode Bayar</div>
           <div style="display:flex;flex-direction:column;gap:10px">
             <button onclick="simulatePayment('QRIS','${order.id}')" style="padding:14px;border:2px solid var(--border);border-radius:10px;background:white;font-family:inherit;font-size:14px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:10px;text-align:left">
-              📱 <span><div>QRIS</div><div style="font-size:11px;font-weight:400;color:var(--muted)">GoPay, OVO, Dana, LinkAja, ShopeePay</div></span>
+              <svg class="i" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="7" y="2.5" width="10" height="19" rx="2"/><path d="M11 18h2"/></svg> <span><div>QRIS</div><div style="font-size:11px;font-weight:400;color:var(--muted)">GoPay, OVO, Dana, LinkAja, ShopeePay</div></span>
             </button>
             <button onclick="simulatePayment('TRANSFER','${order.id}')" style="padding:14px;border:2px solid var(--border);border-radius:10px;background:white;font-family:inherit;font-size:14px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:10px;text-align:left">
-              🏦 <span><div>Transfer Bank</div><div style="font-size:11px;font-weight:400;color:var(--muted)">BCA, BRI, BNI, Mandiri, dll</div></span>
+              <svg class="i" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18"/><path d="M4.5 21v-9.5M19.5 21v-9.5"/><path d="M2 11.5 12 5l10 6.5"/><path d="M8.5 21v-6M12 21v-6M15.5 21v-6"/></svg> <span><div>Transfer Bank</div><div style="font-size:11px;font-weight:400;color:var(--muted)">BCA, BRI, BNI, Mandiri, dll</div></span>
             </button>
           </div>
         </div>
 
         <div style="text-align:center">
-          <button onclick="init()" style="background:none;border:none;color:var(--muted);font-size:13px;cursor:pointer;font-family:inherit">← Kembali ke Menu</button>
+          <button onclick="init()" style="background:none;border:none;color:var(--muted);font-size:13px;cursor:pointer;font-family:inherit">&larr; Kembali ke Menu</button>
         </div>
       </div>
     </div>`;

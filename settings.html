@@ -6,7 +6,7 @@
 <title>Pengaturan - RestoranKu</title>
 <link rel="stylesheet" href="style.css">
 <link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#FF6B35">
+<meta name="theme-color" content="#C2531F">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="RestoranKu">
@@ -28,10 +28,10 @@
 
     <div class="content">
       <div class="tabs">
-        <button class="tab-btn active" onclick="switchTab('profil',this)">🏪 Profil Restoran</button>
-        <button class="tab-btn" onclick="switchTab('rekening',this)">🏦 Rekening Bank</button>
-        <button class="tab-btn" onclick="switchTab('jam',this)">🕐 Jam Operasional</button>
-        <button class="tab-btn" onclick="switchTab('akun',this)">👤 Akun & Keamanan</button>
+        <button class="tab-btn active" onclick="switchTab('profil',this)"><svg class="i" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9 4.6 4h14.8L21 9"/><path d="M4 9v11.5h16V9"/><path d="M9.2 20.5V14h5.6v6.5"/><path d="M3 9h18"/></svg> Profil Restoran</button>
+        <button class="tab-btn" onclick="switchTab('rekening',this)"><svg class="i" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18"/><path d="M4.5 21v-9.5M19.5 21v-9.5"/><path d="M2 11.5 12 5l10 6.5"/><path d="M8.5 21v-6M12 21v-6M15.5 21v-6"/></svg> Rekening Bank</button>
+        <button class="tab-btn" onclick="switchTab('jam',this)"><svg class="i" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7.2v5l3.3 1.9"/></svg> Jam Operasional</button>
+        <button class="tab-btn" onclick="switchTab('akun',this)"><svg class="i" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8.2" r="3.5"/><path d="M4.7 20.5a7.3 7.3 0 0 1 14.6 0"/></svg> Akun &amp; Keamanan</button>
       </div>
 
       <!-- TAB PROFIL -->
@@ -40,7 +40,7 @@
           <div class="card-header"><h3>Profil Restoran</h3></div>
           <div class="card-body">
             <div class="form-group" style="text-align:center;margin-bottom:24px">
-              <div id="logo-preview" style="width:80px;height:80px;border-radius:16px;background:var(--primary-light);display:flex;align-items:center;justify-content:center;font-size:36px;margin:0 auto 12px;border:2px dashed var(--border)">🍽️</div>
+              <div id="logo-preview" style="width:80px;height:80px;border-radius:16px;background:var(--primary-light);color:var(--primary);display:flex;align-items:center;justify-content:center;margin:0 auto 12px;border:2px dashed var(--border)"><svg class="i" width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 2.5v6a1.6 1.6 0 0 0 3.2 0v-6"/><path d="M8.6 2.5v18"/><path d="M16.5 2.5c-1.8 0-2.8 2.1-2.8 5s1 4 2 4v9"/></svg></div>
               <div class="form-group">
                 <label class="form-label">URL Logo Restoran</label>
                 <input type="url" class="form-control" id="resto-logo" placeholder="https://...logo.png" oninput="previewLogo(this.value)">
@@ -69,7 +69,7 @@
                 <input type="email" class="form-control" id="resto-email" placeholder="email@restoran.com">
               </div>
             </div>
-            <button class="btn btn-primary" onclick="saveProfil()" id="btn-save-profil">💾 Simpan Profil</button>
+            <button class="btn btn-primary" onclick="saveProfil()" id="btn-save-profil"><svg class="i" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 3h11l4 4v14H5V3Z"/><path d="M8.2 3v5.5h7.6V3"/><path d="M8.2 21v-6.5h7.6V21"/></svg> Simpan Profil</button>
           </div>
         </div>
       </div>
@@ -78,16 +78,16 @@
       <div class="tab-content" id="tab-rekening">
         <div class="card" style="max-width:600px">
           <div class="card-header">
-            <h3>🏦 Rekening Bank</h3>
+            <h3 style="display:flex;align-items:center;gap:7px"><svg class="i" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18"/><path d="M4.5 21v-9.5M19.5 21v-9.5"/><path d="M2 11.5 12 5l10 6.5"/><path d="M8.5 21v-6M12 21v-6M15.5 21v-6"/></svg> Rekening Bank</h3>
             <span class="badge" id="bank-status-tag">Belum Setup</span>
           </div>
           <div class="card-body">
             <div class="alert alert-info" style="margin-bottom:20px">
-              🔒 <strong>Keamanan:</strong> Perubahan rekening memerlukan konfirmasi password. Semua perubahan dicatat dan diverifikasi oleh Xendit secara otomatis. Uang langsung masuk ke rekening ini setelah pembayaran.
+              <svg class="i" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="10.5" width="14" height="10" rx="2"/><path d="M8 10.5V7.2a4 4 0 0 1 8 0v3.3"/></svg> <strong>Keamanan:</strong> Perubahan rekening memerlukan konfirmasi password. Semua perubahan dicatat dan diverifikasi oleh Xendit secara otomatis. Uang langsung masuk ke rekening ini setelah pembayaran.
             </div>
 
             <div id="bank-current" style="display:none;background:var(--success-light);border:1px solid #9AE6B4;border-radius:var(--radius-sm);padding:16px;margin-bottom:20px">
-              <div style="font-weight:600;color:var(--success);margin-bottom:8px">✅ Rekening Terdaftar</div>
+              <div style="font-weight:600;color:var(--success);margin-bottom:8px;display:flex;align-items:center;gap:6px"><svg class="i" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M8.3 12.5l2.5 2.5L16 9.5"/></svg> Rekening Terdaftar</div>
               <div id="bank-display"></div>
             </div>
 
@@ -118,14 +118,14 @@
               <div class="form-group">
                 <label class="form-label">Nama Pemilik Rekening *</label>
                 <input type="text" class="form-control" id="bank-holder" placeholder="Sesuai buku tabungan">
-                <div class="form-hint">⚠️ Nama harus sama persis dengan nama di rekening bank. Xendit akan memverifikasi otomatis.</div>
+                <div class="form-hint" style="display:flex;align-items:flex-start;gap:5px"><svg class="i" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.6 21.3 20H2.7L12 3.6Z"/><path d="M12 9.8v4.2"/><path d="M12 16.9h.01"/></svg> <span>Nama harus sama persis dengan nama di rekening bank. Xendit akan memverifikasi otomatis.</span></div>
               </div>
               <div class="form-group">
                 <label class="form-label">Konfirmasi Password Akun *</label>
                 <input type="password" class="form-control" id="bank-password" placeholder="Password akun kamu untuk konfirmasi">
                 <div class="form-hint">Wajib diisi untuk keamanan perubahan rekening</div>
               </div>
-              <button class="btn btn-primary" onclick="saveBank()" id="btn-save-bank">🏦 Simpan & Verifikasi Rekening</button>
+              <button class="btn btn-primary" onclick="saveBank()" id="btn-save-bank"><svg class="i" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18"/><path d="M4.5 21v-9.5M19.5 21v-9.5"/><path d="M2 11.5 12 5l10 6.5"/><path d="M8.5 21v-6M12 21v-6M15.5 21v-6"/></svg> Simpan &amp; Verifikasi Rekening</button>
             </div>
           </div>
         </div>
@@ -134,7 +134,7 @@
       <!-- TAB JAM OPERASIONAL -->
       <div class="tab-content" id="tab-jam">
         <div class="card" style="max-width:500px">
-          <div class="card-header"><h3>🕐 Jam Operasional</h3></div>
+          <div class="card-header"><h3 style="display:flex;align-items:center;gap:7px"><svg class="i" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7.2v5l3.3 1.9"/></svg> Jam Operasional</h3></div>
           <div class="card-body">
             <div class="form-group">
               <label class="form-label">Jam Buka</label>
@@ -151,10 +151,10 @@
                   <input type="checkbox" id="is-open" checked>
                   <span class="toggle-slider"></span>
                 </label>
-                <span id="open-label" style="font-weight:600">🟢 Restoran Buka</span>
+                <span id="open-label" style="font-weight:600;display:inline-flex;align-items:center"><span class="status-dot green" style="margin-right:6px"></span>Restoran Buka</span>
               </div>
             </div>
-            <button class="btn btn-primary" onclick="saveJam()" id="btn-save-jam">💾 Simpan Pengaturan</button>
+            <button class="btn btn-primary" onclick="saveJam()" id="btn-save-jam"><svg class="i" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 3h11l4 4v14H5V3Z"/><path d="M8.2 3v5.5h7.6V3"/><path d="M8.2 21v-6.5h7.6V21"/></svg> Simpan Pengaturan</button>
           </div>
         </div>
       </div>
@@ -163,7 +163,7 @@
       <div class="tab-content" id="tab-akun">
         <div style="display:flex;flex-direction:column;gap:20px;max-width:500px">
           <div class="card">
-            <div class="card-header"><h3>👤 Info Akun</h3></div>
+            <div class="card-header"><h3 style="display:flex;align-items:center;gap:7px"><svg class="i" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8.2" r="3.5"/><path d="M4.7 20.5a7.3 7.3 0 0 1 14.6 0"/></svg> Info Akun</h3></div>
             <div class="card-body">
               <div style="display:flex;align-items:center;gap:16px;padding:16px;background:var(--bg);border-radius:var(--radius-sm)">
                 <div style="width:56px;height:56px;background:var(--primary);border-radius:50%;display:flex;align-items:center;justify-content:center;color:white;font-size:22px;font-weight:700" id="akun-avatar">R</div>
@@ -177,7 +177,7 @@
           </div>
 
           <div class="card">
-            <div class="card-header"><h3>🔑 Ganti Password</h3></div>
+            <div class="card-header"><h3 style="display:flex;align-items:center;gap:7px"><svg class="i" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="15.2" r="3.8"/><path d="M10.8 12.4 19.5 3.7"/><path d="M15.5 8.4l2.3 2.3"/><path d="M18 5.9l2.1 2.1"/></svg> Ganti Password</h3></div>
             <div class="card-body">
               <div class="form-group">
                 <label class="form-label">Password Lama</label>
@@ -191,12 +191,12 @@
                 <label class="form-label">Konfirmasi Password Baru</label>
                 <input type="password" class="form-control" id="pass-confirm" placeholder="Ulangi password baru">
               </div>
-              <button class="btn btn-primary" onclick="changePassword()" id="btn-change-pass">🔑 Ganti Password</button>
+              <button class="btn btn-primary" onclick="changePassword()" id="btn-change-pass"><svg class="i" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="15.2" r="3.8"/><path d="M10.8 12.4 19.5 3.7"/><path d="M15.5 8.4l2.3 2.3"/><path d="M18 5.9l2.1 2.1"/></svg> Ganti Password</button>
             </div>
           </div>
 
           <div class="card" style="border-color:var(--danger)">
-            <div class="card-header"><h3 style="color:var(--danger)">⚠️ Zona Berbahaya</h3></div>
+            <div class="card-header"><h3 style="color:var(--danger);display:flex;align-items:center;gap:7px"><svg class="i" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.6 21.3 20H2.7L12 3.6Z"/><path d="M12 9.8v4.2"/><path d="M12 16.9h.01"/></svg> Zona Berbahaya</h3></div>
             <div class="card-body">
               <p style="color:var(--text-muted);margin-bottom:16px;font-size:14px">Logout dari semua perangkat dan akhiri sesi saat ini.</p>
               <button class="btn btn-danger" onclick="Auth.logout()">↩ Logout dari Akun</button>
@@ -222,7 +222,7 @@ function switchTab(tab, el) {
 }
 
 document.getElementById('is-open').addEventListener('change', function() {
-  document.getElementById('open-label').textContent = this.checked ? '🟢 Restoran Buka' : '🔴 Restoran Tutup';
+  document.getElementById('open-label').innerHTML = this.checked ? '<span class="status-dot green" style="margin-right:6px"></span>Restoran Buka' : '<span class="status-dot red" style="margin-right:6px"></span>Restoran Tutup';
 });
 
 async function init() {
@@ -249,12 +249,12 @@ async function init() {
   document.getElementById('jam-buka').value = resto.opening_time || '08:00';
   document.getElementById('jam-tutup').value = resto.closing_time || '22:00';
   document.getElementById('is-open').checked = resto.is_open !== false;
-  document.getElementById('open-label').textContent = resto.is_open !== false ? '🟢 Restoran Buka' : '🔴 Restoran Tutup';
+  document.getElementById('open-label').innerHTML = resto.is_open !== false ? '<span class="status-dot green" style="margin-right:6px"></span>Restoran Buka' : '<span class="status-dot red" style="margin-right:6px"></span>Restoran Tutup';
 
   // Bank info
   const tag = document.getElementById('bank-status-tag');
   if (resto.bank_verified) {
-    tag.textContent = '✅ Terverifikasi'; tag.className = 'badge badge-success';
+    tag.textContent = 'Terverifikasi'; tag.className = 'badge badge-success';
     document.getElementById('bank-current').style.display = 'block';
     document.getElementById('bank-display').innerHTML = `<div style="font-size:14px"><strong>${resto.bank_name}</strong> · ${resto.bank_account_number}<br><span style="color:var(--text-muted)">${resto.bank_account_name}</span></div>`;
   } else if (resto.bank_account_number) {
@@ -263,14 +263,14 @@ async function init() {
     document.getElementById('bank-number').value = resto.bank_account_number || '';
     document.getElementById('bank-holder').value = resto.bank_account_name || '';
   } else {
-    tag.textContent = '❌ Belum Setup'; tag.className = 'badge badge-danger';
+    tag.textContent = 'Belum Setup'; tag.className = 'badge badge-danger';
   }
 }
 
 function previewLogo(url) {
   const el = document.getElementById('logo-preview');
-  if (url) el.innerHTML = `<img src="${url}" style="width:80px;height:80px;border-radius:14px;object-fit:cover" onerror="this.parentElement.innerHTML='🍽️'">`;
-  else el.innerHTML = '🍽️';
+  if (url) el.innerHTML = `<img src="${url}" style="width:80px;height:80px;border-radius:14px;object-fit:cover" onerror="this.parentElement.innerHTML='<svg class=&quot;i&quot; width=&quot;30&quot; height=&quot;30&quot; viewBox=&quot;0 0 24 24&quot; fill=&quot;none&quot; stroke=&quot;currentColor&quot; stroke-width=&quot;1.8&quot; stroke-linecap=&quot;round&quot; stroke-linejoin=&quot;round&quot;><path d=&quot;M7 2.5v6a1.6 1.6 0 0 0 3.2 0v-6&quot;/><path d=&quot;M8.6 2.5v18&quot;/><path d=&quot;M16.5 2.5c-1.8 0-2.8 2.1-2.8 5s1 4 2 4v9&quot;/></svg>'">`;
+  else el.innerHTML = `<svg class="i" width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 2.5v6a1.6 1.6 0 0 0 3.2 0v-6"/><path d="M8.6 2.5v18"/><path d="M16.5 2.5c-1.8 0-2.8 2.1-2.8 5s1 4 2 4v9"/></svg>`;
 }
 
 async function saveProfil() {
@@ -368,10 +368,10 @@ async function changePassword() {
 init();
 </script>
   <nav class="bottom-nav">
-    <a href="dashboard.html" class="bottom-nav-item"><span class="bn-icon">📊</span>Beranda</a>
-    <a href="orders.html" class="bottom-nav-item"><span class="bn-icon">🛒</span>Pesanan</a>
-    <a href="menu.html" class="bottom-nav-item"><span class="bn-icon">🍽️</span>Menu</a>
-    <a href="tables.html" class="bottom-nav-item"><span class="bn-icon">🪑</span>Meja</a>
+    <a href="dashboard.html" class="bottom-nav-item"><span class="bn-icon"><svg class="i" width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11.5 12 4l9 7.5"/><path d="M5.5 10v10h13V10"/><path d="M9.5 20v-6.5h5V20"/></svg></span>Beranda</a>
+    <a href="orders.html" class="bottom-nav-item"><span class="bn-icon"><svg class="i" width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9.5" cy="20" r="1.3"/><circle cx="17.5" cy="20" r="1.3"/><path d="M2.5 3h2l2.3 12a2 2 0 0 0 2 1.6h8a2 2 0 0 0 2-1.6L21 8H6.2"/></svg></span>Pesanan</a>
+    <a href="menu.html" class="bottom-nav-item"><span class="bn-icon"><svg class="i" width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 2.5v6a1.6 1.6 0 0 0 3.2 0v-6"/><path d="M8.6 2.5v18"/><path d="M16.5 2.5c-1.8 0-2.8 2.1-2.8 5s1 4 2 4v9"/></svg></span>Menu</a>
+    <a href="tables.html" class="bottom-nav-item"><span class="bn-icon"><svg class="i" width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="7.5" width="18" height="3" rx="1"/><path d="M5.5 10.5V20"/><path d="M18.5 10.5V20"/></svg></span>Meja</a>
     <button type="button" class="bottom-nav-item active" onclick="toggleMoreSheet()"><span class="bn-icon">⋯</span>Lainnya</button>
   </nav>
   <div class="sheet-overlay" id="more-sheet-overlay" onclick="closeMoreSheet(event)">
@@ -384,8 +384,8 @@ init();
           <div class="sheet-user-email" id="user-email">-</div>
         </div>
       </div>
-      <a href="transactions.html" class="sheet-link">💰 Transaksi & Laporan</a>
-      <a href="settings.html" class="sheet-link">⚙️ Pengaturan</a>
+      <a href="transactions.html" class="sheet-link"><svg class="i" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="6" width="19" height="12" rx="2"/><circle cx="12" cy="12" r="2.6"/><path d="M6 9h.01M18 15h.01"/></svg> Transaksi &amp; Laporan</a>
+      <a href="settings.html" class="sheet-link"><svg class="i" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3.1"/><path d="M12 3v2.6M12 18.4V21M21 12h-2.6M5.6 12H3M18.4 5.6l-1.9 1.9M7.5 16.5l-1.9 1.9M18.4 18.4l-1.9-1.9M7.5 7.5 5.6 5.6"/></svg> Pengaturan</a>
       <button type="button" class="sheet-link sheet-logout" onclick="Auth.logout()">↩ Keluar Akun</button>
     </div>
   </div>

@@ -6,7 +6,7 @@
 <title>Dashboard - RestoranKu</title>
 <link rel="stylesheet" href="style.css">
 <link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#FF6B35">
+<meta name="theme-color" content="#C2531F">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="RestoranKu">
@@ -56,13 +56,13 @@
     <div class="content">
       <!-- ALERT SETUP -->
       <div class="alert alert-warning" id="setup-alert" style="display:none">
-        ⚠️ Restoran kamu belum lengkap! <a href="settings.html" style="font-weight:700;color:inherit">Lengkapi pengaturan →</a>
+        <svg class="i" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.6 21.3 20H2.7L12 3.6Z"/><path d="M12 9.8v4.2"/><path d="M12 16.9h.01"/></svg> Restoran kamu belum lengkap! <a href="settings.html" style="font-weight:700;color:inherit">Lengkapi pengaturan &rarr;</a>
       </div>
 
       <!-- STATS -->
       <div class="stats-grid">
         <div class="stat-card">
-          <div class="stat-icon orange">💰</div>
+          <div class="stat-icon orange"><svg class="i" width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="6" width="19" height="12" rx="2"/><circle cx="12" cy="12" r="2.6"/><path d="M6 9h.01M18 15h.01"/></svg></div>
           <div class="stat-info">
             <div class="stat-label">Pendapatan Hari Ini</div>
             <div class="stat-value" id="stat-revenue">Rp 0</div>
@@ -70,7 +70,7 @@
           </div>
         </div>
         <div class="stat-card">
-          <div class="stat-icon green">🛒</div>
+          <div class="stat-icon green"><svg class="i" width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9.5" cy="20" r="1.3"/><circle cx="17.5" cy="20" r="1.3"/><path d="M2.5 3h2l2.3 12a2 2 0 0 0 2 1.6h8a2 2 0 0 0 2-1.6L21 8H6.2"/></svg></div>
           <div class="stat-info">
             <div class="stat-label">Pesanan Hari Ini</div>
             <div class="stat-value" id="stat-orders">0</div>
@@ -78,7 +78,7 @@
           </div>
         </div>
         <div class="stat-card">
-          <div class="stat-icon blue">🍽️</div>
+          <div class="stat-icon blue"><svg class="i" width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 2.5v6a1.6 1.6 0 0 0 3.2 0v-6"/><path d="M8.6 2.5v18"/><path d="M16.5 2.5c-1.8 0-2.8 2.1-2.8 5s1 4 2 4v9"/></svg></div>
           <div class="stat-info">
             <div class="stat-label">Total Menu Aktif</div>
             <div class="stat-value" id="stat-menu">0</div>
@@ -86,7 +86,7 @@
           </div>
         </div>
         <div class="stat-card">
-          <div class="stat-icon yellow">🪑</div>
+          <div class="stat-icon yellow"><svg class="i" width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="7.5" width="18" height="3" rx="1"/><path d="M5.5 10.5V20"/><path d="M18.5 10.5V20"/></svg></div>
           <div class="stat-info">
             <div class="stat-label">Total Meja</div>
             <div class="stat-value" id="stat-tables">0</div>
@@ -100,12 +100,12 @@
         <div class="card-header"><h3>Aksi Cepat</h3></div>
         <div class="card-body">
           <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:12px">
-            <a href="menu.html" class="quick-action"><div class="qa-icon">➕</div><span>Tambah Menu</span></a>
-            <a href="tables.html" class="quick-action"><div class="qa-icon">🪑</div><span>Kelola Meja</span></a>
-            <a href="orders.html" class="quick-action"><div class="qa-icon">🛒</div><span>Lihat Pesanan</span></a>
-            <a href="tables.html#qr" class="quick-action"><div class="qa-icon">📱</div><span>Download QR</span></a>
-            <a href="transactions.html" class="quick-action"><div class="qa-icon">📊</div><span>Laporan</span></a>
-            <a href="settings.html" class="quick-action"><div class="qa-icon">⚙️</div><span>Pengaturan</span></a>
+            <a href="menu.html" class="quick-action"><div class="qa-icon"><svg class="i" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg></div><span>Tambah Menu</span></a>
+            <a href="tables.html" class="quick-action"><div class="qa-icon"><svg class="i" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="7.5" width="18" height="3" rx="1"/><path d="M5.5 10.5V20"/><path d="M18.5 10.5V20"/></svg></div><span>Kelola Meja</span></a>
+            <a href="orders.html" class="quick-action"><div class="qa-icon"><svg class="i" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9.5" cy="20" r="1.3"/><circle cx="17.5" cy="20" r="1.3"/><path d="M2.5 3h2l2.3 12a2 2 0 0 0 2 1.6h8a2 2 0 0 0 2-1.6L21 8H6.2"/></svg></div><span>Lihat Pesanan</span></a>
+            <a href="tables.html#qr" class="quick-action"><div class="qa-icon"><svg class="i" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="7" y="2.5" width="10" height="19" rx="2"/><path d="M11 18h2"/></svg></div><span>Download QR</span></a>
+            <a href="transactions.html" class="quick-action"><div class="qa-icon"><svg class="i" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20V11"/><path d="M12 20V4"/><path d="M20 20v-6.5"/></svg></div><span>Laporan</span></a>
+            <a href="settings.html" class="quick-action"><div class="qa-icon"><svg class="i" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3.1"/><path d="M12 3v2.6M12 18.4V21M21 12h-2.6M5.6 12H3M18.4 5.6l-1.9 1.9M7.5 16.5l-1.9 1.9M18.4 18.4l-1.9-1.9M7.5 7.5 5.6 5.6"/></svg></div><span>Pengaturan</span></a>
           </div>
         </div>
       </div>
@@ -120,7 +120,7 @@
           <div class="card-body" style="padding:0 24px">
             <div id="recent-orders">
               <div class="empty-state" style="padding:30px 20px">
-                <div class="empty-icon">🛒</div>
+                <div class="empty-icon"><svg class="i" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9.5" cy="20" r="1.3"/><circle cx="17.5" cy="20" r="1.3"/><path d="M2.5 3h2l2.3 12a2 2 0 0 0 2 1.6h8a2 2 0 0 0 2-1.6L21 8H6.2"/></svg></div>
                 <p>Belum ada pesanan hari ini</p>
               </div>
             </div>
@@ -146,7 +146,7 @@
           <div class="card-body" style="padding:0 24px">
             <div id="top-menu">
               <div class="empty-state" style="padding:30px 20px">
-                <div class="empty-icon">🍽️</div>
+                <div class="empty-icon"><svg class="i" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 2.5v6a1.6 1.6 0 0 0 3.2 0v-6"/><path d="M8.6 2.5v18"/><path d="M16.5 2.5c-1.8 0-2.8 2.1-2.8 5s1 4 2 4v9"/></svg></div>
                 <p>Belum ada data menu</p>
               </div>
             </div>
@@ -207,14 +207,14 @@ async function init() {
   restoId = resto.id;
   document.getElementById('resto-name-sidebar').textContent = resto.name;
   document.getElementById('toggle-open').checked = resto.is_open;
-  document.getElementById('open-status-text').textContent = resto.is_open ? '🟢 Restoran Buka' : '🔴 Restoran Tutup';
+  document.getElementById('open-status-text').innerHTML = resto.is_open ? '<span class="status-dot green" style="margin-right:6px"></span>Restoran Buka' : '<span class="status-dot red" style="margin-right:6px"></span>Restoran Tutup';
   document.getElementById('open-status-time').textContent = `${resto.opening_time || '08:00'} - ${resto.closing_time || '22:00'}`;
 
   // Bank status
   const bankBadge = document.getElementById('bank-status-badge');
-  if (resto.bank_verified) { bankBadge.textContent = '✅ Terverifikasi'; bankBadge.className = 'badge badge-success'; }
+  if (resto.bank_verified) { bankBadge.textContent = 'Terverifikasi'; bankBadge.className = 'badge badge-success'; }
   else if (resto.bank_account_number) { bankBadge.textContent = '⏳ Pending'; bankBadge.className = 'badge badge-warning'; }
-  else { bankBadge.textContent = '❌ Belum Setup'; bankBadge.className = 'badge badge-danger'; }
+  else { bankBadge.textContent = 'Belum Setup'; bankBadge.className = 'badge badge-danger'; }
 
   // Setup alert
   if (!resto.bank_account_number || !resto.total_tables) document.getElementById('setup-alert').style.display = 'flex';
@@ -258,12 +258,12 @@ async function loadRecentOrders() {
   const el = document.getElementById('recent-orders');
   if (!orders?.length) return;
 
-  const statusMap = { pending: ['⏳','Menunggu','badge-warning'], confirmed: ['✅','Dikonfirmasi','badge-info'], preparing: ['🍳','Dimasak','badge-primary'], ready: ['✔️','Siap','badge-success'], completed: ['✅','Selesai','badge-success'], cancelled: ['❌','Dibatal','badge-danger'] };
-  const payMap = { paid: ['💰','Lunas','badge-success'], unpaid: ['⏳','Belum Bayar','badge-warning'], pending_payment: ['⏳','Menunggu','badge-info'], failed: ['❌','Gagal','badge-danger'], expired: ['⏰','Expired','badge-secondary'] };
+  const statusMap = { pending: ['Menunggu','badge-warning'], confirmed: ['Dikonfirmasi','badge-info'], preparing: ['Dimasak','badge-primary'], ready: ['Siap','badge-success'], completed: ['Selesai','badge-success'], cancelled: ['Dibatal','badge-danger'] };
+  const payMap = { paid: ['Lunas','badge-success'], unpaid: ['Belum Bayar','badge-warning'], pending_payment: ['Menunggu','badge-info'], failed: ['Gagal','badge-danger'], expired: ['Expired','badge-secondary'] };
 
   el.innerHTML = orders.map(o => {
-    const [si, sl, sc] = statusMap[o.status] || ['❓','?','badge-secondary'];
-    const [pi, pl, pc] = payMap[o.payment_status] || ['❓','?','badge-secondary'];
+    const [sl, sc] = statusMap[o.status] || ['?','badge-secondary'];
+    const [pl, pc] = payMap[o.payment_status] || ['?','badge-secondary'];
     const items = o.order_items?.slice(0,2).map(i => `${i.name} x${i.quantity}`).join(', ') || '';
     return `<div class="order-status-row" onclick="window.location='orders.html'" style="cursor:pointer">
       <div style="flex:1">
@@ -271,7 +271,7 @@ async function loadRecentOrders() {
         <div style="font-size:12px;color:var(--text-muted)">${items}</div>
       </div>
       <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px">
-        <span class="badge ${pc}">${pi} ${pl}</span>
+        <span class="badge ${pc}">${pl}</span>
         <span style="font-weight:700;font-size:13px">${formatRupiah(o.total)}</span>
       </div>
     </div>`;
@@ -284,7 +284,7 @@ async function loadTopMenu() {
   if (!items?.length) return;
   el.innerHTML = items.map((m, i) => `<div class="menu-top-row">
     <div style="width:24px;text-align:center;font-weight:800;color:var(--primary)">${i+1}</div>
-    <div class="menu-thumb">${m.image_url ? `<img src="${m.image_url}" style="width:40px;height:40px;border-radius:8px;object-fit:cover">` : '🍽️'}</div>
+    <div class="menu-thumb">${m.image_url ? `<img src="${m.image_url}" style="width:40px;height:40px;border-radius:8px;object-fit:cover">` : `<svg class="i" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 2.5v6a1.6 1.6 0 0 0 3.2 0v-6"/><path d="M8.6 2.5v18"/><path d="M16.5 2.5c-1.8 0-2.8 2.1-2.8 5s1 4 2 4v9"/></svg>`}</div>
     <div style="flex:1"><div style="font-weight:600;font-size:13px">${m.name}</div><div style="font-size:12px;color:var(--text-muted)">${formatRupiah(m.price)}</div></div>
     <div style="font-size:13px;font-weight:600;color:var(--primary)">${m.total_sold} terjual</div>
   </div>`).join('');
@@ -319,7 +319,7 @@ async function loadRevenueChart() {
 
 async function toggleRestaurantOpen(isOpen) {
   await db.from('restaurants').update({ is_open: isOpen }).eq('id', restoId);
-  document.getElementById('open-status-text').textContent = isOpen ? '🟢 Restoran Buka' : '🔴 Restoran Tutup';
+  document.getElementById('open-status-text').innerHTML = isOpen ? '<span class="status-dot green" style="margin-right:6px"></span>Restoran Buka' : '<span class="status-dot red" style="margin-right:6px"></span>Restoran Tutup';
   showToast(isOpen ? 'Restoran sekarang buka' : 'Restoran sekarang tutup', 'success');
 }
 
@@ -332,10 +332,10 @@ function subscribeOrders() {
 init();
 </script>
   <nav class="bottom-nav">
-    <a href="dashboard.html" class="bottom-nav-item active"><span class="bn-icon">📊</span>Beranda</a>
-    <a href="orders.html" class="bottom-nav-item"><span class="bn-icon">🛒</span>Pesanan<span class="bn-badge" id="pending-count" style="display:none">0</span></a>
-    <a href="menu.html" class="bottom-nav-item"><span class="bn-icon">🍽️</span>Menu</a>
-    <a href="tables.html" class="bottom-nav-item"><span class="bn-icon">🪑</span>Meja</a>
+    <a href="dashboard.html" class="bottom-nav-item active"><span class="bn-icon"><svg class="i" width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11.5 12 4l9 7.5"/><path d="M5.5 10v10h13V10"/><path d="M9.5 20v-6.5h5V20"/></svg></span>Beranda</a>
+    <a href="orders.html" class="bottom-nav-item"><span class="bn-icon"><svg class="i" width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9.5" cy="20" r="1.3"/><circle cx="17.5" cy="20" r="1.3"/><path d="M2.5 3h2l2.3 12a2 2 0 0 0 2 1.6h8a2 2 0 0 0 2-1.6L21 8H6.2"/></svg></span>Pesanan<span class="bn-badge" id="pending-count" style="display:none">0</span></a>
+    <a href="menu.html" class="bottom-nav-item"><span class="bn-icon"><svg class="i" width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 2.5v6a1.6 1.6 0 0 0 3.2 0v-6"/><path d="M8.6 2.5v18"/><path d="M16.5 2.5c-1.8 0-2.8 2.1-2.8 5s1 4 2 4v9"/></svg></span>Menu</a>
+    <a href="tables.html" class="bottom-nav-item"><span class="bn-icon"><svg class="i" width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="7.5" width="18" height="3" rx="1"/><path d="M5.5 10.5V20"/><path d="M18.5 10.5V20"/></svg></span>Meja</a>
     <button type="button" class="bottom-nav-item" onclick="toggleMoreSheet()"><span class="bn-icon">⋯</span>Lainnya</button>
   </nav>
   <div class="sheet-overlay" id="more-sheet-overlay" onclick="closeMoreSheet(event)">
@@ -348,8 +348,8 @@ init();
           <div class="sheet-user-email" id="user-email">-</div>
         </div>
       </div>
-      <a href="transactions.html" class="sheet-link">💰 Transaksi & Laporan</a>
-      <a href="settings.html" class="sheet-link">⚙️ Pengaturan</a>
+      <a href="transactions.html" class="sheet-link"><svg class="i" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="6" width="19" height="12" rx="2"/><circle cx="12" cy="12" r="2.6"/><path d="M6 9h.01M18 15h.01"/></svg> Transaksi &amp; Laporan</a>
+      <a href="settings.html" class="sheet-link"><svg class="i" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3.1"/><path d="M12 3v2.6M12 18.4V21M21 12h-2.6M5.6 12H3M18.4 5.6l-1.9 1.9M7.5 16.5l-1.9 1.9M18.4 18.4l-1.9-1.9M7.5 7.5 5.6 5.6"/></svg> Pengaturan</a>
       <button type="button" class="sheet-link sheet-logout" onclick="Auth.logout()">↩ Keluar Akun</button>
     </div>
   </div>
