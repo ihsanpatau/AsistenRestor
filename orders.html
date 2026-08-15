@@ -4,15 +4,15 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>Pesanan - RestoranKu</title>
-<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="style.css">
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#FF6B35">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="RestoranKu">
-<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
-<link rel="icon" href="icons/favicon.ico">
-<link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="icon" href="favicon.ico">
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
 <style>
   .order-columns { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; }
   .order-col { background: var(--bg); border-radius: var(--radius); padding: 16px; min-height: 400px; }
@@ -120,7 +120,7 @@
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="js/supabase.js"></script>
+<script src="supabase.js"></script>
 <script>
 let restoId = null, allOrders = [], currentStatus = '', channel = null;
 
