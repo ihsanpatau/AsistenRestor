@@ -1,10 +1,9 @@
 // Service worker RestoranKu - cache ringan untuk app-shell (bukan cache data pesanan/menu realtime)
-const CACHE_NAME = "restoranku-shell-v1";
-const SHELL_FILES = [
-  "css/style.css",
-  "icons/icon-192.png",
-  "icons/icon-512.png",
-];
+// PENTING: naikkan angka versi ini setiap kali file JS/CSS diupdate & di-deploy,
+// supaya HP pelanggan/pemilik resto tidak "nyangkut" pakai file lama dari cache
+// (ini penyebab bug seperti "xxx is not defined" padahal kode sudah diperbaiki).
+const CACHE_NAME = "restoranku-shell-v2";
+const SHELL_FILES = ["style.css", "icon-192.png", "icon-512.png"];
 
 self.addEventListener("install", (event) => {
   event.waitUntil(
@@ -47,6 +46,25 @@ self.addEventListener("fetch", (event) => {
     return;
   }
 
+  // Network-first juga untuk JS & CSS: selalu coba ambil versi terbaru dari
+  // server dulu, baru fallback ke cache kalau offline/network gagal. Ini
+  // mencegah HP terus memakai file lama (misalnya supabase.js versi lama
+  // yang menyebabkan error "xxx is not defined") setelah ada update.
+  if (req.destination === "script" || req.destination === "style") {
+    event.respondWith(
+      fetch(req)
+        .then((res) => {
+          const resClone = res.clone();
+          caches.open(CACHE_NAME).then((cache) => cache.put(req, resClone));
+          return res;
+        })
+        .catch(() => caches.match(req))
+    );
+    return;
+  }
+
+  // Aset statis lain (ikon, gambar, dsb): cache-first tetap oke karena
+  // jarang berubah.
   event.respondWith(
     caches.match(req).then(
       (cached) =>
