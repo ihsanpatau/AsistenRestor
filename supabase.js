@@ -19,9 +19,18 @@ const Auth = {
     return data;
   },
 
-  // Daftar akun baru (email/password)
-  async register(email, password) {
-    const { data, error } = await db.auth.signUp({ email, password });
+  // Daftar akun baru (email/password). `restoName` (opsional) disimpan di
+  // user_metadata supaya bisa dipakai ensureRestaurant() untuk mengisi nama
+  // restoran otomatis begitu user berhasil login pertama kali — perlu begini
+  // karena kalau "Confirm email" aktif di project Supabase, signUp TIDAK
+  // langsung memberi sesi login, jadi insert ke tabel restaurants tidak bisa
+  // dilakukan di sini (bakal ditolak RLS karena belum authenticated).
+  async register(email, password, restoName) {
+    const { data, error } = await db.auth.signUp({
+      email,
+      password,
+      options: restoName ? { data: { full_name: restoName } } : undefined,
+    });
     if (error) throw error;
     return data;
   },
@@ -205,7 +214,13 @@ function showToast(message, type) {
   const existing = document.querySelector(".toast");
   if (existing) existing.remove();
 
-  const icons = { success: "<svg class="i" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M8.3 12.5l2.5 2.5L16 9.5"/></svg>", error: "<svg class="i" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M9 9l6 6M15 9l-6 6"/></svg>", info: "<svg class="i" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6.2 9.2a5.8 5.8 0 0 1 11.6 0c0 4.8 1.9 5.8 1.9 5.8H4.3s1.9-1 1.9-5.8Z"/><path d="M10.2 18.6a1.9 1.9 0 0 0 3.6 0"/></svg>" };
+  const icons = {
+    success:
+      '<svg class="i" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M8.3 12.5l2.5 2.5L16 9.5"/></svg>',
+    error:
+      '<svg class="i" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M9 9l6 6M15 9l-6 6"/></svg>',
+    info: '<svg class="i" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6.2 9.2a5.8 5.8 0 0 1 11.6 0c0 4.8 1.9 5.8 1.9 5.8H4.3s1.9-1 1.9-5.8Z"/><path d="M10.2 18.6a1.9 1.9 0 0 0 3.6 0"/></svg>',
+  };
   const toast = document.createElement("div");
   toast.className = "toast toast-" + (type || "info");
   toast.innerHTML = `<span style="display:flex">${ icons[type] || icons.info }</span><span>${message}</span>`;
