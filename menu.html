@@ -31,14 +31,14 @@
   .cat-scroll::-webkit-scrollbar { height: 3px; }
   .cat-scroll::-webkit-scrollbar-track { background: var(--bg); }
   .cat-scroll::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
-  .img-upload-box { position: relative; width: 100%; height: 180px; border: 2px dashed var(--border); border-radius: var(--radius-sm); background: var(--bg); display: flex; align-items: center; justify-content: center; cursor: pointer; overflow: hidden; transition: all 0.2s; }
-  .img-upload-box:hover { border-color: var(--primary); background: var(--primary-light); }
-  .img-upload-box.has-image { border-style: solid; }
-  .img-upload-box img { width: 100%; height: 100%; object-fit: cover; display: block; }
-  .img-upload-placeholder { text-align: center; color: var(--text-muted); font-size: 13px; pointer-events: none; }
-  .img-upload-placeholder .icon { font-size: 32px; margin-bottom: 6px; display: block; }
-  .img-remove-btn { border-radius: var(--radius-sm); border: none; font-size: 12px; font-weight: 600; padding: 8px 14px; cursor: pointer; }
-  .img-upload-progress { position: absolute; inset: 0; background: rgba(255,255,255,0.85); display: flex; align-items: center; justify-content: center; flex-direction: column; gap: 8px; font-size: 12px; color: var(--text-muted); }
+  .img-gallery { display: flex; flex-wrap: wrap; gap: 10px; }
+  .img-tile { position: relative; width: 92px; height: 92px; border-radius: var(--radius-sm); overflow: hidden; border: 1px solid var(--border); background: var(--bg); flex-shrink: 0; }
+  .img-tile img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .img-tile .img-tile-remove { position: absolute; top: 4px; right: 4px; width: 22px; height: 22px; border-radius: 50%; border: none; background: rgba(0,0,0,0.6); color: #fff; font-size: 12px; line-height: 1; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+  .img-tile .img-tile-cover { position: absolute; bottom: 4px; left: 4px; background: rgba(0,0,0,0.6); color: #fff; font-size: 10px; padding: 2px 6px; border-radius: 999px; }
+  .img-add-tile { width: 92px; height: 92px; border: 2px dashed var(--border); border-radius: var(--radius-sm); background: var(--bg); display: flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0; transition: all 0.2s; }
+  .img-add-tile:hover { border-color: var(--primary); background: var(--primary-light); }
+  .img-add-tile .icon { font-size: 22px; text-align: center; color: var(--text-muted); pointer-events: none; }
   .cat-row { display: flex; align-items: center; gap: 10px; padding: 10px; background: var(--bg); border-radius: var(--radius-sm); }
   .cat-row input.form-control { padding: 6px 10px; font-size: 13px; }
 </style>
@@ -136,18 +136,10 @@
           <textarea class="form-control" id="menu-desc" rows="2" placeholder="Deskripsi singkat menu..."></textarea>
         </div>
         <div class="form-group" style="grid-column:1/-1">
-          <label class="form-label">Foto Menu (opsional)</label>
-          <div class="img-upload-box" id="img-upload-box" onclick="document.getElementById('menu-image-file').click()">
-            <div class="img-upload-placeholder" id="img-upload-placeholder">
-              <span class="icon">📷</span>
-              Klik untuk pilih foto dari galeri/kamera
-            </div>
-            <img id="img-preview" style="display:none">
-          </div>
-          <button type="button" class="img-remove-btn" id="img-remove-btn" style="display:none;margin-top:8px;background:var(--danger-light);color:var(--danger)" onclick="removeMenuImage(event)">🗑️ Hapus Foto</button>
-          <input type="file" id="menu-image-file" accept="image/*" style="display:none" onchange="handleImageFile(event)">
-          <input type="hidden" id="menu-image">
-          <div class="form-hint">Format JPG/PNG/WEBP, maksimal 3MB. Foto langsung diupload ke server saat disimpan.</div>
+          <label class="form-label">Foto Menu (opsional, bisa lebih dari 1)</label>
+          <div class="img-gallery" id="img-gallery"></div>
+          <input type="file" id="menu-image-file" accept="image/*" multiple style="display:none" onchange="handleImageFiles(event)">
+          <div class="form-hint">Format JPG/PNG/WEBP, maksimal 3MB per foto, maksimal 6 foto. Foto pertama jadi foto sampul. Foto langsung diupload ke server saat disimpan.</div>
         </div>
         <div class="form-group">
           <label class="form-label">Menu Rekomendasi?</label>
@@ -323,67 +315,78 @@ function filterCat(catId, el) {
   filterMenu();
 }
 
-let selectedImageFile = null; // File baru yang dipilih user, belum diupload
-let currentImageUrl = '';     // URL foto yang sedang tersimpan (kalau edit)
-let removeImageFlag = false;  // true kalau user klik "Hapus Foto"
+// --- Multi-foto: satu menu bisa punya beberapa foto sekaligus ---
+const MAX_MENU_PHOTOS = 6;
+let existingImages = [];   // URL foto yang sudah tersimpan di server (kalau edit menu)
+let removedImages = [];    // URL foto lama yang dihapus user, dibersihkan dari storage saat simpan
+let newImageFiles = [];    // File baru yang dipilih user, belum diupload (array of {file, previewUrl})
 
-function resetImagePicker(existingUrl) {
-  selectedImageFile = null;
-  removeImageFlag = false;
-  currentImageUrl = existingUrl || '';
+function resetImagePicker(existingUrls) {
+  existingImages = Array.isArray(existingUrls) ? existingUrls.filter(Boolean) : (existingUrls ? [existingUrls] : []);
+  removedImages = [];
+  newImageFiles.forEach(f => URL.revokeObjectURL(f.previewUrl));
+  newImageFiles = [];
   document.getElementById('menu-image-file').value = '';
-  document.getElementById('menu-image').value = existingUrl || '';
-  const preview = document.getElementById('img-preview');
-  const placeholder = document.getElementById('img-upload-placeholder');
-  const box = document.getElementById('img-upload-box');
-  const removeBtn = document.getElementById('img-remove-btn');
-  if (existingUrl) {
-    preview.src = existingUrl;
-    preview.style.display = 'block';
-    placeholder.style.display = 'none';
-    box.classList.add('has-image');
-    removeBtn.style.display = 'inline-flex';
-  } else {
-    preview.style.display = 'none';
-    preview.src = '';
-    placeholder.style.display = 'block';
-    box.classList.remove('has-image');
-    removeBtn.style.display = 'none';
+  renderImageGallery();
+}
+
+function totalPhotoCount() {
+  return existingImages.length + newImageFiles.length;
+}
+
+function renderImageGallery() {
+  const gallery = document.getElementById('img-gallery');
+  const tiles = [];
+
+  existingImages.forEach((url, idx) => {
+    tiles.push(`<div class="img-tile">
+      <img src="${url}">
+      ${idx === 0 ? '<span class="img-tile-cover">Sampul</span>' : ''}
+      <button type="button" class="img-tile-remove" onclick="removeExistingImage(${idx})" title="Hapus foto">✕</button>
+    </div>`);
+  });
+
+  newImageFiles.forEach((item, idx) => {
+    const isCover = existingImages.length === 0 && idx === 0;
+    tiles.push(`<div class="img-tile">
+      <img src="${item.previewUrl}">
+      ${isCover ? '<span class="img-tile-cover">Sampul</span>' : ''}
+      <button type="button" class="img-tile-remove" onclick="removeNewImage(${idx})" title="Hapus foto">✕</button>
+    </div>`);
+  });
+
+  if (totalPhotoCount() < MAX_MENU_PHOTOS) {
+    tiles.push(`<div class="img-add-tile" onclick="document.getElementById('menu-image-file').click()">
+      <span class="icon">📷+</span>
+    </div>`);
   }
+
+  gallery.innerHTML = tiles.join('');
 }
 
-function handleImageFile(e) {
-  const file = e.target.files[0];
-  if (!file) return;
-  if (!file.type.startsWith('image/')) { showToast('File harus berupa gambar', 'error'); return; }
-  if (file.size > 3 * 1024 * 1024) { showToast('Ukuran foto maksimal 3MB', 'error'); return; }
+function handleImageFiles(e) {
+  const files = Array.from(e.target.files || []);
+  e.target.value = ''; // supaya bisa pilih file yang sama lagi kalau perlu
 
-  selectedImageFile = file;
-  removeImageFlag = false;
-  const reader = new FileReader();
-  reader.onload = (ev) => {
-    const preview = document.getElementById('img-preview');
-    preview.src = ev.target.result;
-    preview.style.display = 'block';
-    document.getElementById('img-upload-placeholder').style.display = 'none';
-    document.getElementById('img-upload-box').classList.add('has-image');
-    document.getElementById('img-remove-btn').style.display = 'inline-flex';
-  };
-  reader.readAsDataURL(file);
+  for (const file of files) {
+    if (totalPhotoCount() >= MAX_MENU_PHOTOS) { showToast(`Maksimal ${MAX_MENU_PHOTOS} foto per menu`, 'error'); break; }
+    if (!file.type.startsWith('image/')) { showToast(`"${file.name}" bukan file gambar`, 'error'); continue; }
+    if (file.size > 3 * 1024 * 1024) { showToast(`"${file.name}" lebih dari 3MB`, 'error'); continue; }
+    newImageFiles.push({ file, previewUrl: URL.createObjectURL(file) });
+  }
+  renderImageGallery();
 }
 
-function removeMenuImage(e) {
-  e.stopPropagation();
-  selectedImageFile = null;
-  removeImageFlag = true;
-  document.getElementById('menu-image-file').value = '';
-  document.getElementById('menu-image').value = '';
-  const preview = document.getElementById('img-preview');
-  preview.style.display = 'none';
-  preview.src = '';
-  document.getElementById('img-upload-placeholder').style.display = 'block';
-  document.getElementById('img-upload-box').classList.remove('has-image');
-  document.getElementById('img-remove-btn').style.display = 'none';
+function removeExistingImage(idx) {
+  const [removed] = existingImages.splice(idx, 1);
+  if (removed) removedImages.push(removed);
+  renderImageGallery();
+}
+
+function removeNewImage(idx) {
+  const [removed] = newImageFiles.splice(idx, 1);
+  if (removed) URL.revokeObjectURL(removed.previewUrl);
+  renderImageGallery();
 }
 
 async function openMenuModal(id = null) {
@@ -399,7 +402,10 @@ async function openMenuModal(id = null) {
       document.getElementById('menu-category').value = menu.category_id || '';
       document.getElementById('menu-desc').value = menu.description || '';
       document.getElementById('menu-recommended').checked = menu.is_recommended;
-      resetImagePicker(menu.image_url || '');
+      // `images` = array foto (fitur baru). Kalau belum ada (menu lama / kolom belum dimigrasi),
+      // fallback ke `image_url` tunggal supaya foto lama tetap muncul di form edit.
+      const menuImages = Array.isArray(menu.images) && menu.images.length ? menu.images : (menu.image_url ? [menu.image_url] : []);
+      resetImagePicker(menuImages);
     }
   } else {
     document.getElementById('menu-id').value = '';
@@ -409,7 +415,7 @@ async function openMenuModal(id = null) {
     document.getElementById('menu-category').value = '';
     document.getElementById('menu-desc').value = '';
     document.getElementById('menu-recommended').checked = false;
-    resetImagePicker('');
+    resetImagePicker([]);
   }
   document.getElementById('modal-menu').classList.add('active');
 }
@@ -428,28 +434,28 @@ async function saveMenu() {
   setLoading(btn, true);
 
   try {
-    // Upload foto baru dulu kalau user memilih file
-    let imageUrl = removeImageFlag ? null : currentImageUrl || null;
-    if (selectedImageFile) {
+    // Upload semua foto baru dulu (kalau ada), sisanya (foto lama yang tidak dihapus) dipakai apa adanya
+    let uploadedUrls = [];
+    if (newImageFiles.length) {
       try {
-        imageUrl = await uploadMenuImage(selectedImageFile, restoId);
+        uploadedUrls = await uploadMenuImages(newImageFiles.map(f => f.file), restoId);
       } catch (uploadErr) {
         showToast('Gagal upload foto: ' + uploadErr.message, 'error');
         setLoading(btn, false);
         return;
       }
     }
+    const finalImages = [...existingImages, ...uploadedUrls];
 
     const payload = {
       restaurant_id: restoId, name, price, stock,
       category_id: document.getElementById('menu-category').value || null,
       description: document.getElementById('menu-desc').value.trim() || null,
-      image_url: imageUrl,
+      images: finalImages,
+      image_url: finalImages[0] || null, // foto sampul, dipakai halaman lain (dashboard, menu pelanggan)
       is_recommended: document.getElementById('menu-recommended').checked,
       is_available: stock > 0
     };
-
-    const oldImageUrl = currentImageUrl;
 
     if (editMenuId) {
       const { error } = await db.from('menu_items').update(payload).eq('id', editMenuId).eq('restaurant_id', restoId);
@@ -461,8 +467,8 @@ async function saveMenu() {
       showToast('Menu berhasil ditambahkan', 'success');
     }
 
-    // Kalau foto diganti/dihapus, bersihkan foto lama dari storage (best-effort)
-    if (oldImageUrl && oldImageUrl !== imageUrl) deleteMenuImage(oldImageUrl);
+    // Bersihkan foto yang dihapus user dari storage (best-effort)
+    if (removedImages.length) deleteMenuImages(removedImages);
 
     closeMenuModal();
     await loadMenus();
