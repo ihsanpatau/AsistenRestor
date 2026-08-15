@@ -100,6 +100,77 @@ const Auth = {
 };
 
 // ============================================
+// STORAGE HELPER (upload foto ke Supabase Storage)
+// ============================================
+const STORAGE_BUCKET = "menu-photos";
+
+/** * Upload file foto menu ke Supabase Storage dan kembalikan public URL-nya. * @param {File} file * @param {string} restoId - dipakai sebagai folder supaya rapi & terpisah per restoran */
+async function uploadMenuImage(file, restoId) {
+  if (!file) return null;
+  const ext = (file.name.split(".").pop() || "jpg").toLowerCase();
+  const safeExt = /^[a-z0-9]+$/.test(ext) ? ext : "jpg";
+  const filePath = `${restoId}/${Date.now()}-${Math.random() .toString(36) .slice(2, 8)}.${safeExt}`;
+
+  const { error } = await db.storage
+    .from(STORAGE_BUCKET)
+    .upload(filePath, file, {
+      cacheControl: "3600",
+      upsert: false,
+      contentType: file.type || "image/jpeg",
+    });
+
+  if (error) {
+    // Pesan lebih jelas kalau bucket belum dibuat di Supabase
+    if (/bucket/i.test(error.message) && /not.*found/i.test(error.message)) {
+      throw new Error(
+        `Bucket storage "${STORAGE_BUCKET}" belum ada di Supabase. Buat dulu lewat SQL Editor (lihat supabase_storage_setup.sql).`
+      );
+    }
+    throw error;
+  }
+
+  const { data: pub } = db.storage.from(STORAGE_BUCKET).getPublicUrl(filePath);
+  return pub.publicUrl;
+}
+
+/** * Hapus foto lama dari storage berdasarkan public URL-nya (best-effort, tidak melempar error). */
+async function deleteMenuImage(publicUrl) {
+  try {
+    if (!publicUrl || !publicUrl.includes(`/${STORAGE_BUCKET}/`)) return;
+    const path = publicUrl.split(`/${STORAGE_BUCKET}/`)[1];
+    if (!path) return;
+    await db.storage.from(STORAGE_BUCKET).remove([path]);
+  } catch (e) {
+    // Diamkan saja, penghapusan foto lama tidak kritikal
+  }
+}
+
+// Kategori default yang otomatis dibuat untuk restoran baru yang belum punya kategori sama sekali
+const DEFAULT_MENU_CATEGORIES = [
+  { name: "Makanan Utama", icon: "🍛", sort_order: 1 },
+  { name: "Minuman", icon: "🥤", sort_order: 2 },
+  { name: "Cemilan", icon: "🍟", sort_order: 3 },
+  { name: "Dessert", icon: "🍰", sort_order: 4 },
+  { name: "Paket Hemat", icon: "🎁", sort_order: 5 },
+];
+
+/** * Pastikan restoran punya minimal satu kategori. Kalau kosong, isi otomatis dengan kategori default * supaya dropdown kategori tidak kosong melompong untuk restoran baru. */
+async function ensureDefaultCategories(restoId) {
+  const { count } = await db
+    .from("menu_categories")
+    .select("id", { count: "exact", head: true })
+    .eq("restaurant_id", restoId);
+  if (count && count > 0) return false;
+
+  const rows = DEFAULT_MENU_CATEGORIES.map((c) => ({
+    ...c,
+    restaurant_id: restoId,
+  }));
+  const { error } = await db.from("menu_categories").insert(rows);
+  return !error;
+}
+
+// ============================================
 // UI UTILS
 // ============================================
 function formatRupiah(num) {
