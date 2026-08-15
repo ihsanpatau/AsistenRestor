@@ -2,9 +2,17 @@
 <html lang="id">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>Kelola Meja - RestoranKu</title>
 <link rel="stylesheet" href="css/style.css">
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#FF6B35">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="RestoranKu">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<link rel="icon" href="icons/favicon.ico">
+<link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
 <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
 <style>
   .table-grid { display: grid; grid-template-columns: repeat(auto-fill,minmax(200px,1fr)); gap: 16px; }
@@ -16,41 +24,14 @@
 </style>
 </head>
 <body>
-<div class="layout">
-  <div class="sidebar" id="sidebar">
-    <div class="sidebar-brand">
-      <div class="logo"><div class="logo-icon">🍽️</div><div class="logo-text"><h3>RestoranKu</h3><span id="resto-name-sidebar">-</span></div></div>
-    </div>
-    <nav class="sidebar-nav">
-      <div class="nav-section">
-        <div class="nav-section-label">Menu Utama</div>
-        <a href="dashboard.html" class="nav-item"><span class="nav-icon">📊</span> Dashboard</a>
-        <a href="orders.html" class="nav-item"><span class="nav-icon">🛒</span> Pesanan</a>
-        <a href="menu.html" class="nav-item"><span class="nav-icon">🍽️</span> Kelola Menu</a>
-        <a href="tables.html" class="nav-item active"><span class="nav-icon">🪑</span> Kelola Meja</a>
-        <a href="transactions.html" class="nav-item"><span class="nav-icon">💰</span> Transaksi</a>
-      </div>
-      <div class="nav-section">
-        <a href="settings.html" class="nav-item"><span class="nav-icon">⚙️</span> Pengaturan</a>
-      </div>
-    </nav>
-    <div class="sidebar-footer">
-      <div class="sidebar-user" onclick="Auth.logout()">
-        <div class="user-avatar" id="user-avatar">R</div>
-        <div class="user-info"><div class="user-name" id="user-email">-</div><div class="user-role">Pemilik Restoran</div></div>
-        <span style="color:rgba(255,255,255,0.4)">↩</span>
-      </div>
-    </div>
-  </div>
-  <div class="sidebar-overlay" id="sidebar-overlay" onclick="closeSidebar()"></div>
-
+<div class="app-shell">
   <div class="main">
     <div class="topbar">
       <div class="topbar-left">
-        <button class="hamburger" onclick="openSidebar()">☰</button>
         <div class="page-title">Kelola Meja & QR Code</div>
       </div>
       <div class="topbar-right">
+        <button type="button" class="topbar-avatar-btn" onclick="toggleMoreSheet()" id="topbar-avatar-btn">R</button>
         <button class="btn btn-ghost" onclick="downloadAllQR()">📥 Download Semua QR</button>
         <button class="btn btn-primary" onclick="openAddTable()">➕ Tambah Meja</button>
       </div>
@@ -130,8 +111,6 @@
 let restoId = null, restoSlug = null, tables = [], currentQrTableNum = null;
 const BASE_URL = window.location.origin;
 
-function openSidebar() { document.getElementById('sidebar').classList.add('open'); document.getElementById('sidebar-overlay').classList.add('active'); }
-function closeSidebar() { document.getElementById('sidebar').classList.remove('open'); document.getElementById('sidebar-overlay').classList.remove('active'); }
 
 async function init() {
   const user = await Auth.requireAuth();
@@ -266,7 +245,7 @@ function printQR() {
     <img src="${url}" style="width:250px">
     <p style="font-size:12px;color:#666">Scan QR untuk memesan</p>
     <script>window.onload=()=>{window.print();window.close()}<\/script>
-  </body></html>`);
+</body></html>`);
 }
 
 async function downloadAllQR() {
@@ -280,5 +259,27 @@ async function downloadAllQR() {
 
 init();
 </script>
+  <nav class="bottom-nav">
+    <a href="dashboard.html" class="bottom-nav-item"><span class="bn-icon">📊</span>Beranda</a>
+    <a href="orders.html" class="bottom-nav-item"><span class="bn-icon">🛒</span>Pesanan</a>
+    <a href="menu.html" class="bottom-nav-item"><span class="bn-icon">🍽️</span>Menu</a>
+    <a href="tables.html" class="bottom-nav-item active"><span class="bn-icon">🪑</span>Meja</a>
+    <button type="button" class="bottom-nav-item" onclick="toggleMoreSheet()"><span class="bn-icon">⋯</span>Lainnya</button>
+  </nav>
+  <div class="sheet-overlay" id="more-sheet-overlay" onclick="closeMoreSheet(event)">
+    <div class="sheet-panel" onclick="event.stopPropagation()">
+      <div class="sheet-handle"></div>
+      <div class="sheet-user-row">
+        <div class="user-avatar-lg" id="user-avatar">R</div>
+        <div>
+          <div class="sheet-resto-name" id="resto-name-sidebar">Loading...</div>
+          <div class="sheet-user-email" id="user-email">-</div>
+        </div>
+      </div>
+      <a href="transactions.html" class="sheet-link">💰 Transaksi & Laporan</a>
+      <a href="settings.html" class="sheet-link">⚙️ Pengaturan</a>
+      <button type="button" class="sheet-link sheet-logout" onclick="Auth.logout()">↩ Keluar Akun</button>
+    </div>
+  </div>
 </body>
 </html>
