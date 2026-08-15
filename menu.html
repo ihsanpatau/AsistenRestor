@@ -145,7 +145,7 @@
             <img id="img-preview" style="display:none">
           </div>
           <button type="button" class="img-remove-btn" id="img-remove-btn" style="display:none;margin-top:8px;background:var(--danger-light);color:var(--danger)" onclick="removeMenuImage(event)">🗑️ Hapus Foto</button>
-          <input type="file" id="menu-image-file" accept="image/*" capture="environment" style="display:none" onchange="handleImageFile(event)">
+          <input type="file" id="menu-image-file" accept="image/*" style="display:none" onchange="handleImageFile(event)">
           <input type="hidden" id="menu-image">
           <div class="form-hint">Format JPG/PNG/WEBP, maksimal 3MB. Foto langsung diupload ke server saat disimpan.</div>
         </div>
@@ -227,7 +227,10 @@ async function init() {
   if (!resto) return window.location.href = 'login.html';
   restoId = resto.id;
   document.getElementById('resto-name-sidebar').textContent = resto.name;
-  await ensureDefaultCategories(restoId);
+  const seedResult = await ensureDefaultCategories(restoId);
+  if (seedResult.error) {
+    showToast('Gagal buat kategori default: ' + seedResult.error.message + ' — jalankan supabase_rls_setup.sql', 'error');
+  }
   await loadCategories();
   await loadMenus();
 }
