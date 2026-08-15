@@ -158,14 +158,23 @@ async function doRegister() {
   const btn = document.getElementById('btn-register');
   setLoading(btn, true);
   try {
-    const { user } = await Auth.register(email, password);
-    // Buat slug dari nama restoran
-    const slug = name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') + '-' + Date.now().toString().slice(-4);
-    // Insert data restoran
-    const { error } = await db.from('restaurants').insert({ user_id: user.id, name, slug, email });
-    if (error) throw error;
-    showToast('Pendaftaran berhasil! Silakan login', 'success');
-    setTimeout(() => switchTab('login'), 1500);
+    const { session } = await Auth.register(email, password, name);
+    // Catatan: baris "insert ke tabel restaurants" sengaja TIDAK dilakukan di
+    // sini. Kalau opsi "Confirm email" aktif di project Supabase, signUp()
+    // belum memberi sesi login sama sekali, sehingga insert akan ditolak oleh
+    // RLS (dianggap request anonim) dan pendaftaran terlihat "gagal diam-diam"
+    // meski akunnya sebenarnya sudah dibuat. Nama restoran sudah disimpan di
+    // user_metadata, dan baris di tabel restaurants akan dibuat otomatis oleh
+    // Auth.ensureRestaurant() begitu user berhasil login dan membuka
+    // dashboard.html — pola yang sama seperti login via Google.
+    if (session) {
+      // "Confirm email" tidak aktif -> user langsung punya sesi, boleh langsung masuk dashboard
+      showToast('Pendaftaran berhasil! Mengalihkan...', 'success');
+      setTimeout(() => window.location.href = 'dashboard.html', 1000);
+    } else {
+      showToast('Pendaftaran berhasil! Cek email kamu untuk konfirmasi, lalu login.', 'success');
+      setTimeout(() => switchTab('login'), 1800);
+    }
   } catch(e) {
     showToast(e.message || 'Gagal mendaftar', 'error');
   } finally { setLoading(btn, false); }
