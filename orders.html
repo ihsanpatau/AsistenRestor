@@ -37,6 +37,7 @@
         <div class="page-title">Pesanan Masuk</div>
       </div>
       <div class="topbar-right">
+        <span class="topbar-resto-name" id="topbar-resto-name"></span>
         <button type="button" class="topbar-avatar-btn" onclick="toggleMoreSheet()" id="topbar-avatar-btn">R</button>
         <div class="realtime-indicator"><div class="pulse"></div> Realtime</div>
         <div style="display:flex;gap:8px">
@@ -120,12 +121,10 @@ document.getElementById('filter-date').value = new Date().toISOString().split('T
 async function init() {
   const user = await Auth.requireAuth();
   document.getElementById('user-email').textContent = user.email;
-  document.getElementById('user-avatar').textContent = user.email[0].toUpperCase();
-  document.getElementById('topbar-avatar-btn').textContent = user.email[0].toUpperCase();
-  const { data: resto } = await db.from('restaurants').select('id,name').eq('user_id', user.id).single();
+  const { data: resto } = await db.from('restaurants').select('id,name,logo_url').eq('user_id', user.id).single();
   if (!resto) return;
+  applyRestoIdentity(resto);
   restoId = resto.id;
-  document.getElementById('resto-name-sidebar').textContent = resto.name;
   await loadOrders();
   subscribeOrders();
 }

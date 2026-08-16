@@ -53,6 +53,7 @@
         <div class="page-title">Kelola Menu</div>
       </div>
       <div class="topbar-right">
+        <span class="topbar-resto-name" id="topbar-resto-name"></span>
         <button type="button" class="topbar-avatar-btn" onclick="toggleMoreSheet()" id="topbar-avatar-btn">R</button>
         <button class="btn btn-ghost btn-sm" onclick="openCatModal()"><svg class="i" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M11.3 3H4v7.3L13.3 19.6a1.9 1.9 0 0 0 2.7 0l4.9-4.9a1.9 1.9 0 0 0 0-2.7L11.3 3Z"/><circle cx="8" cy="7.8" r="1.2"/></svg> Kategori</button>
         <button class="btn btn-primary" onclick="openMenuModal()"><svg class="i" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg> Tambah Menu</button>
@@ -215,12 +216,10 @@ let restoId = null, allMenus = [], allCats = [], activeCat = '', editMenuId = nu
 async function init() {
   const user = await Auth.requireAuth();
   document.getElementById('user-email').textContent = user.email;
-  document.getElementById('user-avatar').textContent = user.email[0].toUpperCase();
-  document.getElementById('topbar-avatar-btn').textContent = user.email[0].toUpperCase();
-  const { data: resto } = await db.from('restaurants').select('id,name').eq('user_id', user.id).single();
+  const { data: resto } = await db.from('restaurants').select('id,name,logo_url').eq('user_id', user.id).single();
   if (!resto) return window.location.href = 'login.html';
+  applyRestoIdentity(resto);
   restoId = resto.id;
-  document.getElementById('resto-name-sidebar').textContent = resto.name;
   const seedResult = await ensureDefaultCategories(restoId);
   if (seedResult.error) {
     showToast('Gagal buat kategori default: ' + seedResult.error.message + ' — jalankan supabase_rls_setup.sql', 'error');
