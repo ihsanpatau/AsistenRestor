@@ -121,6 +121,7 @@ async function init() {
   const user = await Auth.requireAuth();
   document.getElementById('user-email').textContent = user.email;
   document.getElementById('user-avatar').textContent = user.email[0].toUpperCase();
+  document.getElementById('topbar-avatar-btn').textContent = user.email[0].toUpperCase();
   const { data: resto } = await db.from('restaurants').select('id,name').eq('user_id', user.id).single();
   if (!resto) return;
   restoId = resto.id;

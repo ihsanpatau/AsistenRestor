@@ -229,6 +229,7 @@ async function init() {
   const user = await Auth.requireAuth();
   document.getElementById('user-email').textContent = user.email;
   document.getElementById('user-avatar').textContent = user.email[0].toUpperCase();
+  document.getElementById('topbar-avatar-btn').textContent = user.email[0].toUpperCase();
   document.getElementById('akun-email').textContent = user.email;
   document.getElementById('akun-avatar').textContent = user.email[0].toUpperCase();
   document.getElementById('akun-since').textContent = 'Bergabung: ' + new Date(user.created_at).toLocaleDateString('id-ID', { day:'2-digit', month:'long', year:'numeric' });

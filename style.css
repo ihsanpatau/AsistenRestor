@@ -472,3 +472,21 @@ select.form-control { appearance: none; background-image: url("data:image/svg+xm
 }
 .btn-google:hover { background: var(--bg); box-shadow: var(--shadow); border-color: var(--primary); }
 .btn-google svg { width: 18px; height: 18px; flex-shrink: 0; }
+
+/* ===== RESPONSIVE LEBAR LAYAR (HP, iPad, Tablet, Laptop, Komputer) ===== */
+/* Default (di atas) sudah pas untuk HP (iPhone dkk, layar sampai ~700px).
+   Aturan di bawah ini melebarkan tampilan secara bertahap supaya di layar
+   yang lebih besar aplikasi tidak cuma jadi kolom sempit di tengah dengan
+   banyak ruang kosong di kiri-kanan. */
+@media (min-width: 700px) {
+  .main, .bottom-nav, .sheet-panel { max-width: 760px; }
+}
+@media (min-width: 900px) {
+  .main, .bottom-nav, .sheet-panel { max-width: 940px; }
+}
+@media (min-width: 1200px) {
+  .main, .bottom-nav, .sheet-panel { max-width: 1100px; }
+}
+@media (min-width: 1600px) {
+  .main, .bottom-nav, .sheet-panel { max-width: 1240px; }
+}
