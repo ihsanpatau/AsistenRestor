@@ -121,7 +121,11 @@ async function init() {
   restoId = resto.id;
   restoSlug = resto.slug;
   document.getElementById('resto-name-sidebar').textContent = resto.name;
-  document.getElementById('base-url-display').innerHTML = `<svg class="i" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9.8 14.2 14.2 9.8"/><path d="M11.3 6.4l1.2-1.2a3.4 3.4 0 1 1 4.8 4.8l-1.2 1.2"/><path d="M12.7 17.6l-1.2 1.2a3.4 3.4 0 1 1-4.8-4.8l1.2-1.2"/></svg> ${BASE_URL}/menu.html?resto=${restoSlug}`;
+  // PERBAIKAN: link ini sebelumnya salah mengarah ke menu.html (halaman kelola
+  // menu milik owner, perlu login) — seharusnya menu-pelanggan.html (halaman
+  // pesan untuk pelanggan). Makanya kalau link ini di-copy/dibagikan sendiri,
+  // hasilnya "tidak bisa dipakai untuk memesan".
+  document.getElementById('base-url-display').innerHTML = `<svg class="i" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9.8 14.2 14.2 9.8"/><path d="M11.3 6.4l1.2-1.2a3.4 3.4 0 1 1 4.8 4.8l-1.2 1.2"/><path d="M12.7 17.6l-1.2 1.2a3.4 3.4 0 1 1-4.8-4.8l1.2-1.2"/></svg> ${BASE_URL}/menu-pelanggan.html?resto=${restoSlug}`;
   await loadTables();
 }
 
@@ -161,13 +165,59 @@ function renderTables() {
   </div>`).join('');
 
   // Generate QR untuk semua meja
-  tables.forEach(t => {
-    const canvas = document.getElementById(`qr-${t.table_number}`);
-    QRCode.toCanvas(canvas, getMenuUrl(t.table_number), {
+  generateAllTableQr();
+}
+
+// PERBAIKAN: sebelumnya QRCode.toCanvas() dipanggil tanpa penanganan error sama
+// sekali. Kalau library QR dari CDN gagal dimuat (koneksi lambat/CDN diblokir
+// jaringan tertentu) atau toCanvas() gagal karena sebab lain, kanvasnya akan
+// kelihatan KOSONG tanpa pesan apa-apa — persis seperti yang dilaporkan.
+// Sekarang: (1) coba CDN cadangan kalau CDN utama gagal dimuat, (2) tampilkan
+// pesan error + tombol "Coba Lagi" di kotak QR yang gagal, bukan kotak kosong.
+function loadQrLibraryFallback() {
+  return new Promise((resolve, reject) => {
+    if (typeof QRCode !== 'undefined') return resolve();
+    const s = document.createElement('script');
+    s.src = 'https://unpkg.com/qrcode@1.5.3/build/qrcode.min.js';
+    s.onload = () => resolve();
+    s.onerror = () => reject(new Error('Gagal memuat library QR Code (cek koneksi internet)'));
+    document.head.appendChild(s);
+  });
+}
+
+function showQrError(canvas, onRetry) {
+  if (!canvas) return;
+  const wrap = document.createElement('div');
+  wrap.style.cssText = 'width:140px;height:140px;margin:12px auto;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;background:var(--danger-light);border-radius:8px;padding:8px;text-align:center';
+  wrap.innerHTML = `<span style="font-size:11px;color:var(--danger)">Gagal buat QR</span>`;
+  const btn = document.createElement('button');
+  btn.className = 'btn btn-ghost btn-sm';
+  btn.textContent = 'Coba Lagi';
+  btn.onclick = onRetry;
+  wrap.appendChild(btn);
+  canvas.replaceWith(wrap);
+}
+
+async function generateQrForTable(t) {
+  const canvasId = `qr-${t.table_number}`;
+  const canvas = document.getElementById(canvasId);
+  if (!canvas) return;
+  try {
+    if (typeof QRCode === 'undefined') await loadQrLibraryFallback();
+    await QRCode.toCanvas(canvas, getMenuUrl(t.table_number), {
       width: 140, margin: 1,
       color: { dark: '#2D3748', light: '#FFFFFF' }
     });
-  });
+  } catch (e) {
+    console.error('Gagal generate QR meja', t.table_number, e);
+    showQrError(canvas, async () => { await loadTables(); });
+  }
+}
+
+async function generateAllTableQr() {
+  for (const t of tables) {
+    await generateQrForTable(t);
+  }
 }
 
 function openAddTable() { document.getElementById('modal-table').classList.add('active'); }
@@ -205,14 +255,20 @@ async function deleteTable(id, num) {
   await loadTables();
 }
 
-function showQRModal(tableNum) {
+async function showQRModal(tableNum) {
   currentQrTableNum = tableNum;
   const url = getMenuUrl(tableNum);
   document.getElementById('qr-modal-title').textContent = `QR Code Meja ${tableNum}`;
   document.getElementById('qr-url-display').textContent = url;
-  const canvas = document.getElementById('qr-large');
-  QRCode.toCanvas(canvas, url, { width: 280, margin: 2, color: { dark: '#2D3748', light: '#FFFFFF' } });
   document.getElementById('modal-qr').classList.add('active');
+  const canvas = document.getElementById('qr-large');
+  try {
+    if (typeof QRCode === 'undefined') await loadQrLibraryFallback();
+    await QRCode.toCanvas(canvas, url, { width: 280, margin: 2, color: { dark: '#2D3748', light: '#FFFFFF' } });
+  } catch (e) {
+    console.error('Gagal generate QR besar meja', tableNum, e);
+    showToast('Gagal membuat QR Code. Cek koneksi internet lalu coba lagi.', 'error');
+  }
 }
 
 function downloadQR(tableNum) {
