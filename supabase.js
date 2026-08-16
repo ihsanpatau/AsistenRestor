@@ -172,6 +172,46 @@ async function deleteMenuImages(publicUrls) {
   await Promise.all(list.map((url) => deleteMenuImage(url)));
 }
 
+/** * Upload logo restoran ke Supabase Storage (folder terpisah "logos/") dan kembalikan public URL-nya. * Pakai bucket yang sama seperti foto menu supaya tidak perlu setup bucket/izin baru. * @param {File} file * @param {string} restoId */
+async function uploadRestoLogo(file, restoId) {
+  if (!file) return null;
+  const ext = (file.name.split(".").pop() || "jpg").toLowerCase();
+  const safeExt = /^[a-z0-9]+$/.test(ext) ? ext : "jpg";
+  const filePath = `logos/${restoId}/${Date.now()}-${Math.random() .toString(36) .slice(2, 8)}.${safeExt}`;
+
+  const { error } = await db.storage
+    .from(STORAGE_BUCKET)
+    .upload(filePath, file, {
+      cacheControl: "3600",
+      upsert: false,
+      contentType: file.type || "image/jpeg",
+    });
+
+  if (error) {
+    if (/bucket/i.test(error.message) && /not.*found/i.test(error.message)) {
+      throw new Error(
+        `Bucket storage "${STORAGE_BUCKET}" belum ada di Supabase. Buat dulu lewat SQL Editor (lihat supabase_storage_setup.sql).`
+      );
+    }
+    throw error;
+  }
+
+  const { data: pub } = db.storage.from(STORAGE_BUCKET).getPublicUrl(filePath);
+  return pub.publicUrl;
+}
+
+/** * Hapus logo lama dari storage berdasarkan public URL-nya (best-effort, tidak melempar error). */
+async function deleteRestoLogo(publicUrl) {
+  try {
+    if (!publicUrl || !publicUrl.includes(`/${STORAGE_BUCKET}/`)) return;
+    const path = publicUrl.split(`/${STORAGE_BUCKET}/`)[1];
+    if (!path) return;
+    await db.storage.from(STORAGE_BUCKET).remove([path]);
+  } catch (e) {
+    // Diamkan saja, penghapusan logo lama tidak kritikal
+  }
+}
+
 // Kategori default yang otomatis dibuat untuk restoran baru yang belum punya kategori sama sekali
 const DEFAULT_MENU_CATEGORIES = [
   { name: "Makanan Utama", icon: "🍛", sort_order: 1 },
