@@ -490,3 +490,31 @@ select.form-control { appearance: none; background-image: url("data:image/svg+xm
 @media (min-width: 1600px) {
   .main, .bottom-nav, .sheet-panel { max-width: 1240px; }
 }
+
+/* ===== LAYAR LEBAR (tablet landscape, iPad, laptop, komputer):
+   ubah bottom-nav jadi rail navigasi di sisi kiri supaya tidak
+   membuang ruang layar dan terasa seperti aplikasi desktop, bukan
+   cuma kolom HP yang dilebarkan. Tidak butuh perubahan HTML sama
+   sekali karena dipakai ulang markup .bottom-nav yang sudah ada. ===== */
+@media (min-width: 1024px) {
+  .app-shell { align-items: stretch; }
+  .bottom-nav {
+    top: 0; bottom: 0; left: 0; right: auto; height: 100vh;
+    width: 96px; max-width: 96px;
+    flex-direction: column; justify-content: flex-start; align-items: stretch;
+    padding: calc(20px + env(safe-area-inset-top)) 8px 20px;
+    gap: 4px; border-top: none; border-right: 1px solid var(--border);
+    box-shadow: 4px 0 24px rgba(194,83,31,0.06);
+  }
+  .bottom-nav-item { flex: none; padding: 12px 4px; font-size: 10.5px; border-radius: var(--radius-sm); }
+  .bottom-nav-item:hover { background: var(--primary-light); color: var(--primary); }
+  .bottom-nav-item .bn-icon { padding: 4px; margin-bottom: 2px; }
+  .main {
+    margin-left: 96px; margin-right: 0; width: auto;
+    max-width: none !important; min-height: 100vh;
+  }
+  .content { padding-bottom: 28px; max-width: 1320px; margin: 0 auto; width: 100%; }
+  .topbar { padding-left: 28px; padding-right: 28px; }
+  .sheet-overlay { justify-content: flex-start; padding-left: 96px; }
+  .sheet-panel { max-width: 340px; border-radius: 0 var(--radius-lg) var(--radius-lg) 0; margin: 0; }
+}

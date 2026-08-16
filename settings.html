@@ -40,11 +40,15 @@
           <div class="card-header"><h3>Profil Restoran</h3></div>
           <div class="card-body">
             <div class="form-group" style="text-align:center;margin-bottom:24px">
-              <div id="logo-preview" style="width:80px;height:80px;border-radius:16px;background:var(--primary-light);color:var(--primary);display:flex;align-items:center;justify-content:center;margin:0 auto 12px;border:2px dashed var(--border)"><svg class="i" width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 2.5v6a1.6 1.6 0 0 0 3.2 0v-6"/><path d="M8.6 2.5v18"/><path d="M16.5 2.5c-1.8 0-2.8 2.1-2.8 5s1 4 2 4v9"/></svg></div>
-              <div class="form-group">
-                <label class="form-label">URL Logo Restoran</label>
-                <input type="url" class="form-control" id="resto-logo" placeholder="https://...logo.png" oninput="previewLogo(this.value)">
-                <div class="form-hint">Gunakan URL gambar dari internet atau imgbb.com</div>
+              <div id="logo-preview" onclick="document.getElementById('resto-logo-file').click()" style="cursor:pointer;width:80px;height:80px;border-radius:16px;background:var(--primary-light);color:var(--primary);display:flex;align-items:center;justify-content:center;margin:0 auto 12px;border:2px dashed var(--border);overflow:hidden"><svg class="i" width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 2.5v6a1.6 1.6 0 0 0 3.2 0v-6"/><path d="M8.6 2.5v18"/><path d="M16.5 2.5c-1.8 0-2.8 2.1-2.8 5s1 4 2 4v9"/></svg></div>
+              <input type="hidden" id="resto-logo">
+              <input type="file" id="resto-logo-file" accept="image/*" style="display:none" onchange="handleLogoFile(event)">
+              <div class="form-group" style="text-align:center">
+                <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap">
+                  <button type="button" class="btn btn-ghost btn-sm" onclick="document.getElementById('resto-logo-file').click()"><svg class="i" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8.3h3.2l1.4-1.9h6.8l1.4 1.9H20v11.2H4Z"/><circle cx="12" cy="14" r="3.3"/></svg> Pilih Foto</button>
+                  <button type="button" class="btn btn-ghost btn-sm" id="btn-remove-logo" onclick="removeLogo()" style="display:none"><svg class="i" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 6l12 12M18 6L6 18"/></svg> Hapus Foto</button>
+                </div>
+                <div class="form-hint">Klik untuk upload dari galeri/kamera. Format JPG/PNG/WEBP, maksimal 2MB.</div>
               </div>
             </div>
             <div class="form-group">
@@ -246,6 +250,7 @@ async function init() {
   document.getElementById('resto-email').value = resto.email || '';
   document.getElementById('resto-logo').value = resto.logo_url || '';
   if (resto.logo_url) previewLogo(resto.logo_url);
+  document.getElementById('btn-remove-logo').style.display = resto.logo_url ? 'inline-flex' : 'none';
 
   document.getElementById('jam-buka').value = resto.opening_time || '08:00';
   document.getElementById('jam-tutup').value = resto.closing_time || '22:00';
@@ -270,8 +275,32 @@ async function init() {
 
 function previewLogo(url) {
   const el = document.getElementById('logo-preview');
-  if (url) el.innerHTML = `<img src="${url}" style="width:80px;height:80px;border-radius:14px;object-fit:cover" onerror="this.parentElement.innerHTML='<svg class=&quot;i&quot; width=&quot;30&quot; height=&quot;30&quot; viewBox=&quot;0 0 24 24&quot; fill=&quot;none&quot; stroke=&quot;currentColor&quot; stroke-width=&quot;1.8&quot; stroke-linecap=&quot;round&quot; stroke-linejoin=&quot;round&quot;><path d=&quot;M7 2.5v6a1.6 1.6 0 0 0 3.2 0v-6&quot;/><path d=&quot;M8.6 2.5v18&quot;/><path d=&quot;M16.5 2.5c-1.8 0-2.8 2.1-2.8 5s1 4 2 4v9&quot;/></svg>'">`;
+  if (url) el.innerHTML = `<img src="${url}" style="width:100%;height:100%;object-fit:cover" onerror="this.parentElement.innerHTML='<svg class=&quot;i&quot; width=&quot;30&quot; height=&quot;30&quot; viewBox=&quot;0 0 24 24&quot; fill=&quot;none&quot; stroke=&quot;currentColor&quot; stroke-width=&quot;1.8&quot; stroke-linecap=&quot;round&quot; stroke-linejoin=&quot;round&quot;><path d=&quot;M7 2.5v6a1.6 1.6 0 0 0 3.2 0v-6&quot;/><path d=&quot;M8.6 2.5v18&quot;/><path d=&quot;M16.5 2.5c-1.8 0-2.8 2.1-2.8 5s1 4 2 4v9&quot;/></svg>'">`;
   else el.innerHTML = `<svg class="i" width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 2.5v6a1.6 1.6 0 0 0 3.2 0v-6"/><path d="M8.6 2.5v18"/><path d="M16.5 2.5c-1.8 0-2.8 2.1-2.8 5s1 4 2 4v9"/></svg>`;
+}
+
+// --- Upload logo restoran (foto langsung dari HP/komputer, bukan URL) ---
+let newLogoFile = null;   // File baru yang dipilih user, belum diupload
+let logoRemoved = false;  // User menekan "Hapus Foto"
+
+function handleLogoFile(e) {
+  const file = e.target.files && e.target.files[0];
+  e.target.value = '';
+  if (!file) return;
+  if (!file.type.startsWith('image/')) return showToast('File harus berupa gambar', 'error');
+  if (file.size > 2 * 1024 * 1024) return showToast('Ukuran foto maksimal 2MB', 'error');
+  newLogoFile = file;
+  logoRemoved = false;
+  previewLogo(URL.createObjectURL(file));
+  document.getElementById('btn-remove-logo').style.display = 'inline-flex';
+}
+
+function removeLogo() {
+  newLogoFile = null;
+  logoRemoved = true;
+  document.getElementById('resto-logo').value = '';
+  previewLogo('');
+  document.getElementById('btn-remove-logo').style.display = 'none';
 }
 
 async function saveProfil() {
@@ -279,16 +308,38 @@ async function saveProfil() {
   if (!name) return showToast('Nama restoran wajib diisi', 'error');
   const btn = document.getElementById('btn-save-profil');
   setLoading(btn, true);
+
+  let logoUrl = document.getElementById('resto-logo').value.trim() || null;
+  const oldLogoUrl = restoData ? restoData.logo_url : null;
+
+  try {
+    if (newLogoFile) {
+      logoUrl = await uploadRestoLogo(newLogoFile, restoId);
+    } else if (logoRemoved) {
+      logoUrl = null;
+    }
+  } catch (uploadErr) {
+    setLoading(btn, false);
+    return showToast('Gagal upload logo: ' + uploadErr.message, 'error');
+  }
+
   const { error } = await db.from('restaurants').update({
     name,
     description: document.getElementById('resto-desc').value.trim() || null,
     address: document.getElementById('resto-address').value.trim() || null,
     phone: document.getElementById('resto-phone').value.trim() || null,
     email: document.getElementById('resto-email').value.trim() || null,
-    logo_url: document.getElementById('resto-logo').value.trim() || null,
+    logo_url: logoUrl,
   }).eq('id', restoId);
   setLoading(btn, false);
   if (error) return showToast('Gagal simpan: ' + error.message, 'error');
+
+  // Bersihkan logo lama dari storage kalau diganti/dihapus (best-effort)
+  if (oldLogoUrl && oldLogoUrl !== logoUrl) deleteRestoLogo(oldLogoUrl);
+
+  document.getElementById('resto-logo').value = logoUrl || '';
+  restoData.logo_url = logoUrl;
+  newLogoFile = null; logoRemoved = false;
   document.getElementById('resto-name-sidebar').textContent = name;
   showToast('Profil berhasil disimpan', 'success');
 }
