@@ -199,6 +199,7 @@ const params = new URLSearchParams(window.location.search);
 const restoSlug = params.get('resto');
 const mejaNum = parseInt(params.get('meja') || '1');
 
+const PLATFORM_FEE = 950; // fee tetap per transaksi, ditanggung konsumen atau restoran sesuai pengaturan resto
 let restoData = null, menuItems = [], categories = [], cart = {}, activeCat = 'all';
 
 function formatRp(n) { return new Intl.NumberFormat('id-ID', { style:'currency', currency:'IDR', minimumFractionDigits:0 }).format(n); }
@@ -362,8 +363,9 @@ function openCart() {
   }).filter(Boolean);
 
   const subtotal = items.reduce((s, i) => s + i.sub, 0);
-  const platformFee = 1000;
-  const total = subtotal + platformFee;
+  const platformFee = PLATFORM_FEE;
+  const feeOnCustomer = (restoData.fee_payer !== 'restaurant');
+  const total = feeOnCustomer ? subtotal + platformFee : subtotal;
 
   document.getElementById('cart-body').innerHTML = `
     <div id="cart-items">
@@ -385,7 +387,9 @@ function openCart() {
 
     <div class="order-summary">
       <div class="summary-row"><span>Subtotal</span><span>${formatRp(subtotal)}</span></div>
-      <div class="summary-row"><span>Platform Fee</span><span>${formatRp(platformFee)}</span></div>
+      ${feeOnCustomer
+        ? `<div class="summary-row"><span>Platform Fee</span><span>${formatRp(platformFee)}</span></div>`
+        : `<div class="summary-row"><span>Platform Fee</span><span style="color:var(--success)">Ditanggung restoran</span></div>`}
       <div class="summary-row total"><span>Total</span><span>${formatRp(total)}</span></div>
     </div>
 
@@ -419,8 +423,9 @@ async function placeOrder() {
   btn.disabled = true; btn.innerHTML = '<span class="spinner-lg" style="width:20px;height:20px;border-width:2px;display:inline-block;margin-right:8px"></span> Memproses...';
 
   const subtotal = items.reduce((s, i) => s + i.subtotal, 0);
-  const platformFee = 1000;
-  const total = subtotal + platformFee;
+  const platformFee = PLATFORM_FEE;
+  const feeOnCustomer = (restoData.fee_payer !== 'restaurant');
+  const total = feeOnCustomer ? subtotal + platformFee : subtotal;
   const customerName = document.getElementById('cust-name').value.trim();
   const customerNote = document.getElementById('cust-note').value.trim();
 
@@ -457,10 +462,10 @@ async function placeOrder() {
   }).eq('id', order.id);
 
   // Redirect ke Xendit Payment Page (SIMULASI - dalam produksi gunakan Xendit API)
-  showPaymentPage(order, items, total, platformFee);
+  showPaymentPage(order, items, total, platformFee, feeOnCustomer);
 }
 
-function showPaymentPage(order, items, total, platformFee) {
+function showPaymentPage(order, items, total, platformFee, feeOnCustomer) {
   closeCart();
   // Dalam produksi: window.location.href = xenditInvoiceUrl;
   // Untuk simulasi, tampilkan halaman pembayaran sederhana
@@ -475,7 +480,7 @@ function showPaymentPage(order, items, total, platformFee) {
         <div style="background:white;border-radius:14px;padding:20px;margin-bottom:16px;border:1px solid var(--border)">
           <div style="font-size:13px;color:var(--muted);margin-bottom:4px">Total Pembayaran</div>
           <div style="font-size:32px;font-weight:800;color:var(--primary)">${formatRp(total)}</div>
-          <div style="font-size:12px;color:var(--muted);margin-top:4px">Meja ${mejaNum} · ${items.length} item · Fee Rp1.000</div>
+          <div style="font-size:12px;color:var(--muted);margin-top:4px">Meja ${mejaNum} · ${items.length} item${feeOnCustomer ? ' · Fee Rp950' : ' · Fee Rp950 ditanggung restoran'}</div>
         </div>
 
         <div style="background:white;border-radius:14px;padding:20px;margin-bottom:16px;border:1px solid var(--border)">
