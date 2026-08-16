@@ -12,47 +12,69 @@
 <link rel="icon" href="favicon.ico">
 <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Fraunces:opsz,wght@9..144,600;9..144,700&display=swap');
 * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color: transparent; }
 :root {
-  --primary: #C2531F; --primary-dark: #9E4318; --primary-light: #FBEEE6;
-  --success: #2F855A; --danger: #C53030; --bg: #F5F5F3;
+  --primary: #C2531F; --primary-dark: #7C3712; --primary-light: #FBEEE6;
+  --success: #2F855A; --danger: #C53030; --bg: #F6F4F0;
   --card: #fff; --border: #E7E5E1; --text: #21262F; --muted: #767D8A;
   --shadow: 0 1px 2px rgba(23,20,15,.05), 0 6px 18px rgba(23,20,15,.06);
 }
 body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; padding-bottom: 100px; }
 
-/* HEADER */
-.resto-header { background: var(--primary); color: white; padding: 0; position: relative; }
-.resto-hero { padding: 24px 20px 20px; }
-.resto-logo { width: 56px; height: 56px; border-radius: 14px; background: rgba(255,255,255,0.16); border: 1px solid rgba(255,255,255,.2); display: flex; align-items: center; justify-content: center; margin-bottom: 12px; overflow:hidden; }
-.resto-logo svg { width: 24px; height: 24px; }
-.resto-logo img { width:56px; height:56px; object-fit:cover; border-radius:14px; }
-.resto-name { font-size: 22px; font-weight: 800; margin-bottom: 4px; }
-.resto-meta { font-size: 13px; opacity: 0.85; display: flex; align-items: center; gap: 12px; flex-wrap:wrap; }
-.meja-badge { background: rgba(255,255,255,0.18); border: 1px solid rgba(255,255,255,.22); padding: 4px 12px; border-radius: 999px; font-weight: 700; font-size: 13px; display: inline-flex; align-items: center; gap: 5px; }
-.status-open { background: rgba(56,161,105,0.3); color: #C6F6D5; padding: 4px 10px; border-radius: 999px; font-size: 12px; font-weight: 600; display: inline-flex; align-items: center; }
-.status-closed { background: rgba(229,62,62,0.3); color: #FED7D7; padding: 4px 10px; border-radius: 999px; font-size: 12px; font-weight: 600; display: inline-flex; align-items: center; }
-.status-dot { width: 7px; height: 7px; border-radius: 50%; display: inline-block; }
-.status-dot.green { background: #48D583; }
-.status-dot.red { background: #FF8A8A; }
+/* ============================================
+   HEADER — didesain ulang: dulu cuma blok warna
+   flat + teks, terlihat generik/template. Sekarang
+   ada lapisan gradasi bertekstur, garis lengkung
+   custom di bagian bawah, dan "kartu identitas"
+   restoran yang melayang menumpuk di atas lengkungan
+   (bukan cuma logo kotak nempel biasa).
+   ============================================ */
+.resto-header { background: linear-gradient(150deg, var(--primary-dark) 0%, var(--primary) 65%, #D9682F 100%); color: white; padding: 22px 18px 0; position: relative; overflow: hidden; }
+.resto-header::before { content:''; position:absolute; inset:0; background-image: radial-gradient(rgba(255,255,255,.14) 1px, transparent 1px); background-size: 14px 14px; opacity:.55; pointer-events:none; }
+.resto-header::after { content:''; position:absolute; width:220px; height:220px; border-radius:50%; background:rgba(255,255,255,.08); top:-90px; right:-60px; pointer-events:none; }
+.resto-topline { position:relative; z-index:2; display:flex; align-items:center; justify-content:space-between; font-size:12px; font-weight:600; letter-spacing:.03em; color:rgba(255,255,255,.85); padding-bottom:14px; }
+.resto-topline .brand-mark { display:flex; align-items:center; gap:6px; }
+.resto-topline .brand-mark svg { width:14px; height:14px; opacity:.9; }
+.resto-wave { position:relative; z-index:2; display:block; width:100%; height:34px; margin-bottom:-1px; }
+.resto-wave path { fill: var(--bg); }
 
-/* CATEGORY TABS */
-.cat-tabs { background: white; border-bottom: 1px solid var(--border); padding: 0 16px; display: flex; gap: 4px; overflow-x: auto; position: sticky; top: 0; z-index: 100; }
+.resto-card { position:relative; z-index:3; background:#fff; border-radius:20px; margin: -46px 4px 18px; padding:18px 16px 16px; box-shadow: 0 14px 30px rgba(45,25,10,.16), 0 2px 8px rgba(45,25,10,.06); display:flex; gap:14px; align-items:flex-start; }
+.resto-logo { width: 62px; height: 62px; border-radius: 16px; background: var(--primary-light); border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; overflow:hidden; flex-shrink:0; box-shadow: 0 4px 10px rgba(194,83,31,.18); }
+.resto-logo svg { width: 26px; height: 26px; color: var(--primary); }
+.resto-logo img { width:62px; height:62px; object-fit:cover; border-radius:16px; }
+.resto-card-body { flex:1; min-width:0; }
+.resto-name { font-family: 'Fraunces', serif; font-size: 20px; font-weight: 700; line-height:1.15; margin-bottom: 7px; color: var(--text); }
+.resto-meta { font-size: 12.5px; display: flex; align-items: center; gap: 8px; flex-wrap:wrap; }
+.meja-badge { background: var(--primary-light); color: var(--primary-dark); padding: 4px 11px; border-radius: 999px; font-weight: 700; font-size: 12.5px; display: inline-flex; align-items: center; gap: 5px; }
+.status-open { background: #E7F6EC; color: #1F7A46; padding: 4px 10px; border-radius: 999px; font-size: 12px; font-weight: 700; display: inline-flex; align-items: center; }
+.status-closed { background: #FBEAEA; color: #B33; padding: 4px 10px; border-radius: 999px; font-size: 12px; font-weight: 700; display: inline-flex; align-items: center; }
+.status-dot { width: 7px; height: 7px; border-radius: 50%; display: inline-block; }
+.status-dot.green { background: #2F855A; }
+.status-dot.red { background: #C53030; }
+.resto-hours { color: var(--muted); display:inline-flex; align-items:center; gap:4px; }
+
+/* CATEGORY TABS — dulu daftar emoji + teks mengambang dengan garis bawah
+   polos. Sekarang jadi pill custom dengan ikon dibungkus lencana bulat kecil
+   supaya tidak terlihat "penuh emoji", lebih seperti chip terkurasi. */
+.cat-tabs { background: var(--bg); padding: 4px 14px 12px; display: flex; gap: 8px; overflow-x: auto; position: sticky; top: 0; z-index: 100; }
 .cat-tabs::-webkit-scrollbar { display: none; }
-.cat-tab { padding: 14px 16px; font-size: 13px; font-weight: 600; white-space: nowrap; cursor: pointer; border-bottom: 2px solid transparent; color: var(--muted); transition: all 0.2s; flex-shrink: 0; display: flex; align-items: center; gap: 6px; }
-.cat-tab.active { color: var(--primary); border-bottom-color: var(--primary); }
+.cat-tab { padding: 8px 14px 8px 8px; font-size: 13px; font-weight: 700; white-space: nowrap; cursor: pointer; color: var(--text); transition: all 0.2s; flex-shrink: 0; display: flex; align-items: center; gap: 7px; background: #fff; border: 1px solid var(--border); border-radius: 999px; }
+.cat-tab .cat-badge { width: 22px; height: 22px; border-radius: 50%; background: var(--primary-light); display:inline-flex; align-items:center; justify-content:center; font-size: 12px; flex-shrink:0; }
+.cat-tab.active { color: #fff; background: var(--primary); border-color: var(--primary); box-shadow: 0 5px 12px rgba(194,83,31,.28); }
+.cat-tab.active .cat-badge { background: rgba(255,255,255,.22); }
 
 /* SEARCH */
-.search-wrap { padding: 12px 16px; background: white; border-bottom: 1px solid var(--border); }
-.search-input { width: 100%; padding: 10px 16px 10px 40px; border: 1px solid var(--border); border-radius: 999px; font-size: 14px; font-family: inherit; background: var(--bg); }
+.search-wrap { padding: 4px 16px 14px; background: var(--bg); }
+.search-input { width: 100%; padding: 12px 16px 12px 42px; border: 1px solid var(--border); border-radius: 14px; font-size: 14px; font-family: inherit; background: #fff; box-shadow: 0 1px 2px rgba(23,20,15,.04); }
 .search-input:focus { outline: none; border-color: var(--primary); }
 .search-wrap-inner { position: relative; }
-.search-icon { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: var(--muted); display: flex; }
+.search-icon { position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: var(--muted); display: flex; }
 
 /* MENU SECTION */
-.menu-section { padding: 16px; }
-.section-title { font-size: 16px; font-weight: 800; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
+.menu-section { padding: 4px 16px 16px; }
+.section-title { font-size: 15.5px; font-weight: 800; margin-bottom: 12px; display: flex; align-items: center; gap: 9px; font-family:'Fraunces', serif; }
+.section-title .sec-badge { width: 26px; height: 26px; border-radius: 9px; background: var(--primary-light); display:inline-flex; align-items:center; justify-content:center; font-size: 13px; flex-shrink:0; }
 
 /* MENU ITEM */
 .menu-item { background: white; border-radius: 14px; margin-bottom: 12px; overflow: hidden; border: 1px solid var(--border); display: flex; box-shadow: var(--shadow); transition: transform 0.15s; }
@@ -227,20 +249,27 @@ function renderPage() {
 
   let html = `
     <div class="resto-header">
-      <div class="resto-hero">
-        <div class="resto-logo">${restoData.logo_url ? `<img src="${restoData.logo_url}" onerror="this.parentElement.innerHTML='<svg class=&quot;i&quot; width=&quot;24&quot; height=&quot;24&quot; viewBox=&quot;0 0 24 24&quot; fill=&quot;none&quot; stroke=&quot;currentColor&quot; stroke-width=&quot;1.8&quot; stroke-linecap=&quot;round&quot; stroke-linejoin=&quot;round&quot;><path d=&quot;M7 2.5v6a1.6 1.6 0 0 0 3.2 0v-6&quot;/><path d=&quot;M8.6 2.5v18&quot;/><path d=&quot;M16.5 2.5c-1.8 0-2.8 2.1-2.8 5s1 4 2 4v9&quot;/></svg>'">` : `<svg class="i" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 2.5v6a1.6 1.6 0 0 0 3.2 0v-6"/><path d="M8.6 2.5v18"/><path d="M16.5 2.5c-1.8 0-2.8 2.1-2.8 5s1 4 2 4v9"/></svg>`}</div>
+      <div class="resto-topline">
+        <span class="brand-mark"><svg class="i" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 2.5v6a1.6 1.6 0 0 0 3.2 0v-6"/><path d="M8.6 2.5v18"/><path d="M16.5 2.5c-1.8 0-2.8 2.1-2.8 5s1 4 2 4v9"/></svg> Menu Digital</span>
+        ${restoData.opening_time ? `<span>${restoData.opening_time.slice(0,5)}&ndash;${(restoData.closing_time||'22:00').slice(0,5)}</span>` : ''}
+      </div>
+      <svg class="resto-wave" viewBox="0 0 400 34" preserveAspectRatio="none"><path d="M0,34 C80,8 140,30 200,20 C260,10 320,26 400,10 L400,34 Z"></path></svg>
+    </div>
+
+    <div class="resto-card">
+      <div class="resto-logo">${restoData.logo_url ? `<img src="${restoData.logo_url}" onerror="this.parentElement.innerHTML='<svg class=&quot;i&quot; width=&quot;24&quot; height=&quot;24&quot; viewBox=&quot;0 0 24 24&quot; fill=&quot;none&quot; stroke=&quot;currentColor&quot; stroke-width=&quot;1.8&quot; stroke-linecap=&quot;round&quot; stroke-linejoin=&quot;round&quot;><path d=&quot;M7 2.5v6a1.6 1.6 0 0 0 3.2 0v-6&quot;/><path d=&quot;M8.6 2.5v18&quot;/><path d=&quot;M16.5 2.5c-1.8 0-2.8 2.1-2.8 5s1 4 2 4v9&quot;/></svg>'">` : `<svg class="i" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 2.5v6a1.6 1.6 0 0 0 3.2 0v-6"/><path d="M8.6 2.5v18"/><path d="M16.5 2.5c-1.8 0-2.8 2.1-2.8 5s1 4 2 4v9"/></svg>`}</div>
+      <div class="resto-card-body">
         <div class="resto-name">${restoData.name}</div>
         <div class="resto-meta">
-          <span class="meja-badge"><svg class="i" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="7.5" width="18" height="3" rx="1"/><path d="M5.5 10.5V20"/><path d="M18.5 10.5V20"/></svg> Meja ${mejaNum}</span>
+          <span class="meja-badge"><svg class="i" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="7.5" width="18" height="3" rx="1"/><path d="M5.5 10.5V20"/><path d="M18.5 10.5V20"/></svg> Meja ${mejaNum}</span>
           <span class="${isOpen ? 'status-open' : 'status-closed'}">${isOpen ? '<span class="status-dot green" style="margin-right:5px"></span>Buka' : '<span class="status-dot red" style="margin-right:5px"></span>Tutup'}</span>
-          ${restoData.opening_time ? `<span><svg class="i" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7.2v5l3.3 1.9"/></svg> ${restoData.opening_time.slice(0,5)}-${(restoData.closing_time||'22:00').slice(0,5)}</span>` : ''}
         </div>
       </div>
     </div>
 
     <div class="cat-tabs">
-      <div class="cat-tab ${activeCat==='all'?'active':''}" onclick="setCat('all')">Semua</div>
-      ${categories.map(c => `<div class="cat-tab ${activeCat===c.id?'active':''}" onclick="setCat('${c.id}')">${c.icon} ${c.name}</div>`).join('')}
+      <div class="cat-tab ${activeCat==='all'?'active':''}" onclick="setCat('all')"><span class="cat-badge">✦</span>Semua</div>
+      ${categories.map(c => `<div class="cat-tab ${activeCat===c.id?'active':''}" onclick="setCat('${c.id}')"><span class="cat-badge">${c.icon}</span>${c.name}</div>`).join('')}
     </div>
 
     <div class="search-wrap">
@@ -260,7 +289,7 @@ function renderPage() {
       const items = group.items.filter(m => !searchQuery || m.name.toLowerCase().includes(searchQuery) || (m.description||'').toLowerCase().includes(searchQuery));
       if (!items.length) return;
       hasItems = true;
-      html += `<div class="menu-section"><div class="section-title">${group.icon} ${group.name}</div>`;
+      html += `<div class="menu-section"><div class="section-title"><span class="sec-badge">${group.icon}</span>${group.name}</div>`;
       html += items.map(m => menuItemHTML(m)).join('');
       html += `</div>`;
     });

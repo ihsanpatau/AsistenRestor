@@ -114,6 +114,7 @@
 <script src="supabase.js"></script>
 <script>
 let restoId = null, restoSlug = null, tables = [], currentQrTableNum = null;
+let restoName = 'Restoran', restoLogoUrl = null;
 const BASE_URL = window.location.origin;
 
 
@@ -125,6 +126,8 @@ async function init() {
   applyRestoIdentity(resto);
   restoId = resto.id;
   restoSlug = resto.slug;
+  restoName = resto.name || 'Restoran';
+  restoLogoUrl = resto.logo_url || null;
   // PERBAIKAN: link ini sebelumnya salah mengarah ke menu.html (halaman kelola
   // menu milik owner, perlu login) — seharusnya menu-pelanggan.html (halaman
   // pesan untuk pelanggan). Makanya kalau link ini di-copy/dibagikan sendiri,
@@ -259,6 +262,204 @@ async function deleteTable(id, num) {
   await loadTables();
 }
 
+// ============================================
+// KARTU QR BER-BRANDING
+// PERBAIKAN: sebelumnya QR yang didownload/print/preview cuma kotak QR polos
+// putih + satu baris teks "Meja X" — kalau dilaminating dan ditaruh di meja,
+// pelanggan tidak tahu itu QR resto apa dan terlihat asal-asalan. Sekarang
+// setiap QR dibungkus dalam kartu bermerk custom: latar gradasi warna brand,
+// tekstur titik halus, logo restoran dalam bingkai bulat, nama restoran,
+// panel QR dengan sudut viewfinder, dan label meja — didesain manual lewat
+// Canvas API (bukan cuma nempel QR mentah).
+// ============================================
+
+function roundRectPath(ctx, x, y, w, h, r) {
+  if (typeof r === 'number') r = { tl: r, tr: r, br: r, bl: r };
+  ctx.beginPath();
+  ctx.moveTo(x + r.tl, y);
+  ctx.lineTo(x + w - r.tr, y);
+  ctx.arcTo(x + w, y, x + w, y + r.tr, r.tr);
+  ctx.lineTo(x + w, y + h - r.br);
+  ctx.arcTo(x + w, y + h, x + w - r.br, y + h, r.br);
+  ctx.lineTo(x + r.bl, y + h);
+  ctx.arcTo(x, y + h, x, y + h - r.bl, r.bl);
+  ctx.lineTo(x, y + r.tl);
+  ctx.arcTo(x, y, x + r.tl, y, r.tl);
+  ctx.closePath();
+}
+
+function loadRestoLogoImg() {
+  return new Promise((resolve) => {
+    if (!restoLogoUrl) return resolve(null);
+    const img = new Image();
+    img.crossOrigin = 'anonymous';
+    img.onload = () => resolve(img);
+    img.onerror = () => resolve(null);
+    img.src = restoLogoUrl;
+  });
+}
+
+function wrapCenteredText(ctx, text, cx, y, maxWidth, lineHeight) {
+  const words = text.split(' ');
+  let line = '', lines = [];
+  for (const w of words) {
+    const test = line ? line + ' ' + w : w;
+    if (ctx.measureText(test).width > maxWidth && line) { lines.push(line); line = w; }
+    else line = test;
+  }
+  if (line) lines.push(line);
+  lines = lines.slice(0, 2);
+  lines.forEach((l, i) => ctx.fillText(l, cx, y + i * lineHeight));
+  return lines.length;
+}
+
+// Menggambar kartu QR lengkap ke sebuah canvas baru dan mengembalikannya
+async function buildQrCard(tableNum, opts = {}) {
+  const W = opts.width || 640;
+  const H = Math.round(W * 1.48);
+  const canvas = document.createElement('canvas');
+  canvas.width = W; canvas.height = H;
+  const ctx = canvas.getContext('2d');
+  const url = getMenuUrl(tableNum);
+
+  // --- latar belakang gradasi warna brand ---
+  const grad = ctx.createLinearGradient(0, 0, W, H);
+  grad.addColorStop(0, '#9E4318');
+  grad.addColorStop(1, '#C2531F');
+  ctx.fillStyle = grad;
+  roundRectPath(ctx, 0, 0, W, H, W * 0.045);
+  ctx.fill();
+
+  // --- blob dekoratif di pojok ---
+  ctx.save();
+  roundRectPath(ctx, 0, 0, W, H, W * 0.045);
+  ctx.clip();
+  ctx.fillStyle = 'rgba(255,255,255,0.07)';
+  ctx.beginPath(); ctx.arc(W * 0.06, H * 0.03, W * 0.32, 0, Math.PI * 2); ctx.fill();
+  ctx.beginPath(); ctx.arc(W * 0.98, H * 0.995, W * 0.28, 0, Math.PI * 2); ctx.fill();
+  // --- tekstur titik halus ---
+  ctx.fillStyle = 'rgba(255,255,255,0.10)';
+  const dotGap = W * 0.052;
+  for (let yy = dotGap * 0.5; yy < H * 0.42; yy += dotGap) {
+    for (let xx = dotGap * 0.5; xx < W; xx += dotGap) {
+      ctx.beginPath(); ctx.arc(xx, yy, W * 0.006, 0, Math.PI * 2); ctx.fill();
+    }
+  }
+  ctx.restore();
+
+  // --- label kecil atas ---
+  ctx.fillStyle = 'rgba(255,255,255,0.82)';
+  ctx.font = `700 ${Math.round(W * 0.032)}px "Segoe UI", Arial, sans-serif`;
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'alphabetic';
+  const topLabelY = H * 0.085;
+  const label = 'S C A N   U N T U K   P E S A N';
+  ctx.fillText(label, W / 2, topLabelY);
+
+  // --- logo restoran (lingkaran bercincin putih) ---
+  const logoR = W * 0.115;
+  const logoCx = W / 2, logoCy = H * 0.19;
+  ctx.save();
+  ctx.shadowColor = 'rgba(0,0,0,0.25)';
+  ctx.shadowBlur = W * 0.03;
+  ctx.shadowOffsetY = W * 0.01;
+  ctx.beginPath(); ctx.arc(logoCx, logoCy, logoR + W * 0.014, 0, Math.PI * 2);
+  ctx.fillStyle = '#fff';
+  ctx.fill();
+  ctx.restore();
+
+  const logoImg = await loadRestoLogoImg();
+  ctx.save();
+  ctx.beginPath(); ctx.arc(logoCx, logoCy, logoR, 0, Math.PI * 2); ctx.clip();
+  if (logoImg) {
+    const s = Math.max((logoR * 2) / logoImg.width, (logoR * 2) / logoImg.height);
+    const iw = logoImg.width * s, ih = logoImg.height * s;
+    ctx.drawImage(logoImg, logoCx - iw / 2, logoCy - ih / 2, iw, ih);
+  } else {
+    ctx.fillStyle = '#FBEEE6';
+    ctx.fillRect(logoCx - logoR, logoCy - logoR, logoR * 2, logoR * 2);
+    ctx.fillStyle = '#C2531F';
+    ctx.font = `800 ${Math.round(logoR * 1.15)}px "Segoe UI", Arial, sans-serif`;
+    ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    ctx.fillText((restoName || 'R').trim().charAt(0).toUpperCase(), logoCx, logoCy + logoR * 0.05);
+  }
+  ctx.restore();
+
+  // --- nama restoran ---
+  ctx.fillStyle = '#ffffff';
+  ctx.font = `800 ${Math.round(W * 0.062)}px "Segoe UI", Arial, sans-serif`;
+  ctx.textAlign = 'center'; ctx.textBaseline = 'alphabetic';
+  const nameY = logoCy + logoR + W * 0.088;
+  wrapCenteredText(ctx, restoName || 'Restoran', W / 2, nameY, W * 0.82, W * 0.075);
+
+  // --- panel putih untuk QR ---
+  const panelW = W * 0.78, panelH = panelW;
+  const panelX = (W - panelW) / 2, panelY = H * 0.40;
+  ctx.save();
+  ctx.shadowColor = 'rgba(0,0,0,0.28)';
+  ctx.shadowBlur = W * 0.035;
+  ctx.shadowOffsetY = W * 0.012;
+  roundRectPath(ctx, panelX, panelY, panelW, panelH, W * 0.035);
+  ctx.fillStyle = '#ffffff';
+  ctx.fill();
+  ctx.restore();
+
+  // --- generate QR asli ke canvas terpisah, lalu tempel di tengah panel ---
+  const qrPad = panelW * 0.10;
+  const qrSize = panelW - qrPad * 2;
+  const qrCanvas = document.createElement('canvas');
+  try {
+    if (typeof QRCode === 'undefined') await loadQrLibraryFallback();
+    await QRCode.toCanvas(qrCanvas, url, { width: Math.round(qrSize), margin: 0, color: { dark: '#21262F', light: '#FFFFFF' } });
+  } catch (e) {
+    console.error('Gagal generate QR untuk kartu', tableNum, e);
+  }
+  ctx.drawImage(qrCanvas, panelX + qrPad, panelY + qrPad, qrSize, qrSize);
+
+  // --- sudut viewfinder di panel QR ---
+  ctx.strokeStyle = '#C2531F';
+  ctx.lineWidth = W * 0.008;
+  ctx.lineCap = 'round';
+  const cL = qrSize * 0.14;
+  const corners = [
+    [panelX + qrPad * 0.45, panelY + qrPad * 0.45, 1, 1],
+    [panelX + panelW - qrPad * 0.45, panelY + qrPad * 0.45, -1, 1],
+    [panelX + qrPad * 0.45, panelY + panelH - qrPad * 0.45, 1, -1],
+    [panelX + panelW - qrPad * 0.45, panelY + panelH - qrPad * 0.45, -1, -1],
+  ];
+  corners.forEach(([cx, cy, dx, dy]) => {
+    ctx.beginPath();
+    ctx.moveTo(cx + cL * dx, cy);
+    ctx.lineTo(cx, cy);
+    ctx.lineTo(cx, cy + cL * dy);
+    ctx.stroke();
+  });
+
+  // --- badge nomor meja ---
+  const badgeY = panelY + panelH + H * 0.058;
+  ctx.font = `800 ${Math.round(W * 0.05)}px "Segoe UI", Arial, sans-serif`;
+  const badgeText = `MEJA ${tableNum}`;
+  const badgeTextW = ctx.measureText(badgeText).width;
+  const badgePadX = W * 0.05;
+  const badgeW = badgeTextW + badgePadX * 2, badgeH = W * 0.1;
+  roundRectPath(ctx, W / 2 - badgeW / 2, badgeY - badgeH * 0.72, badgeW, badgeH, badgeH / 2);
+  ctx.fillStyle = '#ffffff';
+  ctx.fill();
+  ctx.fillStyle = '#9E4318';
+  ctx.textAlign = 'center';
+  ctx.fillText(badgeText, W / 2, badgeY + badgeH * 0.13);
+
+  // --- footer ---
+  ctx.fillStyle = 'rgba(255,255,255,0.85)';
+  ctx.font = `600 ${Math.round(W * 0.032)}px "Segoe UI", Arial, sans-serif`;
+  ctx.fillText('Arahkan kamera HP ke QR untuk pesan & bayar', W / 2, H * 0.935);
+  ctx.fillStyle = 'rgba(255,255,255,0.55)';
+  ctx.font = `600 ${Math.round(W * 0.026)}px "Segoe UI", Arial, sans-serif`;
+  ctx.fillText('asistenku.pro', W / 2, H * 0.972);
+
+  return canvas;
+}
+
 async function showQRModal(tableNum) {
   currentQrTableNum = tableNum;
   const url = getMenuUrl(tableNum);
@@ -267,43 +468,33 @@ async function showQRModal(tableNum) {
   document.getElementById('modal-qr').classList.add('active');
   const canvas = document.getElementById('qr-large');
   try {
-    if (typeof QRCode === 'undefined') await loadQrLibraryFallback();
-    await QRCode.toCanvas(canvas, url, { width: 280, margin: 2, color: { dark: '#2D3748', light: '#FFFFFF' } });
+    const card = await buildQrCard(tableNum, { width: 340 });
+    canvas.width = card.width; canvas.height = card.height;
+    canvas.style.width = '260px'; canvas.style.height = 'auto'; canvas.style.borderRadius = '16px';
+    canvas.getContext('2d').drawImage(card, 0, 0);
   } catch (e) {
     console.error('Gagal generate QR besar meja', tableNum, e);
     showToast('Gagal membuat QR Code. Cek koneksi internet lalu coba lagi.', 'error');
   }
 }
 
-function downloadQR(tableNum) {
-  const canvas = document.getElementById(`qr-${tableNum}`);
-  const tempCanvas = document.createElement('canvas');
-  const size = 300;
-  tempCanvas.width = size; tempCanvas.height = size + 60;
-  const ctx = tempCanvas.getContext('2d');
-  ctx.fillStyle = 'white';
-  ctx.fillRect(0, 0, tempCanvas.width, tempCanvas.height);
-  ctx.drawImage(canvas, (size - 250) / 2, 20, 250, 250);
-  ctx.fillStyle = '#2D3748';
-  ctx.font = 'bold 18px Arial';
-  ctx.textAlign = 'center';
-  ctx.fillText(`Meja ${tableNum}`, size / 2, size - 5);
+async function downloadQR(tableNum) {
+  const card = await buildQrCard(tableNum, { width: 900 });
   const link = document.createElement('a');
-  link.download = `qr-meja-${tableNum}.png`;
-  link.href = tempCanvas.toDataURL();
+  link.download = `qr-meja-${tableNum}-${restoSlug || 'resto'}.png`;
+  link.href = card.toDataURL('image/png');
   link.click();
 }
 
 function downloadSingleQR() { if (currentQrTableNum) downloadQR(currentQrTableNum); }
 
-function printQR() {
-  const canvas = document.getElementById('qr-large');
-  const url = canvas.toDataURL();
+async function printQR() {
+  if (!currentQrTableNum) return;
+  const card = await buildQrCard(currentQrTableNum, { width: 900 });
+  const url = card.toDataURL('image/png');
   const win = window.open('', '_blank');
-  win.document.write(`<html><body style="text-align:center;padding:20px;font-family:Arial">
-    <h2>Meja ${currentQrTableNum}</h2>
-    <img src="${url}" style="width:250px">
-    <p style="font-size:12px;color:#666">Scan QR untuk memesan</p>
+  win.document.write(`<html><body style="margin:0;display:flex;align-items:center;justify-content:center;min-height:100vh;background:#f2f2f2">
+    <img src="${url}" style="width:340px;border-radius:20px">
     <script>window.onload=()=>{window.print();window.close()}<\/script>
 </body></html>`);
 }
@@ -312,8 +503,8 @@ async function downloadAllQR() {
   if (!tables.length) return showToast('Belum ada meja', 'error');
   showToast('Mengunduh QR... Setiap QR akan didownload satu per satu', 'info');
   for (let i = 0; i < tables.length; i++) {
-    await new Promise(r => setTimeout(r, 300));
-    downloadQR(tables[i].table_number);
+    await downloadQR(tables[i].table_number);
+    await new Promise(r => setTimeout(r, 350));
   }
 }
 
