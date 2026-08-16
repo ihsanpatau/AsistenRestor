@@ -299,8 +299,8 @@ function loadRestoLogoImg() {
   });
 }
 
-function wrapCenteredText(ctx, text, cx, y, maxWidth, lineHeight) {
-  const words = text.split(' ');
+function wrapLines(ctx, text, maxWidth, maxLines) {
+  const words = (text || '').split(' ');
   let line = '', lines = [];
   for (const w of words) {
     const test = line ? line + ' ' + w : w;
@@ -308,15 +308,66 @@ function wrapCenteredText(ctx, text, cx, y, maxWidth, lineHeight) {
     else line = test;
   }
   if (line) lines.push(line);
-  lines = lines.slice(0, 2);
-  lines.forEach((l, i) => ctx.fillText(l, cx, y + i * lineHeight));
-  return lines.length;
+  if (lines.length > maxLines) {
+    lines = lines.slice(0, maxLines);
+    let last = lines[maxLines - 1];
+    while (ctx.measureText(last + '…').width > maxWidth && last.length > 1) last = last.slice(0, -1);
+    lines[maxLines - 1] = last + '…';
+  }
+  return lines;
 }
 
-// Menggambar kartu QR lengkap ke sebuah canvas baru dan mengembalikannya
+// Menggambar kartu QR lengkap ke sebuah canvas baru dan mengembalikannya.
+// PERBAIKAN: versi sebelumnya menempatkan tiap elemen (badge meja, footer,
+// dsb) berdasarkan PERSENTASE tinggi kanvas yang ditebak manual — ternyata
+// tebakannya kepanjangan pas dijalankan sungguhan, jadi badge "MEJA X" dan
+// teks footer numpuk & sebagian kepotong keluar kanvas. Sekarang tinggi
+// kanvas (H) DIHITUNG dari total tinggi konten pakai kursor-Y berjalan
+// (setiap elemen menambah posisi Y sesuai tinggi asli elemen sebelumnya),
+// jadi tidak mungkin ada yang tumpang tindih atau terpotong lagi.
 async function buildQrCard(tableNum, opts = {}) {
-  const W = opts.width || 640;
-  const H = Math.round(W * 1.48);
+  const W = opts.width || 720;
+  const pad = Math.round(W * 0.09);
+  const contentW = W - pad * 2;
+
+  const font = (weight, size) => `${weight} ${Math.round(size)}px "Segoe UI", Arial, sans-serif`;
+  const labelFont = font(700, W * 0.030);
+  const nameFont = font(800, W * 0.058);
+  const badgeFont = font(800, W * 0.046);
+  const footer1Font = font(600, W * 0.030);
+  const footer2Font = font(600, W * 0.024);
+
+  // canvas sementara khusus untuk mengukur teks sebelum ukuran akhir dibuat
+  const mCanvas = document.createElement('canvas');
+  const mctx = mCanvas.getContext('2d');
+  mctx.font = nameFont;
+  const nameLineH = W * 0.070;
+  const nameLines = wrapLines(mctx, restoName || 'Restoran', contentW * 0.96, 2);
+
+  const logoR = W * 0.105;
+  const panelW = contentW;
+  const panelH = panelW;
+  const qrPad = panelW * 0.095;
+
+  mctx.font = badgeFont;
+  const badgeText = `MEJA ${tableNum}`;
+  const badgeTextW = mctx.measureText(badgeText).width;
+  const badgeH = W * 0.088;
+  const badgeW = badgeTextW + W * 0.10;
+
+  // --- susun kursor Y (top-down), setiap baris = tinggi blok + jarak ke blok berikutnya ---
+  let y = W * 0.075;                              // jarak atas kartu
+  const labelY = y + W * 0.028;  y += W * 0.028 + W * 0.055;   // label "SCAN UNTUK PESAN"
+  const logoCy = y + logoR;      y += logoR * 2 + W * 0.052;   // logo bulat
+  const nameTopY = y;            y += nameLines.length * nameLineH + W * 0.055; // nama resto
+  const panelY = y;              y += panelH + W * 0.055;      // panel QR
+  const badgeY = y;              y += badgeH + W * 0.050;      // badge nomor meja
+  const footer1Y = y + W * 0.030; y += W * 0.030 + W * 0.032;  // baris footer 1
+  const footer2Y = y + W * 0.026; y += W * 0.026 + W * 0.070;  // baris footer 2 + jarak bawah
+
+  const H = Math.round(y);
+  const panelX = (W - panelW) / 2;
+
   const canvas = document.createElement('canvas');
   canvas.width = W; canvas.height = H;
   const ctx = canvas.getContext('2d');
@@ -330,17 +381,17 @@ async function buildQrCard(tableNum, opts = {}) {
   roundRectPath(ctx, 0, 0, W, H, W * 0.045);
   ctx.fill();
 
-  // --- blob dekoratif di pojok ---
+  // --- blob dekoratif + tekstur titik halus ---
   ctx.save();
   roundRectPath(ctx, 0, 0, W, H, W * 0.045);
   ctx.clip();
   ctx.fillStyle = 'rgba(255,255,255,0.07)';
-  ctx.beginPath(); ctx.arc(W * 0.06, H * 0.03, W * 0.32, 0, Math.PI * 2); ctx.fill();
-  ctx.beginPath(); ctx.arc(W * 0.98, H * 0.995, W * 0.28, 0, Math.PI * 2); ctx.fill();
-  // --- tekstur titik halus ---
-  ctx.fillStyle = 'rgba(255,255,255,0.10)';
+  ctx.beginPath(); ctx.arc(W * 0.05, H * 0.02, W * 0.30, 0, Math.PI * 2); ctx.fill();
+  ctx.beginPath(); ctx.arc(W * 0.97, H * 0.995, W * 0.26, 0, Math.PI * 2); ctx.fill();
+  ctx.fillStyle = 'rgba(255,255,255,0.09)';
   const dotGap = W * 0.052;
-  for (let yy = dotGap * 0.5; yy < H * 0.42; yy += dotGap) {
+  const dotZoneH = panelY - W * 0.02;
+  for (let yy = dotGap * 0.5; yy < dotZoneH; yy += dotGap) {
     for (let xx = dotGap * 0.5; xx < W; xx += dotGap) {
       ctx.beginPath(); ctx.arc(xx, yy, W * 0.006, 0, Math.PI * 2); ctx.fill();
     }
@@ -349,16 +400,13 @@ async function buildQrCard(tableNum, opts = {}) {
 
   // --- label kecil atas ---
   ctx.fillStyle = 'rgba(255,255,255,0.82)';
-  ctx.font = `700 ${Math.round(W * 0.032)}px "Segoe UI", Arial, sans-serif`;
+  ctx.font = labelFont;
   ctx.textAlign = 'center';
   ctx.textBaseline = 'alphabetic';
-  const topLabelY = H * 0.085;
-  const label = 'S C A N   U N T U K   P E S A N';
-  ctx.fillText(label, W / 2, topLabelY);
+  ctx.fillText('S C A N   U N T U K   P E S A N', W / 2, labelY);
 
   // --- logo restoran (lingkaran bercincin putih) ---
-  const logoR = W * 0.115;
-  const logoCx = W / 2, logoCy = H * 0.19;
+  const logoCx = W / 2;
   ctx.save();
   ctx.shadowColor = 'rgba(0,0,0,0.25)';
   ctx.shadowBlur = W * 0.03;
@@ -379,7 +427,7 @@ async function buildQrCard(tableNum, opts = {}) {
     ctx.fillStyle = '#FBEEE6';
     ctx.fillRect(logoCx - logoR, logoCy - logoR, logoR * 2, logoR * 2);
     ctx.fillStyle = '#C2531F';
-    ctx.font = `800 ${Math.round(logoR * 1.15)}px "Segoe UI", Arial, sans-serif`;
+    ctx.font = font(800, logoR * 1.15);
     ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
     ctx.fillText((restoName || 'R').trim().charAt(0).toUpperCase(), logoCx, logoCy + logoR * 0.05);
   }
@@ -387,25 +435,21 @@ async function buildQrCard(tableNum, opts = {}) {
 
   // --- nama restoran ---
   ctx.fillStyle = '#ffffff';
-  ctx.font = `800 ${Math.round(W * 0.062)}px "Segoe UI", Arial, sans-serif`;
+  ctx.font = nameFont;
   ctx.textAlign = 'center'; ctx.textBaseline = 'alphabetic';
-  const nameY = logoCy + logoR + W * 0.088;
-  wrapCenteredText(ctx, restoName || 'Restoran', W / 2, nameY, W * 0.82, W * 0.075);
+  nameLines.forEach((l, i) => ctx.fillText(l, W / 2, nameTopY + (i + 1) * nameLineH - nameLineH * 0.28));
 
   // --- panel putih untuk QR ---
-  const panelW = W * 0.78, panelH = panelW;
-  const panelX = (W - panelW) / 2, panelY = H * 0.40;
   ctx.save();
   ctx.shadowColor = 'rgba(0,0,0,0.28)';
-  ctx.shadowBlur = W * 0.035;
-  ctx.shadowOffsetY = W * 0.012;
+  ctx.shadowBlur = W * 0.03;
+  ctx.shadowOffsetY = W * 0.01;
   roundRectPath(ctx, panelX, panelY, panelW, panelH, W * 0.035);
   ctx.fillStyle = '#ffffff';
   ctx.fill();
   ctx.restore();
 
   // --- generate QR asli ke canvas terpisah, lalu tempel di tengah panel ---
-  const qrPad = panelW * 0.10;
   const qrSize = panelW - qrPad * 2;
   const qrCanvas = document.createElement('canvas');
   try {
@@ -418,14 +462,14 @@ async function buildQrCard(tableNum, opts = {}) {
 
   // --- sudut viewfinder di panel QR ---
   ctx.strokeStyle = '#C2531F';
-  ctx.lineWidth = W * 0.008;
+  ctx.lineWidth = W * 0.007;
   ctx.lineCap = 'round';
-  const cL = qrSize * 0.14;
+  const cL = qrSize * 0.13;
   const corners = [
-    [panelX + qrPad * 0.45, panelY + qrPad * 0.45, 1, 1],
-    [panelX + panelW - qrPad * 0.45, panelY + qrPad * 0.45, -1, 1],
-    [panelX + qrPad * 0.45, panelY + panelH - qrPad * 0.45, 1, -1],
-    [panelX + panelW - qrPad * 0.45, panelY + panelH - qrPad * 0.45, -1, -1],
+    [panelX + qrPad * 0.5, panelY + qrPad * 0.5, 1, 1],
+    [panelX + panelW - qrPad * 0.5, panelY + qrPad * 0.5, -1, 1],
+    [panelX + qrPad * 0.5, panelY + panelH - qrPad * 0.5, 1, -1],
+    [panelX + panelW - qrPad * 0.5, panelY + panelH - qrPad * 0.5, -1, -1],
   ];
   corners.forEach(([cx, cy, dx, dy]) => {
     ctx.beginPath();
@@ -436,26 +480,22 @@ async function buildQrCard(tableNum, opts = {}) {
   });
 
   // --- badge nomor meja ---
-  const badgeY = panelY + panelH + H * 0.058;
-  ctx.font = `800 ${Math.round(W * 0.05)}px "Segoe UI", Arial, sans-serif`;
-  const badgeText = `MEJA ${tableNum}`;
-  const badgeTextW = ctx.measureText(badgeText).width;
-  const badgePadX = W * 0.05;
-  const badgeW = badgeTextW + badgePadX * 2, badgeH = W * 0.1;
-  roundRectPath(ctx, W / 2 - badgeW / 2, badgeY - badgeH * 0.72, badgeW, badgeH, badgeH / 2);
+  roundRectPath(ctx, W / 2 - badgeW / 2, badgeY, badgeW, badgeH, badgeH / 2);
   ctx.fillStyle = '#ffffff';
   ctx.fill();
   ctx.fillStyle = '#9E4318';
-  ctx.textAlign = 'center';
-  ctx.fillText(badgeText, W / 2, badgeY + badgeH * 0.13);
+  ctx.font = badgeFont;
+  ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+  ctx.fillText(badgeText, W / 2, badgeY + badgeH / 2 + W * 0.003);
 
   // --- footer ---
-  ctx.fillStyle = 'rgba(255,255,255,0.85)';
-  ctx.font = `600 ${Math.round(W * 0.032)}px "Segoe UI", Arial, sans-serif`;
-  ctx.fillText('Arahkan kamera HP ke QR untuk pesan & bayar', W / 2, H * 0.935);
+  ctx.textBaseline = 'alphabetic';
+  ctx.fillStyle = 'rgba(255,255,255,0.88)';
+  ctx.font = footer1Font;
+  ctx.fillText('Arahkan kamera HP ke QR untuk pesan & bayar', W / 2, footer1Y);
   ctx.fillStyle = 'rgba(255,255,255,0.55)';
-  ctx.font = `600 ${Math.round(W * 0.026)}px "Segoe UI", Arial, sans-serif`;
-  ctx.fillText('asistenku.pro', W / 2, H * 0.972);
+  ctx.font = footer2Font;
+  ctx.fillText('asistenku.pro', W / 2, footer2Y);
 
   return canvas;
 }
