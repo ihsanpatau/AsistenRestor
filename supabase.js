@@ -212,6 +212,39 @@ async function deleteRestoLogo(publicUrl) {
   }
 }
 
+// ============================================
+// IDENTITAS RESTORAN DI TOPBAR (logo + nama)
+// Dipanggil di semua halaman setelah data restoran diambil, supaya avatar
+// di pojok kanan atas (dan di sheet "Lainnya") ikut menampilkan logo asli
+// yang diupload user di Pengaturan, bukan cuma huruf inisial email.
+// ============================================
+function applyRestoIdentity(resto) {
+  if (!resto) return;
+  const initial = (resto.name || "R").trim().charAt(0).toUpperCase() || "R";
+
+  const setAvatar = (el) => {
+    if (!el) return;
+    if (resto.logo_url) {
+      el.style.backgroundImage = `url('${resto.logo_url}')`;
+      el.style.backgroundSize = "cover";
+      el.style.backgroundPosition = "center";
+      el.textContent = "";
+    } else {
+      el.style.backgroundImage = "";
+      el.textContent = initial;
+    }
+  };
+
+  setAvatar(document.getElementById("topbar-avatar-btn"));
+  setAvatar(document.getElementById("user-avatar"));
+
+  const nameLabel = document.getElementById("topbar-resto-name");
+  if (nameLabel) nameLabel.textContent = resto.name || "";
+
+  const sidebarName = document.getElementById("resto-name-sidebar");
+  if (sidebarName) sidebarName.textContent = resto.name || "";
+}
+
 // Kategori default yang otomatis dibuat untuk restoran baru yang belum punya kategori sama sekali
 const DEFAULT_MENU_CATEGORIES = [
   { name: "Makanan Utama", icon: "🍛", sort_order: 1 },
