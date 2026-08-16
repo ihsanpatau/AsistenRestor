@@ -30,6 +30,7 @@
       <div class="topbar-right">
         <button type="button" class="topbar-avatar-btn" onclick="toggleMoreSheet()" id="topbar-avatar-btn">R</button>
         <button class="btn btn-ghost btn-sm" onclick="exportCSV()"><svg class="i" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.5v11.5"/><path d="M7.5 11l4.5 4.5L16.5 11"/><path d="M4.5 19.5h15"/></svg> Export CSV</button>
+        <button class="btn btn-primary btn-sm" onclick="exportExcel()"><svg class="i" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.5v11.5"/><path d="M7.5 11l4.5 4.5L16.5 11"/><path d="M4.5 19.5h15"/></svg> Export Excel</button>
       </div>
     </div>
 
@@ -75,7 +76,7 @@
       <!-- SUMMARY -->
       <div class="summary-row">
         <div class="summary-box">
-          <div class="label"><svg class="i" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="6" width="19" height="12" rx="2"/><circle cx="12" cy="12" r="2.6"/><path d="M6 9h.01M18 15h.01"/></svg> Total Pendapatan</div>
+          <div class="label"><svg class="i" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="6" width="19" height="12" rx="2"/><circle cx="12" cy="12" r="2.6"/><path d="M6 9h.01M18 15h.01"/></svg> Total Keuntungan</div>
           <div class="value" id="sum-revenue" style="color:var(--success)">Rp 0</div>
           <div style="font-size:12px;color:var(--text-muted);margin-top:4px" id="sum-revenue-sub"></div>
         </div>
@@ -87,11 +88,6 @@
         <div class="summary-box">
           <div class="label"><svg class="i" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20V11"/><path d="M12 20V4"/><path d="M20 20v-6.5"/></svg> Rata-rata per Order</div>
           <div class="value" id="sum-avg">Rp 0</div>
-        </div>
-        <div class="summary-box">
-          <div class="label"><svg class="i" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M11.3 3H4v7.3L13.3 19.6a1.9 1.9 0 0 0 2.7 0l4.9-4.9a1.9 1.9 0 0 0 0-2.7L11.3 3Z"/><circle cx="8" cy="7.8" r="1.2"/></svg> Platform Fee Dipotong</div>
-          <div class="value" id="sum-fee" style="color:var(--text-muted)">Rp 0</div>
-          <div style="font-size:12px;color:var(--text-muted);margin-top:4px">ke platform RestoranKu</div>
         </div>
       </div>
 
@@ -110,15 +106,13 @@
                   <th>Meja</th>
                   <th>Waktu</th>
                   <th>Item</th>
-                  <th>Subtotal</th>
-                  <th>Platform Fee</th>
-                  <th>Total Bayar</th>
+                  <th>Keuntungan</th>
                   <th>Metode</th>
                   <th>Status</th>
                 </tr>
               </thead>
               <tbody id="trans-tbody">
-                <tr><td colspan="9" style="text-align:center;padding:40px;color:var(--text-muted)">Pilih periode dan klik Cari</td></tr>
+                <tr><td colspan="7" style="text-align:center;padding:40px;color:var(--text-muted)">Pilih periode dan klik Cari</td></tr>
               </tbody>
             </table>
           </div>
@@ -129,6 +123,7 @@
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 <script src="supabase.js"></script>
 <script>
 let restoId = null, transData = [];
@@ -181,17 +176,22 @@ async function loadTransactions() {
 
 function renderSummary() {
   const paid = transData.filter(o => o.payment_status === 'paid');
-  const total = paid.reduce((s, o) => s + o.total, 0);
-  const fee = paid.reduce((s, o) => s + (o.platform_fee || 0), 0);
-  const avg = paid.length ? Math.round(total / paid.length) : 0;
+  const profit = paid.reduce((s, o) => s + keuntungan(o), 0);
+  const avg = paid.length ? Math.round(profit / paid.length) : 0;
 
-  document.getElementById('sum-revenue').textContent = formatRupiah(total);
-  document.getElementById('sum-revenue-sub').textContent = `Bersih setelah fee: ${formatRupiah(total - fee)}`;
+  document.getElementById('sum-revenue').textContent = formatRupiah(profit);
+  document.getElementById('sum-revenue-sub').textContent = `${paid.length} transaksi lunas`;
   document.getElementById('sum-count').textContent = transData.length;
   document.getElementById('sum-count-sub').textContent = `${paid.length} lunas · ${transData.length - paid.length} lainnya`;
   document.getElementById('sum-avg').textContent = formatRupiah(avg);
-  document.getElementById('sum-fee').textContent = formatRupiah(fee);
   document.getElementById('result-count').textContent = `${transData.length} transaksi`;
+}
+
+// Keuntungan restoran per order = total dibayar customer dikurangi platform fee
+// (kalau kolom subtotal tersedia, itu sudah sama nilainya dan dipakai sebagai fallback).
+function keuntungan(o) {
+  if (o.subtotal != null) return o.subtotal;
+  return (o.total || 0) - (o.platform_fee || 0);
 }
 
 function renderTable() {
@@ -200,7 +200,7 @@ function renderTable() {
   const payLabel = { paid: 'Lunas', unpaid: 'Belum', pending_payment: 'Proses', failed: 'Gagal', expired: 'Expired' };
 
   if (!transData.length) {
-    tbody.innerHTML = '<tr><td colspan="9" style="text-align:center;padding:40px;color:var(--text-muted)">Tidak ada transaksi pada periode ini</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:40px;color:var(--text-muted)">Tidak ada transaksi pada periode ini</td></tr>';
     return;
   }
 
@@ -209,31 +209,86 @@ function renderTable() {
     <td>Meja ${o.table_number}</td>
     <td style="font-size:12px;color:var(--text-muted);white-space:nowrap">${new Date(o.created_at).toLocaleString('id-ID',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'})}</td>
     <td style="font-size:12px;max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${o.order_items?.map(i=>`${i.name} x${i.quantity}`).join(', ') || '-'}</td>
-    <td>${formatRupiah(o.subtotal || 0)}</td>
-    <td style="color:var(--text-muted)">${formatRupiah(o.platform_fee || 0)}</td>
-    <td><strong>${formatRupiah(o.total)}</strong></td>
+    <td><strong>${formatRupiah(keuntungan(o))}</strong></td>
     <td style="font-size:12px">${o.payment_method || '-'}</td>
     <td><span class="badge ${payColor[o.payment_status] || 'badge-secondary'}">${payLabel[o.payment_status] || o.payment_status}</span></td>
   </tr>`).join('');
 }
 
+// Susun baris data laporan (dipakai bareng oleh Export CSV & Export Excel supaya isinya konsisten)
+function buildReportRows() {
+  const payLabel = { paid: 'Lunas', unpaid: 'Belum Bayar', pending_payment: 'Diproses', failed: 'Gagal', expired: 'Expired' };
+  const headers = ['No Order', 'Meja', 'Waktu', 'Item', 'Keuntungan', 'Metode', 'Status'];
+  const rows = transData.map(o => [
+    o.order_number,
+    `Meja ${o.table_number}`,
+    new Date(o.created_at).toLocaleString('id-ID'),
+    o.order_items?.map(i => `${i.name} x${i.quantity}`).join(' | ') || '-',
+    keuntungan(o),
+    o.payment_method || '-',
+    payLabel[o.payment_status] || o.payment_status,
+  ]);
+  return { headers, rows };
+}
+
 function exportCSV() {
   if (!transData.length) return showToast('Tidak ada data untuk diexport', 'error');
-  const headers = ['No Order','Meja','Waktu','Item','Subtotal','Platform Fee','Total','Metode','Status'];
-  const rows = transData.map(o => [
-    o.order_number, `Meja ${o.table_number}`,
-    new Date(o.created_at).toLocaleString('id-ID'),
-    o.order_items?.map(i=>`${i.name} x${i.quantity}`).join(' | ') || '-',
-    o.subtotal || 0, o.platform_fee || 0, o.total,
-    o.payment_method || '-', o.payment_status
-  ]);
-  const csv = [headers, ...rows].map(r => r.map(v => `"${v}"`).join(',')).join('\n');
-  const blob = new Blob([csv], { type: 'text/csv' });
+  const { headers, rows } = buildReportRows();
+  const csv = [headers, ...rows].map(r => r.map(v => `"${String(v).replace(/"/g, '""')}"`).join(',')).join('\n');
+  const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' });
   const link = document.createElement('a');
   link.href = URL.createObjectURL(blob);
-  link.download = `transaksi-${new Date().toISOString().split('T')[0]}.csv`;
+  link.download = `transaksi-${document.getElementById('date-from').value}_${document.getElementById('date-to').value}.csv`;
+  document.body.appendChild(link);
   link.click();
+  link.remove();
   showToast('File CSV berhasil didownload', 'success');
+}
+
+function exportExcel() {
+  if (!transData.length) return showToast('Tidak ada data untuk diexport', 'error');
+  if (typeof XLSX === 'undefined') return showToast('Gagal memuat modul Excel, coba refresh halaman', 'error');
+
+  const { headers, rows } = buildReportRows();
+  const paid = transData.filter(o => o.payment_status === 'paid');
+  const totalKeuntungan = paid.reduce((s, o) => s + keuntungan(o), 0);
+  const from = document.getElementById('date-from').value;
+  const to = document.getElementById('date-to').value;
+
+  // --- Sheet 1: Ringkasan ---
+  const summaryAOA = [
+    ['Laporan Transaksi & Keuntungan'],
+    ['Restoran', document.getElementById('resto-name-sidebar').textContent],
+    ['Periode', `${from} s/d ${to}`],
+    ['Dicetak', new Date().toLocaleString('id-ID')],
+    [],
+    ['Total Transaksi', transData.length],
+    ['Transaksi Lunas', paid.length],
+    ['Total Keuntungan', totalKeuntungan],
+    ['Rata-rata Keuntungan / Order', paid.length ? Math.round(totalKeuntungan / paid.length) : 0],
+  ];
+  const wsSummary = XLSX.utils.aoa_to_sheet(summaryAOA);
+  wsSummary['!cols'] = [{ wch: 26 }, { wch: 30 }];
+  wsSummary['!merges'] = [{ s: { r: 0, c: 0 }, e: { r: 0, c: 1 } }];
+
+  // --- Sheet 2: Detail transaksi ---
+  const wsDetail = XLSX.utils.aoa_to_sheet([headers, ...rows]);
+  wsDetail['!cols'] = [
+    { wch: 20 }, { wch: 10 }, { wch: 18 }, { wch: 34 }, { wch: 16 }, { wch: 12 }, { wch: 12 },
+  ];
+  // Format kolom "Keuntungan" (index 4) sebagai angka Rupiah
+  const range = XLSX.utils.decode_range(wsDetail['!ref']);
+  for (let r = 1; r <= range.e.r; r++) {
+    const cell = wsDetail[XLSX.utils.encode_cell({ r, c: 4 })];
+    if (cell) cell.z = '#,##0';
+  }
+  wsDetail['!autofilter'] = { ref: wsDetail['!ref'] };
+
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, wsSummary, 'Ringkasan');
+  XLSX.utils.book_append_sheet(wb, wsDetail, 'Detail Transaksi');
+  XLSX.writeFile(wb, `laporan-transaksi-${from}_${to}.xlsx`);
+  showToast('File Excel berhasil didownload', 'success');
 }
 
 init();
