@@ -226,14 +226,27 @@ async function init() {
   subscribeOrders();
 }
 
+// Keuntungan restoran per order = total dibayar customer dikurangi platform fee
+// (kalau kolom subtotal tersedia, itu sudah sama nilainya dan dipakai sebagai fallback).
+// Sama persis dengan transactions.html supaya angka Dashboard & Laporan konsisten.
+function keuntungan(o) {
+  if (o.subtotal != null) return o.subtotal;
+  return (o.total || 0) - (o.platform_fee || 0);
+}
+
 async function loadStats() {
   const today = new Date().toISOString().split('T')[0];
-  const { data: orders } = await db.from('orders').select('total,status,payment_status').eq('restaurant_id', restoId).gte('created_at', today);
+  const { data: orders } = await db.from('orders').select('total,subtotal,platform_fee,status,payment_status').eq('restaurant_id', restoId).gte('created_at', today);
   const { data: menuData } = await db.from('menu_items').select('id,is_available,stock').eq('restaurant_id', restoId);
   const { data: tableData } = await db.from('restaurant_tables').select('id').eq('restaurant_id', restoId);
 
   const paidOrders = orders?.filter(o => o.payment_status === 'paid') || [];
-  const revenue = paidOrders.reduce((s, o) => s + o.total, 0);
+  // PERBAIKAN: dulu di sini dijumlahkan o.total (= subtotal + platform_fee),
+  // padahal platform_fee itu bukan pendapatan resto — makanya angka di
+  // Dashboard lebih besar daripada "Total Keuntungan" di halaman Laporan.
+  // Sekarang pakai keuntungan(o) yang sama seperti transactions.html, jadi
+  // dua halaman selalu menunjukkan angka yang sama.
+  const revenue = paidOrders.reduce((s, o) => s + keuntungan(o), 0);
   const pending = orders?.filter(o => o.status === 'pending' || o.status === 'confirmed') || [];
   const habis = menuData?.filter(m => !m.is_available || m.stock === 0) || [];
 
@@ -297,11 +310,11 @@ async function loadRevenueChart() {
     days.push({ date: d.toISOString().split('T')[0], label: d.toLocaleDateString('id-ID', { weekday:'short' }) });
   }
 
-  const { data: orders } = await db.from('orders').select('total,created_at,payment_status').eq('restaurant_id', restoId).eq('payment_status', 'paid').gte('created_at', days[0].date);
+  const { data: orders } = await db.from('orders').select('total,subtotal,platform_fee,created_at,payment_status').eq('restaurant_id', restoId).eq('payment_status', 'paid').gte('created_at', days[0].date);
 
   const revenues = days.map(d => {
     const dayOrders = orders?.filter(o => o.created_at.startsWith(d.date)) || [];
-    return dayOrders.reduce((s, o) => s + o.total, 0);
+    return dayOrders.reduce((s, o) => s + keuntungan(o), 0);
   });
 
   const max = Math.max(...revenues, 1);
