@@ -116,6 +116,7 @@ body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); colo
 .sheet-header h3 { font-size: 18px; }
 .sheet-close { width: 32px; height: 32px; border: none; background: var(--bg); border-radius: 50%; font-size: 16px; cursor: pointer; }
 .sheet-body { padding: 16px 20px; }
+#detail-gallery::-webkit-scrollbar { display: none; }
 
 /* CART ITEM */
 .cart-item { display: flex; align-items: center; gap: 12px; padding: 12px 0; border-bottom: 1px solid var(--border); }
@@ -372,12 +373,26 @@ function openItemDetail(id) {
   const isHabis = !m.is_available || m.stock === 0;
   const qty = cart[id] || 0;
 
+  // Dukung banyak foto: pakai kolom `images` (array) kalau ada, fallback ke `image_url` tunggal untuk menu lama
+  const photos = Array.isArray(m.images) && m.images.length ? m.images : (m.image_url ? [m.image_url] : []);
+  const placeholderSvg = `<svg class="i" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="color:var(--muted)"><path d="M7 2.5v6a1.6 1.6 0 0 0 3.2 0v-6"/><path d="M8.6 2.5v18"/><path d="M16.5 2.5c-1.8 0-2.8 2.1-2.8 5s1 4 2 4v9"/></svg>`;
+
+  const galleryHTML = photos.length
+    ? `<div style="position:relative">
+        <div id="detail-gallery" onscroll="onGalleryScroll(this)" style="display:flex;overflow-x:auto;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;border-radius:14px;margin-bottom:${photos.length > 1 ? '8px' : '16px'};scrollbar-width:none">
+          ${photos.map(url => `<div style="flex:0 0 100%;scroll-snap-align:start;aspect-ratio:4/3;background:var(--bg);display:flex;align-items:center;justify-content:center;overflow:hidden">
+            <img src="${url}" style="width:100%;height:100%;object-fit:cover" onerror="this.parentElement.innerHTML='${placeholderSvg.replace(/"/g,'&quot;')}'">
+          </div>`).join('')}
+        </div>
+        ${photos.length > 1 ? `
+          <div style="display:flex;justify-content:center;gap:5px;margin-bottom:16px" id="detail-gallery-dots">
+            ${photos.map((_, i) => `<span class="gallery-dot" data-i="${i}" style="width:${i===0?'16px':'6px'};height:6px;border-radius:3px;background:${i===0?'var(--primary)':'var(--border)'};transition:all .2s"></span>`).join('')}
+          </div>` : ''}
+      </div>`
+    : `<div style="width:100%;aspect-ratio:4/3;border-radius:14px;overflow:hidden;background:var(--bg);margin-bottom:16px;display:flex;align-items:center;justify-content:center">${placeholderSvg}</div>`;
+
   document.getElementById('detail-body').innerHTML = `
-    <div style="width:100%;aspect-ratio:4/3;border-radius:14px;overflow:hidden;background:var(--bg);margin-bottom:16px;display:flex;align-items:center;justify-content:center">
-      ${m.image_url
-        ? `<img src="${m.image_url}" style="width:100%;height:100%;object-fit:cover" onerror="this.parentElement.innerHTML='<svg class=&quot;i&quot; width=&quot;40&quot; height=&quot;40&quot; viewBox=&quot;0 0 24 24&quot; fill=&quot;none&quot; stroke=&quot;currentColor&quot; stroke-width=&quot;1.5&quot; stroke-linecap=&quot;round&quot; stroke-linejoin=&quot;round&quot;><path d=&quot;M7 2.5v6a1.6 1.6 0 0 0 3.2 0v-6&quot;/><path d=&quot;M8.6 2.5v18&quot;/><path d=&quot;M16.5 2.5c-1.8 0-2.8 2.1-2.8 5s1 4 2 4v9&quot;/></svg>'">`
-        : `<svg class="i" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="color:var(--muted)"><path d="M7 2.5v6a1.6 1.6 0 0 0 3.2 0v-6"/><path d="M8.6 2.5v18"/><path d="M16.5 2.5c-1.8 0-2.8 2.1-2.8 5s1 4 2 4v9"/></svg>`}
-    </div>
+    ${galleryHTML}
     ${m.is_recommended ? `<span class="rec-badge" style="margin-bottom:8px;display:inline-flex"><svg class="i" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.3l2.6 5.5 6 .8-4.4 4.2 1.1 6-5.3-2.9-5.3 2.9 1.1-6-4.4-4.2 6-.8L12 3.3Z"/></svg> Rekomendasi</span>` : ''}
     <div style="font-size:20px;font-weight:700;margin:6px 0 8px;color:var(--text)">${m.name}</div>
     <div style="font-size:14px;color:var(--muted);line-height:1.6;margin-bottom:18px">${m.description ? m.description : 'Belum ada deskripsi untuk menu ini.'}</div>
@@ -396,6 +411,15 @@ function openItemDetail(id) {
         </div>`}
   `;
   document.getElementById('modal-detail').classList.add('active');
+}
+
+function onGalleryScroll(el) {
+  const idx = Math.round(el.scrollLeft / el.clientWidth);
+  const dots = document.querySelectorAll('#detail-gallery-dots .gallery-dot');
+  dots.forEach((d, i) => {
+    d.style.width = i === idx ? '16px' : '6px';
+    d.style.background = i === idx ? 'var(--primary)' : 'var(--border)';
+  });
 }
 
 function closeDetail() {
@@ -551,7 +575,7 @@ function showPaymentPage(order, itemCount) {
         </div>
 
         <div style="text-align:center">
-          <button onclick="init()" style="background:none;border:none;color:var(--muted);font-size:13px;cursor:pointer;font-family:inherit">&larr; Kembali ke Menu</button>
+          <button onclick="init()" style="background:none;border:2px solid var(--border);color:var(--text);font-size:14.5px;font-weight:700;cursor:pointer;font-family:inherit;padding:12px 20px;border-radius:10px;width:100%">&larr; Kembali ke Menu</button>
         </div>
       </div>
     </div>`;
@@ -594,7 +618,7 @@ function showPaymentConfirm(method) {
           <svg class="i" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-3px;margin-right:4px"><rect x="2.5" y="5" width="19" height="14" rx="2"/><path d="M2.5 9.8h19"/><path d="M6 14.5h4"/></svg> Bayar Sekarang &mdash; ${formatRp(order.total)}
         </button>
         <div style="text-align:center">
-          <button onclick="showPaymentPage(pendingOrder, pendingItemCount)" style="background:none;border:none;color:var(--muted);font-size:13px;cursor:pointer;font-family:inherit">&larr; Ganti metode bayar</button>
+          <button onclick="showPaymentPage(pendingOrder, pendingItemCount)" style="background:none;border:2px solid var(--border);color:var(--text);font-size:14.5px;font-weight:700;cursor:pointer;font-family:inherit;padding:12px 20px;border-radius:10px;width:100%">&larr; Ganti Metode Bayar</button>
         </div>
       </div>
     </div>`;
