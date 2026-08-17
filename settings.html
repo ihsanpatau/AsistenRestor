@@ -37,7 +37,7 @@
 
       <!-- TAB PROFIL -->
       <div class="tab-content active" id="tab-profil">
-        <div class="card" style="max-width:600px">
+        <div class="card">
           <div class="card-header"><h3>Profil Restoran</h3></div>
           <div class="card-body">
             <div class="form-group" style="text-align:center;margin-bottom:24px">
@@ -67,9 +67,15 @@
                 <button type="button" class="btn btn-sm" style="background:#16a34a;color:#fff;border:none" onclick="copySlugLink()"><svg class="i" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="8" y="8" width="12" height="12" rx="2"/><path d="M5.5 16H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h11a1 1 0 0 1 1 1v1.5"/></svg> Salin Link</button>
                 <button type="button" class="btn btn-primary btn-sm" onclick="saveSlug()" id="btn-save-slug"><svg class="i" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 3h11l4 4v14H5V3Z"/><path d="M8.2 3v5.5h7.6V3"/><path d="M8.2 21v-6.5h7.6V21"/></svg> Simpan Link Ini</button>
               </div>
-              <div class="alert alert-info" style="margin-top:12px;margin-bottom:0">
-                <svg class="i" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0"><circle cx="12" cy="12" r="9"/><path d="M12 8v5"/><path d="M12 16h.01"/></svg>
-                <span>Bagian sebelum <strong>.../menu-pelanggan.html</strong> (yaitu <strong>asisten-restor.vercel.app</strong>) adalah alamat hosting gratis dari Vercel dan tidak bisa dihapus lewat pengaturan ini. Untuk pakai domain sendiri (misal <strong>menu.rumahmakanseraba.com</strong>), kamu perlu beli domain lalu hubungkan ke project Vercel-nya di dashboard Vercel &gt; Settings &gt; Domains — setelah itu link akan otomatis ikut tanpa perlu ubah kode apa pun.</span>
+              <div style="margin-top:8px">
+                <button type="button" onclick="toggleDomainInfo()" id="btn-domain-info" style="background:none;border:none;padding:0;cursor:pointer;display:inline-flex;align-items:center;gap:6px;color:var(--primary);font-size:13px;font-weight:600">
+                  <span style="width:20px;height:20px;border-radius:50%;background:var(--primary);color:#fff;display:inline-flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0">!</span>
+                  Info tentang domain
+                  <svg id="domain-info-chevron" class="i" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="transition:transform .2s"><path d="M6 9l6 6 6-6"/></svg>
+                </button>
+                <div id="domain-info-box" style="display:none;margin-top:8px" class="alert alert-info">
+                  <span>Bagian sebelum <strong>.../menu-pelanggan.html</strong> (yaitu <strong>asisten-restor.vercel.app</strong>) adalah alamat hosting gratis dari Vercel dan tidak bisa dihapus lewat pengaturan ini. Untuk pakai domain sendiri (misal <strong>menu.rumahmakanseraba.com</strong>), kamu perlu beli domain lalu hubungkan ke project Vercel-nya di dashboard Vercel &gt; Settings &gt; Domains — setelah itu link akan otomatis ikut tanpa perlu ubah kode apa pun.</span>
+                </div>
               </div>
             </div>
             <div class="form-group">
@@ -97,7 +103,7 @@
 
       <!-- TAB REKENING -->
       <div class="tab-content" id="tab-rekening">
-        <div class="card" style="max-width:600px">
+        <div class="card">
           <div class="card-header">
             <h3 style="display:flex;align-items:center;gap:7px"><svg class="i" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18"/><path d="M4.5 21v-9.5M19.5 21v-9.5"/><path d="M2 11.5 12 5l10 6.5"/><path d="M8.5 21v-6M12 21v-6M15.5 21v-6"/></svg> Rekening Bank</h3>
             <span class="badge" id="bank-status-tag">Belum Setup</span>
@@ -179,7 +185,7 @@
 
       <!-- TAB JAM OPERASIONAL -->
       <div class="tab-content" id="tab-jam">
-        <div class="card" style="max-width:500px">
+        <div class="card">
           <div class="card-header"><h3 style="display:flex;align-items:center;gap:7px"><svg class="i" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7.2v5l3.3 1.9"/></svg> Jam Operasional</h3></div>
           <div class="card-body">
             <div class="form-group">
@@ -207,7 +213,7 @@
 
       <!-- TAB AKUN -->
       <div class="tab-content" id="tab-akun">
-        <div style="display:flex;flex-direction:column;gap:20px;max-width:500px">
+        <div style="display:flex;flex-direction:column;gap:20px">
           <div class="card">
             <div class="card-header"><h3 style="display:flex;align-items:center;gap:7px"><svg class="i" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8.2" r="3.5"/><path d="M4.7 20.5a7.3 7.3 0 0 1 14.6 0"/></svg> Info Akun</h3></div>
             <div class="card-body">
@@ -348,6 +354,14 @@ function removeLogo() {
   document.getElementById('resto-logo').value = '';
   previewLogo('');
   document.getElementById('btn-remove-logo').style.display = 'none';
+}
+
+function toggleDomainInfo() {
+  const box = document.getElementById('domain-info-box');
+  const chevron = document.getElementById('domain-info-chevron');
+  const open = box.style.display === 'none';
+  box.style.display = open ? 'block' : 'none';
+  chevron.style.transform = open ? 'rotate(180deg)' : '';
 }
 
 // Konversi nama restoran ke slug URL-friendly
