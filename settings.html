@@ -54,7 +54,7 @@
             </div>
             <div class="form-group">
               <label class="form-label">Nama Restoran *</label>
-              <input type="text" class="form-control" id="resto-name" placeholder="Warung Pak Budi">
+              <input type="text" class="form-control" id="resto-name" placeholder="Warung Pak Budi" oninput="autoFillSlugFromName()">
             </div>
             <div class="form-group">
               <label class="form-label">Link Menu Pelanggan</label>
@@ -285,6 +285,7 @@ async function init() {
 
   document.getElementById('resto-name').value = resto.name || '';
   document.getElementById('resto-slug').value = resto.slug || '';
+  if (resto.slug) slugManuallySet = true; // slug sudah ada di DB, jangan auto-override
   updateSlugPreview();
   document.getElementById('resto-desc').value = resto.description || '';
   document.getElementById('resto-address').value = resto.address || '';
@@ -349,13 +350,38 @@ function removeLogo() {
   document.getElementById('btn-remove-logo').style.display = 'none';
 }
 
+// Konversi nama restoran ke slug URL-friendly
+function nameToSlug(name) {
+  return name.trim().toLowerCase()
+    .replace(/[àáâãäå]/g, 'a').replace(/[èéêë]/g, 'e')
+    .replace(/[ìíîï]/g, 'i').replace(/[òóôõö]/g, 'o')
+    .replace(/[ùúûü]/g, 'u').replace(/ñ/g, 'n')
+    .replace(/[^a-z0-9\s-]/g, '')
+    .replace(/\s+/g, '-')
+    .replace(/-+/g, '-')
+    .replace(/^-|-$/g, '');
+}
+
+// Otomatis isi slug dari nama restoran, hanya jika slug belum pernah di-save ke DB
+let slugManuallySet = false; // true jika slug sudah ada di DB atau sudah disave
+function autoFillSlugFromName() {
+  if (slugManuallySet) return; // jangan override slug yang sudah tersimpan
+  const name = document.getElementById('resto-name').value;
+  const generatedSlug = nameToSlug(name);
+  document.getElementById('resto-slug').value = generatedSlug;
+  updateSlugPreview();
+}
+
 function updateSlugPreview() {
   const slug = document.getElementById('resto-slug').value.trim();
   document.getElementById('slug-preview').textContent = slug
     ? window.location.origin + '/menu-pelanggan.html?resto=' + slug
     : 'Belum diatur';
 }
-document.getElementById('resto-slug').addEventListener('input', updateSlugPreview);
+document.getElementById('resto-slug').addEventListener('input', function() {
+  slugManuallySet = true; // user mengedit slug manual, jangan auto-override lagi
+  updateSlugPreview();
+});
 
 function copySlugLink() {
   const slug = document.getElementById('resto-slug').value.trim();
@@ -413,14 +439,36 @@ async function saveProfil() {
     return showToast('Gagal upload logo: ' + uploadErr.message, 'error');
   }
 
-  const { error } = await db.from('restaurants').update({
+  // Auto-generate slug dari nama jika slug belum pernah di-save (masih kosong di DB)
+  let slugToSave = restoData.slug || null;
+  const currentSlugInput = document.getElementById('resto-slug').value.trim();
+  if (!slugManuallySet && !restoData.slug && currentSlugInput) {
+    // Cek apakah slug auto-generate sudah dipakai restoran lain
+    const generatedSlug = nameToSlug(name);
+    if (generatedSlug && generatedSlug.length >= 3) {
+      const { data: taken } = await db.from('restaurants').select('id').eq('slug', generatedSlug).neq('id', restoId).maybeSingle();
+      if (!taken) {
+        slugToSave = generatedSlug;
+      } else {
+        // Jika slug sudah dipakai, tambahkan angka random di belakang
+        slugToSave = generatedSlug + '-' + Math.floor(Math.random() * 900 + 100);
+      }
+    }
+  }
+
+  const updatePayload = {
     name,
     description: document.getElementById('resto-desc').value.trim() || null,
     address: document.getElementById('resto-address').value.trim() || null,
     phone: document.getElementById('resto-phone').value.trim() || null,
     email: document.getElementById('resto-email').value.trim() || null,
     logo_url: logoUrl,
-  }).eq('id', restoId);
+  };
+  if (slugToSave && slugToSave !== restoData.slug) {
+    updatePayload.slug = slugToSave;
+  }
+
+  const { error } = await db.from('restaurants').update(updatePayload).eq('id', restoId);
   setLoading(btn, false);
   if (error) return showToast('Gagal simpan: ' + error.message, 'error');
 
@@ -430,6 +478,12 @@ async function saveProfil() {
   document.getElementById('resto-logo').value = logoUrl || '';
   restoData.logo_url = logoUrl;
   restoData.name = name;
+  if (slugToSave && slugToSave !== restoData.slug) {
+    restoData.slug = slugToSave;
+    document.getElementById('resto-slug').value = slugToSave;
+    slugManuallySet = true;
+    updateSlugPreview();
+  }
   newLogoFile = null; logoRemoved = false;
   applyRestoIdentity(restoData);
   showToast('Profil berhasil disimpan', 'success');
