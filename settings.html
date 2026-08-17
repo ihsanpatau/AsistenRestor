@@ -57,6 +57,22 @@
               <input type="text" class="form-control" id="resto-name" placeholder="Warung Pak Budi">
             </div>
             <div class="form-group">
+              <label class="form-label">Link Menu Pelanggan</label>
+              <div style="display:flex;align-items:stretch;border:1px solid var(--border);border-radius:10px;overflow:hidden;background:#fff">
+                <span style="padding:11px 4px 11px 14px;color:var(--text-muted);font-size:13px;white-space:nowrap;display:flex;align-items:center">.../menu-pelanggan.html?resto=</span>
+                <input type="text" class="form-control" id="resto-slug" placeholder="rumah-makan-seraba" style="border:none;border-radius:0;padding-left:2px" oninput="this.value=this.value.toLowerCase().replace(/[^a-z0-9-]/g,'-')">
+              </div>
+              <div class="form-hint" id="slug-preview" style="word-break:break-all"></div>
+              <div style="display:flex;gap:8px;margin-top:8px;flex-wrap:wrap">
+                <button type="button" class="btn btn-ghost btn-sm" onclick="copySlugLink()"><svg class="i" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="8" y="8" width="12" height="12" rx="2"/><path d="M5.5 16H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h11a1 1 0 0 1 1 1v1.5"/></svg> Salin Link</button>
+                <button type="button" class="btn btn-ghost btn-sm" onclick="saveSlug()" id="btn-save-slug"><svg class="i" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 3h11l4 4v14H5V3Z"/><path d="M8.2 3v5.5h7.6V3"/><path d="M8.2 21v-6.5h7.6V21"/></svg> Simpan Link Ini</button>
+              </div>
+              <div class="alert alert-info" style="margin-top:12px;margin-bottom:0">
+                <svg class="i" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0"><circle cx="12" cy="12" r="9"/><path d="M12 8v5"/><path d="M12 16h.01"/></svg>
+                <span>Bagian sebelum <strong>.../menu-pelanggan.html</strong> (yaitu <strong>asisten-restor.vercel.app</strong>) adalah alamat hosting gratis dari Vercel dan tidak bisa dihapus lewat pengaturan ini. Untuk pakai domain sendiri (misal <strong>menu.rumahmakanseraba.com</strong>), kamu perlu beli domain lalu hubungkan ke project Vercel-nya di dashboard Vercel &gt; Settings &gt; Domains — setelah itu link akan otomatis ikut tanpa perlu ubah kode apa pun.</span>
+              </div>
+            </div>
+            <div class="form-group">
               <label class="form-label">Deskripsi Restoran</label>
               <textarea class="form-control" id="resto-desc" rows="3" placeholder="Restoran dengan cita rasa khas Indonesia..."></textarea>
             </div>
@@ -268,6 +284,8 @@ async function init() {
   applyRestoIdentity(resto);
 
   document.getElementById('resto-name').value = resto.name || '';
+  document.getElementById('resto-slug').value = resto.slug || '';
+  updateSlugPreview();
   document.getElementById('resto-desc').value = resto.description || '';
   document.getElementById('resto-address').value = resto.address || '';
   document.getElementById('resto-phone').value = resto.phone || '';
@@ -329,6 +347,50 @@ function removeLogo() {
   document.getElementById('resto-logo').value = '';
   previewLogo('');
   document.getElementById('btn-remove-logo').style.display = 'none';
+}
+
+function updateSlugPreview() {
+  const slug = document.getElementById('resto-slug').value.trim();
+  document.getElementById('slug-preview').textContent = slug
+    ? window.location.origin + '/menu-pelanggan.html?resto=' + slug
+    : 'Belum diatur';
+}
+document.getElementById('resto-slug').addEventListener('input', updateSlugPreview);
+
+function copySlugLink() {
+  const slug = document.getElementById('resto-slug').value.trim();
+  if (!slug) return showToast('Isi link-nya dulu', 'error');
+  const url = window.location.origin + '/menu-pelanggan.html?resto=' + slug;
+  navigator.clipboard.writeText(url).then(
+    () => showToast('Link disalin ke clipboard', 'success'),
+    () => showToast('Gagal menyalin link', 'error')
+  );
+}
+
+async function saveSlug() {
+  let slug = document.getElementById('resto-slug').value.trim().toLowerCase()
+    .replace(/[^a-z0-9-]+/g, '-').replace(/-+/g, '-').replace(/^-|-$/g, '');
+  document.getElementById('resto-slug').value = slug;
+  updateSlugPreview();
+
+  if (!slug || slug.length < 3) return showToast('Link minimal 3 karakter (huruf/angka/strip)', 'error');
+  if (slug === restoData.slug) return showToast('Link sama seperti sebelumnya', 'error');
+
+  const btn = document.getElementById('btn-save-slug');
+  setLoading(btn, true);
+
+  const { data: taken } = await db.from('restaurants').select('id').eq('slug', slug).neq('id', restoId).maybeSingle();
+  if (taken) {
+    setLoading(btn, false);
+    return showToast('Link ini sudah dipakai restoran lain, coba yang lain', 'error');
+  }
+
+  const { error } = await db.from('restaurants').update({ slug }).eq('id', restoId);
+  setLoading(btn, false);
+  if (error) return showToast('Gagal simpan link: ' + error.message, 'error');
+
+  restoData.slug = slug;
+  showToast('Link menu berhasil diganti! QR code lama di halaman Meja perlu di-download ulang.', 'success');
 }
 
 async function saveProfil() {
