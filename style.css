@@ -202,7 +202,7 @@ tbody tr:hover { background: var(--primary-light); }
 
 /* ===== MAIN CONTENT (app shell, no sidebar) ===== */
 .app-shell { display: flex; min-height: 100vh; }
-.main { margin-left: 0; flex: 1; display: flex; flex-direction: column; min-height: 100vh; max-width: 720px; width: 100%; margin-left: auto; margin-right: auto; }
+.main { margin-left: 0; flex: 1; display: flex; flex-direction: column; min-height: 100vh; width: 100%; }
 
 .topbar {
   background: rgba(255,255,255,0.9); backdrop-filter: blur(10px);
@@ -234,7 +234,7 @@ tbody tr:hover { background: var(--primary-light); }
   border-top: 1px solid var(--border);
   display: flex; padding: 6px 4px calc(6px + env(safe-area-inset-bottom));
   box-shadow: 0 -6px 24px rgba(194,83,31,0.08);
-  max-width: 720px; margin: 0 auto;
+  width: 100%;
 }
 .bottom-nav-item {
   flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
@@ -480,16 +480,16 @@ select.form-control { appearance: none; background-image: url("data:image/svg+xm
    yang lebih besar aplikasi tidak cuma jadi kolom sempit di tengah dengan
    banyak ruang kosong di kiri-kanan. */
 @media (min-width: 700px) {
-  .main, .bottom-nav, .sheet-panel { max-width: 760px; }
+  .sheet-panel { max-width: 760px; }
 }
 @media (min-width: 900px) {
-  .main, .bottom-nav, .sheet-panel { max-width: 940px; }
+  .sheet-panel { max-width: 940px; }
 }
 @media (min-width: 1200px) {
-  .main, .bottom-nav, .sheet-panel { max-width: 1100px; }
+  .sheet-panel { max-width: 1100px; }
 }
 @media (min-width: 1600px) {
-  .main, .bottom-nav, .sheet-panel { max-width: 1240px; }
+  .sheet-panel { max-width: 1240px; }
 }
 
 /* ===== LAYAR LEBAR (tablet landscape, iPad, laptop, komputer):
