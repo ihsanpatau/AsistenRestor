@@ -14,102 +14,384 @@
 <link rel="icon" href="favicon.ico">
 <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
 <style>
-  body { background: #F5F5F3; min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px; }
-  .auth-card { background: white; border-radius: 16px; width: 100%; max-width: 420px; box-shadow: 0 1px 2px rgba(23,20,15,.04), 0 16px 40px rgba(23,20,15,.08); border: 1px solid #E7E5E1; overflow: hidden; }
-  .auth-header { background: #21262F; padding: 36px 32px 30px; text-align: center; }
-  .auth-header .logo-icon { width: 52px; height: 52px; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,.14); border-radius: 14px; display: flex; align-items: center; justify-content: center; color: #E2894F; margin: 0 auto 16px; }
-  .auth-header h1 { color: white; font-size: 21px; font-weight: 700; letter-spacing: -.2px; }
-  .auth-header p { color: rgba(255,255,255,.55); font-size: 13px; margin-top: 4px; }
-  .auth-body { padding: 32px; }
-  .auth-tabs { display: flex; border-bottom: 1px solid var(--border); margin-bottom: 28px; }
-  .auth-tab { flex: 1; padding: 12px; text-align: center; cursor: pointer; font-weight: 600; font-size: 14px; color: var(--text-muted); border-bottom: 2px solid transparent; transition: all 0.2s; }
-  .auth-tab.active { color: var(--primary); border-bottom-color: var(--primary); }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: #0f1117;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    overflow-x: hidden;
+  }
+
+  /* ── HERO ── */
+  .hero {
+    position: relative;
+    background: linear-gradient(145deg, #1a1f2e 0%, #21262F 60%, #2d1a0e 100%);
+    padding: 52px 28px 44px;
+    text-align: center;
+    overflow: hidden;
+    flex-shrink: 0;
+  }
+  .hero::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 60% 50% at 20% 80%, rgba(194,83,31,.22) 0%, transparent 70%),
+      radial-gradient(ellipse 50% 40% at 80% 20%, rgba(226,137,79,.12) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  /* floating blobs */
+  .blob {
+    position: absolute;
+    border-radius: 50%;
+    opacity: .07;
+    animation: floatBlob 8s ease-in-out infinite;
+  }
+  .blob-1 { width: 180px; height: 180px; background: #E2894F; top: -40px; left: -50px; animation-delay: 0s; }
+  .blob-2 { width: 120px; height: 120px; background: #C2531F; bottom: -30px; right: -30px; animation-delay: -3s; }
+  .blob-3 { width: 80px; height: 80px; background: #E2894F; top: 30px; right: 40px; animation-delay: -5s; }
+  @keyframes floatBlob {
+    0%, 100% { transform: translate(0, 0) scale(1); }
+    50% { transform: translate(8px, -12px) scale(1.06); }
+  }
+
+  .logo-wrap {
+    position: relative;
+    width: 68px; height: 68px;
+    margin: 0 auto 18px;
+  }
+  .logo-ring {
+    position: absolute; inset: -5px;
+    border-radius: 50%;
+    border: 1.5px solid rgba(226,137,79,.35);
+    animation: rotateSlow 12s linear infinite;
+  }
+  @keyframes rotateSlow { to { transform: rotate(360deg); } }
+  .logo-icon {
+    width: 68px; height: 68px;
+    background: rgba(255,255,255,.07);
+    border: 1px solid rgba(255,255,255,.14);
+    border-radius: 18px;
+    display: flex; align-items: center; justify-content: center;
+    color: #E2894F;
+    position: relative;
+    backdrop-filter: blur(6px);
+  }
+
+  .hero h1 {
+    color: #fff;
+    font-size: 26px;
+    font-weight: 800;
+    letter-spacing: -.4px;
+    margin-bottom: 6px;
+  }
+  .hero-tagline {
+    color: rgba(255,255,255,.6);
+    font-size: 13px;
+    margin-bottom: 28px;
+    line-height: 1.5;
+  }
+
+  /* feature pills */
+  .feature-pills {
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+  .pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    background: rgba(255,255,255,.08);
+    border: 1px solid rgba(255,255,255,.12);
+    border-radius: 99px;
+    padding: 5px 12px;
+    font-size: 11.5px;
+    color: rgba(255,255,255,.8);
+    font-weight: 500;
+    backdrop-filter: blur(6px);
+  }
+  .pill svg { color: #E2894F; }
+
+  /* ── AUTH CARD ── */
+  .auth-sheet {
+    background: #fff;
+    border-radius: 24px 24px 0 0;
+    flex: 1;
+    padding: 0 20px 40px;
+    margin-top: -1px;
+    box-shadow: 0 -4px 30px rgba(0,0,0,.12);
+  }
+
+  /* drag handle */
+  .sheet-handle {
+    width: 36px; height: 4px;
+    background: #e0ddd8;
+    border-radius: 99px;
+    margin: 12px auto 22px;
+  }
+
+  .auth-tabs {
+    display: flex;
+    border-bottom: 1.5px solid #F0EDE8;
+    margin-bottom: 24px;
+  }
+  .auth-tab {
+    flex: 1;
+    padding: 11px;
+    text-align: center;
+    cursor: pointer;
+    font-weight: 700;
+    font-size: 14px;
+    color: #9ca3af;
+    border-bottom: 2.5px solid transparent;
+    margin-bottom: -1.5px;
+    transition: all .2s;
+    letter-spacing: -.1px;
+  }
+  .auth-tab.active { color: #C2531F; border-bottom-color: #C2531F; }
+
   .auth-form { display: none; }
   .auth-form.active { display: block; }
-  .divider { display: flex; align-items: center; gap: 12px; margin: 20px 0; color: var(--text-muted); font-size: 13px; }
-  .divider::before, .divider::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+  /* form controls */
+  .form-group { margin-bottom: 16px; }
+  .form-label {
+    display: block;
+    font-size: 13px;
+    font-weight: 600;
+    color: #374151;
+    margin-bottom: 6px;
+    letter-spacing: -.1px;
+  }
+  .form-control {
+    width: 100%;
+    padding: 12px 14px;
+    border: 1.5px solid #E5E0D8;
+    border-radius: 12px;
+    font-size: 14px;
+    color: #111;
+    background: #FAFAF8;
+    outline: none;
+    transition: border-color .15s, box-shadow .15s;
+    -webkit-appearance: none;
+  }
+  .form-control:focus {
+    border-color: #C2531F;
+    box-shadow: 0 0 0 3px rgba(194,83,31,.1);
+    background: #fff;
+  }
+  .form-control::placeholder { color: #B0ADA6; }
+
+  /* password wrapper */
+  .pass-wrap { position: relative; }
+  .pass-wrap .form-control { padding-right: 44px; }
+  .pass-toggle {
+    position: absolute; right: 13px; top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer; color: #9ca3af;
+    display: flex; align-items: center;
+    background: none; border: none; padding: 0;
+  }
+
+  /* primary btn */
+  .btn-main {
+    width: 100%;
+    background: linear-gradient(135deg, #D4622A 0%, #C2531F 100%);
+    color: #fff;
+    border: none;
+    border-radius: 14px;
+    padding: 14px;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    letter-spacing: -.1px;
+    box-shadow: 0 4px 16px rgba(194,83,31,.35);
+    transition: opacity .15s, transform .1s;
+    margin-bottom: 16px;
+  }
+  .btn-main:active { opacity: .88; transform: scale(.98); }
+
+  /* divider */
+  .divider {
+    display: flex; align-items: center; gap: 12px;
+    margin: 4px 0 16px;
+    color: #B0ADA6; font-size: 12px;
+  }
+  .divider::before, .divider::after {
+    content: ''; flex: 1; height: 1px; background: #EDE9E2;
+  }
+
+  /* google btn */
+  .btn-google {
+    width: 100%;
+    display: flex; align-items: center; justify-content: center; gap: 10px;
+    background: #fff;
+    border: 1.5px solid #E5E0D8;
+    border-radius: 14px;
+    padding: 12px;
+    font-size: 14px;
+    font-weight: 600;
+    color: #374151;
+    cursor: pointer;
+    transition: background .15s, border-color .15s;
+    margin-bottom: 16px;
+  }
+  .btn-google:active { background: #F9F6F2; }
+  .btn-google svg { width: 20px; height: 20px; }
+
+  /* forgot link */
+  .link-center {
+    text-align: center;
+    font-size: 13px;
+  }
+  .link-center a { color: #C2531F; text-decoration: none; font-weight: 600; }
+
+  /* info box */
+  .info-box {
+    background: linear-gradient(135deg, #FFF8F4 0%, #FFF4EE 100%);
+    border: 1px solid rgba(194,83,31,.18);
+    border-radius: 12px;
+    padding: 12px 14px;
+    margin-bottom: 16px;
+    font-size: 12.5px;
+    color: #7C4026;
+    line-height: 1.55;
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+  }
+  .info-box .info-icon {
+    width: 20px; height: 20px; flex-shrink: 0;
+    background: rgba(194,83,31,.14);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    color: #C2531F;
+    font-size: 11px; font-weight: 800;
+    margin-top: 1px;
+  }
 </style>
 </head>
 <body>
-<div class="auth-card">
-  <div class="auth-header">
-    <div class="logo-icon"><svg class="i" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 2.5v6a1.6 1.6 0 0 0 3.2 0v-6"/><path d="M8.6 2.5v18"/><path d="M16.5 2.5c-1.8 0-2.8 2.1-2.8 5s1 4 2 4v9"/></svg></div>
-    <h1>RestoranKu</h1>
-    <p>Platform pemesanan digital untuk restoran modern</p>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="blob blob-1"></div>
+  <div class="blob blob-2"></div>
+  <div class="blob blob-3"></div>
+
+  <div class="logo-wrap">
+    <div class="logo-ring"></div>
+    <div class="logo-icon">
+      <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M7 2.5v6a1.6 1.6 0 0 0 3.2 0v-6"/><path d="M8.6 2.5v18"/>
+        <path d="M16.5 2.5c-1.8 0-2.8 2.1-2.8 5s1 4 2 4v9"/>
+      </svg>
+    </div>
   </div>
-  <div class="auth-body">
-    <div class="auth-tabs">
-      <div class="auth-tab active" onclick="switchTab('login')">Masuk</div>
-      <div class="auth-tab" onclick="switchTab('register')">Daftar</div>
-    </div>
 
-    <!-- LOGIN FORM -->
-    <div class="auth-form active" id="form-login">
-      <div class="form-group">
-        <label class="form-label">Email</label>
-        <input type="email" class="form-control" id="login-email" placeholder="email@restoran.com">
-      </div>
-      <div class="form-group">
-        <label class="form-label">Password</label>
-        <div style="position:relative">
-          <input type="password" class="form-control" id="login-password" placeholder="Password kamu" onkeypress="if(event.key==='Enter')doLogin()">
-          <span onclick="togglePass('login-password',this)" style="position:absolute;right:12px;top:50%;transform:translateY(-50%);cursor:pointer;color:var(--text-muted);display:flex" id="login-eye"><svg class="i" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.7-6.8 10-6.8S22 12 22 12s-3.7 6.8-10 6.8S2 12 2 12Z"/><circle cx="12" cy="12" r="2.8"/></svg></span>
-        </div>
-      </div>
-      <button class="btn btn-primary btn-block btn-lg" onclick="doLogin()" id="btn-login">Masuk ke Dashboard</button>
-      <div class="divider">atau</div>
-      <button class="btn-google" onclick="doGoogleLogin()" id="btn-google-login">
-        <svg viewBox="0 0 48 48"><path fill="#FFC107" d="M43.611 20.083H42V20H24v8h11.303c-1.649 4.657-6.08 8-11.303 8-6.627 0-12-5.373-12-12s5.373-12 12-12c3.059 0 5.842 1.154 7.961 3.039l5.657-5.657C34.046 6.053 29.268 4 24 4 12.955 4 4 12.955 4 24s8.955 20 20 20 20-8.955 20-20c0-1.341-.138-2.65-.389-3.917z"/><path fill="#FF3D00" d="M6.306 14.691l6.571 4.819C14.655 15.108 18.961 12 24 12c3.059 0 5.842 1.154 7.961 3.039l5.657-5.657C34.046 6.053 29.268 4 24 4 16.318 4 9.656 8.337 6.306 14.691z"/><path fill="#4CAF50" d="M24 44c5.166 0 9.86-1.977 13.409-5.192l-6.19-5.238C29.211 35.091 26.715 36 24 36c-5.202 0-9.619-3.317-11.283-7.946l-6.522 5.025C9.505 39.556 16.227 44 24 44z"/><path fill="#1976D2" d="M43.611 20.083H42V20H24v8h11.303a12.04 12.04 0 0 1-4.087 5.571l.003-.002 6.19 5.238C36.971 39.205 44 34 44 24c0-1.341-.138-2.65-.389-3.917z"/></svg>
-        Lanjutkan dengan Google
-      </button>
-      <div style="text-align:center;margin-top:16px">
-        <a href="#" onclick="switchTab('forgot')" style="color:var(--primary);font-size:13px">Lupa password?</a>
+  <h1>RestoranKu</h1>
+  <p class="hero-tagline">Kelola pesanan, meja & menu restoran<br>dari satu dashboard yang mudah</p>
+
+  <div class="feature-pills">
+    <div class="pill">
+      <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 2 2 7l10 5 10-5-10-5Z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+      QR Menu Digital
+    </div>
+    <div class="pill">
+      <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
+      Pesanan Real-time
+    </div>
+    <div class="pill">
+      <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg>
+      Pembayaran Digital
+    </div>
+  </div>
+</div>
+
+<!-- AUTH SHEET -->
+<div class="auth-sheet">
+  <div class="sheet-handle"></div>
+
+  <div class="auth-tabs">
+    <div class="auth-tab active" onclick="switchTab('login')">Masuk</div>
+    <div class="auth-tab" onclick="switchTab('register')">Daftar</div>
+  </div>
+
+  <!-- LOGIN -->
+  <div class="auth-form active" id="form-login">
+    <div class="form-group">
+      <label class="form-label">Email</label>
+      <input type="email" class="form-control" id="login-email" placeholder="email@restoran.com" autocomplete="email">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Password</label>
+      <div class="pass-wrap">
+        <input type="password" class="form-control" id="login-password" placeholder="Password kamu" onkeypress="if(event.key==='Enter')doLogin()" autocomplete="current-password">
+        <button type="button" class="pass-toggle" onclick="togglePass('login-password',this)" id="login-eye">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.7-6.8 10-6.8S22 12 22 12s-3.7 6.8-10 6.8S2 12 2 12Z"/><circle cx="12" cy="12" r="2.8"/></svg>
+        </button>
       </div>
     </div>
-
-    <!-- REGISTER FORM -->
-    <div class="auth-form" id="form-register">
-      <div class="form-group">
-        <label class="form-label">Nama Restoran</label>
-        <input type="text" class="form-control" id="reg-name" placeholder="Warung Pak Budi">
-      </div>
-      <div class="form-group">
-        <label class="form-label">Email</label>
-        <input type="email" class="form-control" id="reg-email" placeholder="email@restoran.com">
-      </div>
-      <div class="form-group">
-        <label class="form-label">Password</label>
-        <div style="position:relative">
-          <input type="password" class="form-control" id="reg-password" placeholder="Minimal 8 karakter">
-          <span onclick="togglePass('reg-password',this)" style="position:absolute;right:12px;top:50%;transform:translateY(-50%);cursor:pointer;color:var(--text-muted);display:flex" id="reg-eye"><svg class="i" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.7-6.8 10-6.8S22 12 22 12s-3.7 6.8-10 6.8S2 12 2 12Z"/><circle cx="12" cy="12" r="2.8"/></svg></span>
-        </div>
-      </div>
-      <div class="form-group">
-        <label class="form-label">Konfirmasi Password</label>
-        <input type="password" class="form-control" id="reg-confirm" placeholder="Ulangi password">
-      </div>
-      <div class="alert alert-info" style="font-size:13px">
-        Dengan mendaftar, kamu setuju dengan syarat & ketentuan layanan RestoranKu. Platform fee Rp950/transaksi berlaku (bisa diatur ditanggung konsumen atau restoran di Pengaturan &gt; Rekening Bank).
-      </div>
-      <button class="btn btn-primary btn-block btn-lg" onclick="doRegister()" id="btn-register">Daftar Sekarang</button>
-      <div class="divider">atau</div>
-      <button class="btn-google" onclick="doGoogleLogin()">
-        <svg viewBox="0 0 48 48"><path fill="#FFC107" d="M43.611 20.083H42V20H24v8h11.303c-1.649 4.657-6.08 8-11.303 8-6.627 0-12-5.373-12-12s5.373-12 12-12c3.059 0 5.842 1.154 7.961 3.039l5.657-5.657C34.046 6.053 29.268 4 24 4 12.955 4 4 12.955 4 24s8.955 20 20 20 20-8.955 20-20c0-1.341-.138-2.65-.389-3.917z"/><path fill="#FF3D00" d="M6.306 14.691l6.571 4.819C14.655 15.108 18.961 12 24 12c3.059 0 5.842 1.154 7.961 3.039l5.657-5.657C34.046 6.053 29.268 4 24 4 16.318 4 9.656 8.337 6.306 14.691z"/><path fill="#4CAF50" d="M24 44c5.166 0 9.86-1.977 13.409-5.192l-6.19-5.238C29.211 35.091 26.715 36 24 36c-5.202 0-9.619-3.317-11.283-7.946l-6.522 5.025C9.505 39.556 16.227 44 24 44z"/><path fill="#1976D2" d="M43.611 20.083H42V20H24v8h11.303a12.04 12.04 0 0 1-4.087 5.571l.003-.002 6.19 5.238C36.971 39.205 44 34 44 24c0-1.341-.138-2.65-.389-3.917z"/></svg>
-        Daftar dengan Google
-      </button>
+    <button class="btn-main" onclick="doLogin()" id="btn-login">Masuk ke Dashboard</button>
+    <div class="divider">atau</div>
+    <button class="btn-google" onclick="doGoogleLogin()" id="btn-google-login">
+      <svg viewBox="0 0 48 48"><path fill="#FFC107" d="M43.611 20.083H42V20H24v8h11.303c-1.649 4.657-6.08 8-11.303 8-6.627 0-12-5.373-12-12s5.373-12 12-12c3.059 0 5.842 1.154 7.961 3.039l5.657-5.657C34.046 6.053 29.268 4 24 4 12.955 4 4 12.955 4 24s8.955 20 20 20 20-8.955 20-20c0-1.341-.138-2.65-.389-3.917z"/><path fill="#FF3D00" d="M6.306 14.691l6.571 4.819C14.655 15.108 18.961 12 24 12c3.059 0 5.842 1.154 7.961 3.039l5.657-5.657C34.046 6.053 29.268 4 24 4 16.318 4 9.656 8.337 6.306 14.691z"/><path fill="#4CAF50" d="M24 44c5.166 0 9.86-1.977 13.409-5.192l-6.19-5.238C29.211 35.091 26.715 36 24 36c-5.202 0-9.619-3.317-11.283-7.946l-6.522 5.025C9.505 39.556 16.227 44 24 44z"/><path fill="#1976D2" d="M43.611 20.083H42V20H24v8h11.303a12.04 12.04 0 0 1-4.087 5.571l.003-.002 6.19 5.238C36.971 39.205 44 34 44 24c0-1.341-.138-2.65-.389-3.917z"/></svg>
+      Lanjutkan dengan Google
+    </button>
+    <div class="link-center">
+      <a href="#" onclick="switchTab('forgot')">Lupa password?</a>
     </div>
+  </div>
 
-    <!-- FORGOT PASSWORD FORM -->
-    <div class="auth-form" id="form-forgot">
-      <p style="color:var(--text-muted);margin-bottom:20px;font-size:14px">Masukkan email kamu dan kami akan mengirimkan link reset password.</p>
-      <div class="form-group">
-        <label class="form-label">Email</label>
-        <input type="email" class="form-control" id="forgot-email" placeholder="email@restoran.com">
+  <!-- REGISTER -->
+  <div class="auth-form" id="form-register">
+    <div class="form-group">
+      <label class="form-label">Nama Restoran</label>
+      <input type="text" class="form-control" id="reg-name" placeholder="Warung Pak Budi" autocomplete="organization">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Email</label>
+      <input type="email" class="form-control" id="reg-email" placeholder="email@restoran.com" autocomplete="email">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Password</label>
+      <div class="pass-wrap">
+        <input type="password" class="form-control" id="reg-password" placeholder="Minimal 8 karakter" autocomplete="new-password">
+        <button type="button" class="pass-toggle" onclick="togglePass('reg-password',this)" id="reg-eye">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.7-6.8 10-6.8S22 12 22 12s-3.7 6.8-10 6.8S2 12 2 12Z"/><circle cx="12" cy="12" r="2.8"/></svg>
+        </button>
       </div>
-      <button class="btn btn-primary btn-block" onclick="doForgot()" id="btn-forgot">Kirim Link Reset</button>
-      <div style="text-align:center;margin-top:16px">
-        <a href="#" onclick="switchTab('login')" style="color:var(--primary);font-size:13px">&larr; Kembali ke login</a>
-      </div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Konfirmasi Password</label>
+      <input type="password" class="form-control" id="reg-confirm" placeholder="Ulangi password" autocomplete="new-password">
+    </div>
+    <div class="info-box">
+      <div class="info-icon">i</div>
+      <span>Dengan mendaftar, kamu mendapatkan akses penuh ke dashboard RestoranKu — kelola menu, terima pesanan, pantau meja, dan analitik penjualan, semuanya gratis untuk dicoba.</span>
+    </div>
+    <button class="btn-main" onclick="doRegister()" id="btn-register">Daftar Sekarang</button>
+    <div class="divider">atau</div>
+    <button class="btn-google" onclick="doGoogleLogin()">
+      <svg viewBox="0 0 48 48"><path fill="#FFC107" d="M43.611 20.083H42V20H24v8h11.303c-1.649 4.657-6.08 8-11.303 8-6.627 0-12-5.373-12-12s5.373-12 12-12c3.059 0 5.842 1.154 7.961 3.039l5.657-5.657C34.046 6.053 29.268 4 24 4 12.955 4 4 12.955 4 24s8.955 20 20 20 20-8.955 20-20c0-1.341-.138-2.65-.389-3.917z"/><path fill="#FF3D00" d="M6.306 14.691l6.571 4.819C14.655 15.108 18.961 12 24 12c3.059 0 5.842 1.154 7.961 3.039l5.657-5.657C34.046 6.053 29.268 4 24 4 16.318 4 9.656 8.337 6.306 14.691z"/><path fill="#4CAF50" d="M24 44c5.166 0 9.86-1.977 13.409-5.192l-6.19-5.238C29.211 35.091 26.715 36 24 36c-5.202 0-9.619-3.317-11.283-7.946l-6.522 5.025C9.505 39.556 16.227 44 24 44z"/><path fill="#1976D2" d="M43.611 20.083H42V20H24v8h11.303a12.04 12.04 0 0 1-4.087 5.571l.003-.002 6.19 5.238C36.971 39.205 44 34 44 24c0-1.341-.138-2.65-.389-3.917z"/></svg>
+      Daftar dengan Google
+    </button>
+  </div>
+
+  <!-- FORGOT -->
+  <div class="auth-form" id="form-forgot">
+    <p style="color:#6b7280;margin-bottom:20px;font-size:14px;line-height:1.6">Masukkan email kamu dan kami akan mengirimkan link untuk reset password.</p>
+    <div class="form-group">
+      <label class="form-label">Email</label>
+      <input type="email" class="form-control" id="forgot-email" placeholder="email@restoran.com">
+    </div>
+    <button class="btn-main" onclick="doForgot()" id="btn-forgot">Kirim Link Reset</button>
+    <div class="link-center">
+      <a href="#" onclick="switchTab('login')">← Kembali ke login</a>
     </div>
   </div>
 </div>
@@ -121,14 +403,16 @@ function switchTab(tab) {
   document.querySelectorAll('.auth-form').forEach(f => f.classList.remove('active'));
   document.querySelectorAll('.auth-tab').forEach(t => t.classList.remove('active'));
   document.getElementById('form-' + tab).classList.add('active');
-  if(tab === 'login') document.querySelectorAll('.auth-tab')[0].classList.add('active');
-  if(tab === 'register') document.querySelectorAll('.auth-tab')[1].classList.add('active');
+  if (tab === 'login') document.querySelectorAll('.auth-tab')[0].classList.add('active');
+  if (tab === 'register') document.querySelectorAll('.auth-tab')[1].classList.add('active');
 }
 
 function togglePass(id, el) {
   const input = document.getElementById(id);
   input.type = input.type === 'password' ? 'text' : 'password';
-  el.innerHTML = input.type === 'password' ? '<svg class=\'i\' width=\'17\' height=\'17\' viewBox=\'0 0 24 24\' fill=\'none\' stroke=\'currentColor\' stroke-width=\'1.8\' stroke-linecap=\'round\' stroke-linejoin=\'round\'><path d="M2 12s3.7-6.8 10-6.8S22 12 22 12s-3.7 6.8-10 6.8S2 12 2 12Z"/><circle cx="12" cy="12" r="2.8"/></svg>' : '<svg class=\'i\' width=\'17\' height=\'17\' viewBox=\'0 0 24 24\' fill=\'none\' stroke=\'currentColor\' stroke-width=\'1.8\' stroke-linecap=\'round\' stroke-linejoin=\'round\'><path d="M3 3l18 18"/><path d="M10.6 5.3a10.8 10.8 0 0 1 1.4-.1c6.3 0 10 6.8 10 6.8a17.6 17.6 0 0 1-3.3 4.2M6.5 6.7C3.9 8.4 2 12 2 12s3.7 6.8 10 6.8c1.3 0 2.6-.3 3.7-.8"/><path d="M9.5 9.9a2.9 2.9 0 0 0 4.1 4.1"/></svg>';
+  el.innerHTML = input.type === 'password'
+    ? `<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.7-6.8 10-6.8S22 12 22 12s-3.7 6.8-10 6.8S2 12 2 12Z"/><circle cx="12" cy="12" r="2.8"/></svg>`
+    : `<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3l18 18"/><path d="M10.6 5.3a10.8 10.8 0 0 1 1.4-.1c6.3 0 10 6.8 10 6.8a17.6 17.6 0 0 1-3.3 4.2M6.5 6.7C3.9 8.4 2 12 2 12s3.7 6.8 10 6.8c1.3 0 2.6-.3 3.7-.8"/><path d="M9.5 9.9a2.9 2.9 0 0 0 4.1 4.1"/></svg>`;
 }
 
 async function doLogin() {
@@ -159,16 +443,7 @@ async function doRegister() {
   setLoading(btn, true);
   try {
     const { session } = await Auth.register(email, password, name);
-    // Catatan: baris "insert ke tabel restaurants" sengaja TIDAK dilakukan di
-    // sini. Kalau opsi "Confirm email" aktif di project Supabase, signUp()
-    // belum memberi sesi login sama sekali, sehingga insert akan ditolak oleh
-    // RLS (dianggap request anonim) dan pendaftaran terlihat "gagal diam-diam"
-    // meski akunnya sebenarnya sudah dibuat. Nama restoran sudah disimpan di
-    // user_metadata, dan baris di tabel restaurants akan dibuat otomatis oleh
-    // Auth.ensureRestaurant() begitu user berhasil login dan membuka
-    // dashboard.html — pola yang sama seperti login via Google.
     if (session) {
-      // "Confirm email" tidak aktif -> user langsung punya sesi, boleh langsung masuk dashboard
       showToast('Pendaftaran berhasil! Mengalihkan...', 'success');
       setTimeout(() => window.location.href = 'dashboard.html', 1000);
     } else {
@@ -183,7 +458,6 @@ async function doRegister() {
 async function doGoogleLogin() {
   try {
     await Auth.loginWithGoogle('dashboard.html');
-    // Browser akan redirect ke Google, lalu kembali otomatis ke dashboard.html
   } catch (e) {
     showToast(e.message || 'Gagal login dengan Google', 'error');
   }
@@ -202,7 +476,6 @@ async function doForgot() {
   } finally { setLoading(btn, false); }
 }
 
-// Cek jika sudah login
 (async () => {
   const user = await Auth.getUser();
   if (user) window.location.href = 'dashboard.html';
