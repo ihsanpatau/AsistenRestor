@@ -59,25 +59,18 @@
 
   .logo-wrap {
     position: relative;
-    width: 68px; height: 68px;
+    width: 72px; height: 72px;
     margin: 0 auto 18px;
   }
-  .logo-ring {
-    position: absolute; inset: -5px;
-    border-radius: 50%;
-    border: 1.5px solid rgba(226,137,79,.35);
-    animation: rotateSlow 12s linear infinite;
-  }
-  @keyframes rotateSlow { to { transform: rotate(360deg); } }
   .logo-icon {
-    width: 68px; height: 68px;
-    background: rgba(255,255,255,.07);
-    border: 1px solid rgba(255,255,255,.14);
-    border-radius: 18px;
+    width: 72px; height: 72px;
+    background: linear-gradient(145deg, rgba(226,137,79,.28) 0%, rgba(194,83,31,.2) 100%);
+    border: 1.5px solid rgba(226,137,79,.5);
+    border-radius: 20px;
     display: flex; align-items: center; justify-content: center;
     color: #E2894F;
     position: relative;
-    backdrop-filter: blur(6px);
+    box-shadow: 0 0 0 6px rgba(226,137,79,.1), 0 8px 24px rgba(0,0,0,.28);
   }
 
   .hero h1 {
@@ -284,7 +277,6 @@
   <div class="blob blob-3"></div>
 
   <div class="logo-wrap">
-    <div class="logo-ring"></div>
     <div class="logo-icon">
       <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
         <path d="M7 2.5v6a1.6 1.6 0 0 0 3.2 0v-6"/><path d="M8.6 2.5v18"/>
@@ -372,7 +364,7 @@
     </div>
     <div class="info-box">
       <div class="info-icon">i</div>
-      <span>Dengan mendaftar, kamu mendapatkan akses penuh ke dashboard RestoranKu — kelola menu, terima pesanan, pantau meja, dan analitik penjualan, semuanya gratis untuk dicoba.</span>
+      <span>Dengan mendaftar, kamu mendapatkan akses penuh ke dashboard RestoranKu. Kelola menu, terima pesanan, pantau meja, dan lihat analitik penjualan. Gratis untuk dicoba.</span>
     </div>
     <button class="btn-main" onclick="doRegister()" id="btn-register">Daftar Sekarang</button>
     <div class="divider">atau</div>
