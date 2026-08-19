@@ -33,6 +33,13 @@ body{background:var(--bg);min-height:100vh;font-family:'Inter',sans-serif}
 .dl-steps li{counter-increment:step;padding-left:30px;position:relative;font-size:13.5px;color:var(--text);margin-bottom:12px;line-height:1.5}
 .dl-steps li::before{content:counter(step);position:absolute;left:0;top:0;width:20px;height:20px;background:var(--primary-light);color:var(--primary);border-radius:50%;font-size:11px;font-weight:800;display:flex;align-items:center;justify-content:center}
 .dl-note{background:var(--bg);border-radius:var(--radius-sm);padding:12px 14px;font-size:12.5px;color:var(--text-muted);margin-top:14px}
+.dl-sub{margin-top:26px;padding:20px 18px;background:var(--bg);border-radius:var(--radius);border:1px solid var(--border)}
+.dl-sub h3{font-size:18px;margin-bottom:8px}
+.dl-sub p{font-size:14.5px;line-height:1.7;margin-bottom:18px}
+.dl-sub .dl-steps li{font-size:14.5px;margin-bottom:16px;line-height:1.6}
+.dl-sub .dl-steps li::before{width:22px;height:22px;font-size:12px}
+.dl-sub .dl-steps{padding-left:2px}
+.dl-sub img{width:100%;border-radius:12px;margin-top:12px;border:1px solid var(--border);display:block}
 </style>
 </head>
 <body>
@@ -64,8 +71,8 @@ body{background:var(--bg);min-height:100vh;font-family:'Inter',sans-serif}
     </a>
     <div class="dl-note">⚠️ Saat instalasi, mungkin muncul peringatan "sumber tidak dikenal" — pilih <strong>"Install tetap"</strong>. Ini normal karena aplikasi belum dari Play Store.</div>
 
-    <div style="margin-top:22px;padding-top:18px;border-top:1px solid var(--border)">
-      <h3 style="margin-bottom:6px">📋 Cara Install Manual</h3>
+    <div class="dl-sub">
+      <h3>📋 Cara Install Manual</h3>
       <p>Beberapa HP atau tablet Android tidak mengizinkan install aplikasi di luar Play Store secara default. Kalau file APK tidak otomatis terbuka atau muncul blokir, ikuti langkah berikut:</p>
       <ol class="dl-steps">
         <li>Tap tombol <strong>Download APK</strong> di atas dan tunggu file selesai diunduh</li>
@@ -79,21 +86,23 @@ body{background:var(--bg);min-height:100vh;font-family:'Inter',sans-serif}
       <div class="dl-note">💡 Nama menu izin bisa sedikit berbeda tergantung merk HP (Samsung, Xiaomi, Oppo, dll), tapi intinya sama: cari opsi <strong>"Sumber tidak dikenal"</strong> atau <strong>"Izinkan dari sumber ini"</strong> lalu aktifkan untuk aplikasi File Manager / Browser yang kamu pakai.</div>
     </div>
 
-    <div style="margin-top:22px;padding-top:18px;border-top:1px solid var(--border)">
-      <h3 style="margin-bottom:6px">🛡️ Masih Tidak Bisa Install?</h3>
+    <div class="dl-sub">
+      <h3>🛡️ Masih Tidak Bisa Install?</h3>
       <p>Kalau sudah mengizinkan "sumber tidak dikenal" tapi instalasi tetap gagal atau diblokir otomatis, biasanya <strong>Google Play Protect</strong> yang memblokirnya. Nonaktifkan sementara pemindaiannya dengan langkah berikut:</p>
       <ol class="dl-steps">
         <li>Buka aplikasi <strong>Google Play Store</strong>, lalu tap ikon foto profil kamu di pojok kanan atas
-          <img src="img/tutorial-playprotect/step1-menu.png" alt="Tap foto profil di Play Store, lalu pilih Play Protect" loading="lazy" style="width:100%;border-radius:12px;margin-top:10px;border:1px solid var(--border)">
+          <img src="img/tutorial-playprotect/step1-menu.png" alt="Tap foto profil di Play Store, lalu pilih Play Protect" loading="lazy">
         </li>
         <li>Pada menu yang muncul, pilih <strong>"Play Protect"</strong></li>
         <li>Di halaman Play Protect, tap ikon <strong>⚙️ (Setelan)</strong> di pojok kanan atas
-          <img src="img/tutorial-playprotect/step3-scan-result.png" alt="Halaman Play Protect, tap ikon setelan di pojok kanan atas" loading="lazy" style="width:100%;border-radius:12px;margin-top:10px;border:1px solid var(--border)">
+          <img src="img/tutorial-playprotect/step3-scan-result.png" alt="Halaman Play Protect, tap ikon setelan di pojok kanan atas" loading="lazy">
         </li>
         <li>Matikan toggle <strong>"Pindai aplikasi dengan Play Protect"</strong>
-          <img src="img/tutorial-playprotect/step4-settings.png" alt="Matikan toggle Pindai aplikasi dengan Play Protect" loading="lazy" style="width:100%;border-radius:12px;margin-top:10px;border:1px solid var(--border)">
+          <img src="img/tutorial-playprotect/step2-playprotect.png" alt="Matikan toggle Pindai aplikasi dengan Play Protect" loading="lazy">
         </li>
-        <li>Kembali dan install ulang <strong>RestoranKu.apk</strong> seperti langkah sebelumnya</li>
+        <li>Kembali dan install ulang <strong>RestoranKu.apk</strong> seperti langkah sebelumnya
+          <img src="img/tutorial-playprotect/step4-settings.png" alt="Konfirmasi Play Protect sudah nonaktif sementara" loading="lazy">
+        </li>
       </ol>
       <div class="dl-note">ℹ️ Pemindaian akan otomatis aktif lagi keesokan harinya, jadi ini aman dan tidak mematikan proteksi HP-mu secara permanen. Setelah RestoranKu terinstall, kamu boleh mengaktifkannya kembali kapan saja lewat menu yang sama.</div>
     </div>
