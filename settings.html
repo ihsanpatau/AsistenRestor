@@ -33,6 +33,7 @@
         <button class="tab-btn" onclick="switchTab('rekening',this)"><svg class="i" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18"/><path d="M4.5 21v-9.5M19.5 21v-9.5"/><path d="M2 11.5 12 5l10 6.5"/><path d="M8.5 21v-6M12 21v-6M15.5 21v-6"/></svg> Rekening Bank</button>
         <button class="tab-btn" onclick="switchTab('jam',this)"><svg class="i" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7.2v5l3.3 1.9"/></svg> Jam Operasional</button>
         <button class="tab-btn" onclick="switchTab('akun',this)"><svg class="i" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8.2" r="3.5"/><path d="M4.7 20.5a7.3 7.3 0 0 1 14.6 0"/></svg> Akun &amp; Keamanan</button>
+        <button class="tab-btn" onclick="switchTab('unduh',this)"><svg class="i" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v13"/><path d="M8 12l4 4 4-4"/><rect x="3" y="18" width="18" height="3" rx="1"/></svg> Download Aplikasi</button>
       </div>
 
       <!-- TAB PROFIL -->
@@ -255,30 +256,6 @@
             </div>
           </div>
 
-          <div class="card" id="card-install-app">
-            <div class="card-header"><h3 style="display:flex;align-items:center;gap:7px"><svg class="i" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v13"/><path d="M8 12l4 4 4-4"/><rect x="3" y="18" width="18" height="3" rx="1"/></svg> Install Aplikasi</h3></div>
-            <div class="card-body">
-              <p style="color:var(--text-muted);margin-bottom:16px;font-size:14px">Install RestoranKu sebagai aplikasi di perangkat ini. Bisa dibuka langsung tanpa browser.</p>
-              <button class="btn btn-primary" id="btn-install-app" onclick="installApp()">
-                <svg class="i" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v13"/><path d="M8 12l4 4 4-4"/><rect x="3" y="18" width="18" height="3" rx="1"/></svg>
-                Install RestoranKu
-              </button>
-              <div id="install-note" style="display:none;margin-top:14px;padding:12px;background:var(--bg);border-radius:var(--radius-sm);font-size:13px;color:var(--text-muted)">
-                <strong style="color:var(--text)">Cara install manual:</strong><br>
-                🖥️ <strong>Chrome/Edge di laptop:</strong> Klik ikon install (⊕) di pojok kanan address bar<br>
-                📱 <strong>Android (Chrome):</strong> Menu (⋮) → "Instal dan buat pintasan"<br>
-                🍎 <strong>iPhone/iPad:</strong> Tap Share → "Tambahkan ke Layar Utama"
-              </div>
-              <div style="margin-top:16px;padding-top:16px;border-top:1px solid var(--border)">
-                <p style="color:var(--text-muted);margin-bottom:10px;font-size:14px">Atau download langsung aplikasi Android (APK):</p>
-                <a href="https://drive.google.com/uc?export=download&id=1R74GlGVTn27ZD0Wou4N6AZOCZ5X8Xit5" class="btn btn-primary" style="display:inline-flex;text-decoration:none">
-                  <svg class="i" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v13"/><path d="M8 12l4 4 4-4"/><rect x="3" y="18" width="18" height="3" rx="1"/></svg>
-                  Download APK RestoranKu
-                </a>
-              </div>
-            </div>
-          </div>
-
           <div class="card" style="border-color:var(--danger)">
             <div class="card-header"><h3 style="color:var(--danger);display:flex;align-items:center;gap:7px"><svg class="i" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.6 21.3 20H2.7L12 3.6Z"/><path d="M12 9.8v4.2"/><path d="M12 16.9h.01"/></svg> Zona Berbahaya</h3></div>
             <div class="card-body">
@@ -286,6 +263,66 @@
               <button class="btn btn-danger" onclick="Auth.logout()">↩ Logout dari Akun</button>
             </div>
           </div>
+        </div>
+      </div>
+
+      <!-- TAB DOWNLOAD APLIKASI -->
+      <div class="tab-content" id="tab-unduh">
+        <div class="card" style="margin-bottom:20px">
+          <div class="card-body" style="text-align:center;padding:32px 24px">
+            <img src="icon-192.png" alt="RestoranKu" style="width:64px;height:64px;border-radius:16px;margin-bottom:14px">
+            <h3 style="font-size:19px;font-weight:800;margin-bottom:6px">RestoranKu siap dipakai di semua perangkat</h3>
+            <p style="color:var(--text-muted);font-size:14px;max-width:420px;margin:0 auto">Pilih platform di bawah ini untuk install atau download aplikasi RestoranKu.</p>
+          </div>
+        </div>
+
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:16px">
+
+          <div class="card">
+            <div class="card-body" style="text-align:center;padding:26px 22px">
+              <div style="width:54px;height:54px;border-radius:14px;background:var(--primary-light);color:var(--primary);display:flex;align-items:center;justify-content:center;margin:0 auto 14px">
+                <svg width="26" height="26" viewBox="0 0 24 24" fill="currentColor"><path d="M6.5 8.5v7c0 .5.4.9.9.9h.6v3.1a1.1 1.1 0 0 0 2.2 0v-3.1h1.6v3.1a1.1 1.1 0 0 0 2.2 0v-3.1h.6c.5 0 .9-.4.9-.9v-7h-9Zm11-1.3-1.5-2.6a.4.4 0 0 0-.7.4l1.4 2.4c1.2.8 2.1 2 2.4 3.5H4.9c.3-1.5 1.2-2.7 2.4-3.5l1.4-2.4a.4.4 0 0 0-.7-.4L6.5 7.2C4.3 8.5 2.9 10.7 2.9 13.2h18.2c0-2.5-1.4-4.7-3.6-6ZM9.3 6c-.4 0-.7-.3-.7-.7s.3-.7.7-.7.7.3.7.7-.3.7-.7.7Zm5.4 0c-.4 0-.7-.3-.7-.7s.3-.7.7-.7.7.3.7.7-.3.7-.7.7Z"/></svg>
+              </div>
+              <h4 style="font-weight:800;font-size:15.5px;margin-bottom:4px">Android</h4>
+              <p style="color:var(--text-muted);font-size:12.5px;margin-bottom:16px">Download file APK, install langsung tanpa Play Store.</p>
+              <a href="download/RestoranKu.apk" download class="btn btn-primary btn-block" style="text-decoration:none">
+                <svg class="i" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v13"/><path d="M8 12l4 4 4-4"/><rect x="3" y="18" width="18" height="3" rx="1"/></svg>
+                Download APK
+              </a>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-body" style="text-align:center;padding:26px 22px">
+              <div style="width:54px;height:54px;border-radius:14px;background:var(--primary-light);color:var(--primary);display:flex;align-items:center;justify-content:center;margin:0 auto 14px">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M16.4 1.6c.1 1-.3 2-.9 2.7-.6.7-1.6 1.3-2.6 1.2-.1-1 .4-2 .9-2.6.6-.7 1.7-1.3 2.6-1.3ZM19.8 17c-.5 1.1-.7 1.6-1.3 2.6-.9 1.4-2.1 3.1-3.6 3.1-1.4 0-1.7-.9-3.5-.9-1.8 0-2.2.9-3.5.9-1.5 0-2.6-1.5-3.5-2.9-2.4-3.6-2.6-7.9-1.2-10.2 1-1.7 2.7-2.7 4.3-2.7 1.6 0 2.6 1 3.9 1 1.3 0 2-1 3.9-1 1.4 0 2.9.8 3.9 2.1-3.5 1.9-2.9 6.9.6 8Z"/></svg>
+              </div>
+              <h4 style="font-weight:800;font-size:15.5px;margin-bottom:4px">iPhone / iPad</h4>
+              <p style="color:var(--text-muted);font-size:12.5px;margin-bottom:16px">Install langsung lewat Safari, tanpa App Store.</p>
+              <a href="download.html?tab=ios" class="btn btn-primary btn-block" style="text-decoration:none">
+                <svg class="i" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v13"/><path d="M8 12l4 4 4-4"/><rect x="3" y="18" width="18" height="3" rx="1"/></svg>
+                Lihat Cara Install
+              </a>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-body" style="text-align:center;padding:26px 22px">
+              <div style="width:54px;height:54px;border-radius:14px;background:var(--primary-light);color:var(--primary);display:flex;align-items:center;justify-content:center;margin:0 auto 14px">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M3 5.6 10.3 4.5v6.8H3V5.6Zm7.3 6.7v6.8L3 18l0-5.7h7.3ZM11.2 4.4 21 3v8.2H11.2V4.4Zm9.8 8.8L21 21l-9.8-1.3v-6.5H21Z"/></svg>
+              </div>
+              <h4 style="font-weight:800;font-size:15.5px;margin-bottom:4px">Windows / Mac</h4>
+              <p style="color:var(--text-muted);font-size:12.5px;margin-bottom:16px">Install sebagai app desktop dari browser.</p>
+              <button class="btn btn-primary btn-block" id="btn-install-app" onclick="installApp()">
+                <svg class="i" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v13"/><path d="M8 12l4 4 4-4"/><rect x="3" y="18" width="18" height="3" rx="1"/></svg>
+                Install Aplikasi
+              </button>
+              <div id="install-note" style="display:none;margin-top:12px;padding:10px;background:var(--bg);border-radius:var(--radius-sm);font-size:11.5px;color:var(--text-muted);text-align:left">
+                Klik ikon install (⊕) di pojok kanan address bar Chrome/Edge, lalu pilih "Install".
+              </div>
+            </div>
+          </div>
+
         </div>
       </div>
     </div>
