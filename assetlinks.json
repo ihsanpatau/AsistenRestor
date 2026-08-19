@@ -1,8 +1,0 @@
-{
-  "relation": ["delegate_permission/common.handle_all_urls"],
-  "target": {
-    "namespace": "android_app",
-    "package_name": "com.asistenku.restoranku",
-    "sha256_cert_fingerprints": ["9E:E4:CF:7E:09:D7:8C:9C:89:37:2B:E8:06:79:4B:D8:BB:A1:76:14:55:51:7D:8F:12:DA:3B:E9:A3:DC:93:DC"]
-  }
-}
