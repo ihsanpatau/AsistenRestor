@@ -17,6 +17,8 @@
 body{background:var(--bg);min-height:100vh;font-family:'Inter',sans-serif}
 .dl-wrap{max-width:520px;margin:0 auto;padding:40px 20px 60px;overflow-x:hidden}
 .dl-panel img{max-width:100%}
+.dl-back{display:inline-flex;align-items:center;gap:6px;background:none;border:none;padding:6px 0;margin-bottom:12px;font-family:inherit;font-weight:700;font-size:13.5px;color:var(--text-muted);cursor:pointer}
+.dl-back:hover{color:var(--primary)}
 .dl-header{text-align:center;margin-bottom:32px}
 .dl-logo{width:72px;height:72px;border-radius:20px;margin:0 auto 16px;display:block}
 .dl-header h1{font-size:22px;font-weight:800;color:var(--text);margin-bottom:6px}
@@ -46,6 +48,10 @@ body{background:var(--bg);min-height:100vh;font-family:'Inter',sans-serif}
 </head>
 <body>
 <div class="dl-wrap">
+  <button class="dl-back" onclick="goBack()">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg>
+    Kembali
+  </button>
   <div class="dl-header">
     <img src="icon-192.png" class="dl-logo" alt="RestoranKu">
     <h1>Download RestoranKu</h1>
@@ -157,6 +163,14 @@ async function installDesktop() {
     if (outcome === 'accepted') deferredPrompt = null;
   } else {
     alert('Klik ikon install (⊕) di address bar browser kamu, atau lihat langkah manual di bawah.');
+  }
+}
+
+function goBack() {
+  if (document.referrer && document.referrer.indexOf(window.location.host) !== -1) {
+    window.history.back();
+  } else {
+    window.location.href = 'index.html';
   }
 }
 
