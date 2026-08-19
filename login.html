@@ -517,6 +517,10 @@ async function installApp() {
     if (banner) banner.innerHTML = '<div style="color:#fff;font-size:13px">📱 <strong>Android:</strong> Menu → Tambahkan ke layar utama &nbsp;|&nbsp; 🖥️ <strong>Laptop:</strong> Klik ikon ⊕ di address bar Chrome</div>';
   }
 }
+
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(() => {}));
+}
 </script>
 </body>
 </html>
