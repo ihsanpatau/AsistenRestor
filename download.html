@@ -15,7 +15,8 @@
 <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
 <style>
 body{background:var(--bg);min-height:100vh;font-family:'Inter',sans-serif}
-.dl-wrap{max-width:520px;margin:0 auto;padding:40px 20px 60px}
+.dl-wrap{max-width:520px;margin:0 auto;padding:40px 20px 60px;overflow-x:hidden}
+.dl-panel img{max-width:100%}
 .dl-header{text-align:center;margin-bottom:32px}
 .dl-logo{width:72px;height:72px;border-radius:20px;margin:0 auto 16px;display:block}
 .dl-header h1{font-size:22px;font-weight:800;color:var(--text);margin-bottom:6px}
@@ -40,6 +41,7 @@ body{background:var(--bg);min-height:100vh;font-family:'Inter',sans-serif}
 .dl-sub .dl-steps li::before{width:22px;height:22px;font-size:12px}
 .dl-sub .dl-steps{padding-left:2px}
 .dl-sub img{width:100%;border-radius:12px;margin-top:12px;border:1px solid var(--border);display:block}
+.dl-steps li img,.dl-note img{width:100%;max-width:100%;height:auto;border-radius:12px;margin-top:12px;border:1px solid var(--border);display:block;box-sizing:border-box}
 </style>
 </head>
 <body>
