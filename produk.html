@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, viewport-fit=cover">
+<title>Produk & Harga - RestoranKu</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#21262F">
+<link rel="icon" href="favicon.ico">
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800;900&display=swap');
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{min-height:100%;overscroll-behavior:none}
+body{font-family:'Plus Jakarta Sans',sans-serif;background:#21262F;color:#fff}
+:root{--primary:#C2531F}
+
+.header{background:#21262F;padding:16px 20px;display:flex;align-items:center;gap:12px;border-bottom:1px solid rgba(255,255,255,.08);position:sticky;top:0;z-index:10}
+.header a{color:rgba(255,255,255,.6);text-decoration:none;font-size:14px}
+.header h1{font-size:17px;font-weight:700}
+
+.container{max-width:480px;margin:0 auto;padding:24px 20px calc(40px + env(safe-area-inset-bottom))}
+
+.section-title{font-size:13px;font-weight:700;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:.8px;margin-bottom:12px;margin-top:24px}
+.section-title:first-child{margin-top:0}
+
+.product-card{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);border-radius:16px;padding:20px;margin-bottom:12px}
+.product-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px}
+.product-name{font-size:16px;font-weight:700}
+.product-badge{background:rgba(194,83,31,.15);color:#E39169;padding:4px 10px;border-radius:999px;font-size:11px;font-weight:700;border:1px solid rgba(194,83,31,.2)}
+.product-badge.popular{background:rgba(194,83,31,.25);color:#FF8C42}
+.product-desc{font-size:13px;color:rgba(255,255,255,.55);line-height:1.6;margin-bottom:14px}
+.product-features{list-style:none;margin-bottom:16px}
+.product-features li{font-size:13px;color:rgba(255,255,255,.7);padding:4px 0;display:flex;align-items:center;gap:8px}
+.product-features li::before{content:"✓";color:#C2531F;font-weight:700;flex-shrink:0}
+.product-price{display:flex;align-items:baseline;gap:6px}
+.price-amount{font-size:24px;font-weight:900;color:#fff}
+.price-period{font-size:13px;color:rgba(255,255,255,.4);font-weight:500}
+.price-fee{font-size:12px;color:rgba(255,255,255,.4);margin-top:4px}
+
+.free-card{border-color:rgba(255,255,255,.15)}
+.cta-btn{display:block;text-align:center;background:var(--primary);color:#fff;padding:14px;border-radius:12px;font-size:14px;font-weight:700;text-decoration:none;margin-top:16px}
+.cta-btn.outline{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15)}
+
+.info-box{background:rgba(194,83,31,.1);border:1px solid rgba(194,83,31,.2);border-radius:12px;padding:14px 16px;margin-bottom:20px}
+.info-box p{font-size:13px;color:rgba(255,255,255,.7);line-height:1.6}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <a href="index.html">← Kembali</a>
+  <h1>Produk & Harga</h1>
+</div>
+
+<div class="container">
+
+  <div class="info-box">
+    <p>RestoranKu adalah platform manajemen restoran berbasis QR Code. Pemilik restoran cukup daftar, buat menu, dan pasang QR di meja — pelanggan langsung bisa pesan dan bayar digital.</p>
+  </div>
+
+  <div class="section-title">Paket Berlangganan</div>
+
+  <div class="product-card free-card">
+    <div class="product-header">
+      <div class="product-name">Paket Gratis</div>
+      <div class="product-badge">Gratis Selamanya</div>
+    </div>
+    <div class="product-desc">Cocok untuk restoran kecil yang baru memulai digitalisasi.</div>
+    <ul class="product-features">
+      <li>1 outlet restoran</li>
+      <li>Maksimal 5 meja</li>
+      <li>Maksimal 20 menu</li>
+      <li>QR Code per meja</li>
+      <li>Pesanan realtime</li>
+      <li>Laporan harian</li>
+    </ul>
+    <div class="product-price">
+      <div class="price-amount">Rp 0</div>
+      <div class="price-period">/bulan</div>
+    </div>
+    <div class="price-fee">Fee transaksi: 2% per transaksi</div>
+    <a href="login.html" class="cta-btn outline">Mulai Gratis</a>
+  </div>
+
+  <div class="product-card">
+    <div class="product-header">
+      <div class="product-name">Paket Standar</div>
+      <div class="product-badge popular">Paling Populer</div>
+    </div>
+    <div class="product-desc">Untuk restoran yang ingin fitur lengkap dan meja lebih banyak.</div>
+    <ul class="product-features">
+      <li>1 outlet restoran</li>
+      <li>Maksimal 20 meja</li>
+      <li>Menu tidak terbatas</li>
+      <li>QR Code per meja</li>
+      <li>Pesanan & notifikasi realtime</li>
+      <li>Laporan harian & bulanan</li>
+      <li>Manajemen stok menu</li>
+      <li>Dukungan via WhatsApp</li>
+    </ul>
+    <div class="product-price">
+      <div class="price-amount">Rp 99.000</div>
+      <div class="price-period">/bulan</div>
+    </div>
+    <div class="price-fee">Fee transaksi: 2% per transaksi</div>
+    <a href="login.html" class="cta-btn">Mulai Sekarang</a>
+  </div>
+
+  <div class="product-card">
+    <div class="product-header">
+      <div class="product-name">Paket Pro</div>
+      <div class="product-badge">Multi Outlet</div>
+    </div>
+    <div class="product-desc">Untuk chain restoran atau bisnis dengan beberapa cabang.</div>
+    <ul class="product-features">
+      <li>Hingga 5 outlet restoran</li>
+      <li>Meja tidak terbatas</li>
+      <li>Menu tidak terbatas</li>
+      <li>Dashboard terpusat semua outlet</li>
+      <li>Laporan konsolidasi</li>
+      <li>Manajemen stok terpusat</li>
+      <li>Prioritas dukungan teknis</li>
+      <li>Custom QR branding</li>
+    </ul>
+    <div class="product-price">
+      <div class="price-amount">Rp 299.000</div>
+      <div class="price-period">/bulan</div>
+    </div>
+    <div class="price-fee">Fee transaksi: 2% per transaksi</div>
+    <a href="login.html" class="cta-btn">Mulai Sekarang</a>
+  </div>
+
+  <div class="section-title">Metode Pembayaran</div>
+  <div class="product-card">
+    <ul class="product-features">
+      <li>QRIS (semua e-wallet & m-banking)</li>
+      <li>Transfer bank otomatis</li>
+      <li>Pembayaran langsung ke rekening restoran</li>
+      <li>Powered by Duitku Payment Gateway</li>
+    </ul>
+  </div>
+
+  <div class="section-title">Butuh Bantuan?</div>
+  <a href="kontak.html" class="cta-btn outline" style="margin-top:0">Hubungi Support Kami</a>
+
+</div>
+</body>
+</html>

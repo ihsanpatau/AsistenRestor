@@ -119,7 +119,7 @@
           </div>
           <div class="card-body">
             <div class="alert alert-info" style="margin-bottom:20px">
-              <svg class="i" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="10.5" width="14" height="10" rx="2"/><path d="M8 10.5V7.2a4 4 0 0 1 8 0v3.3"/></svg> <strong>Keamanan:</strong> Perubahan rekening memerlukan konfirmasi password. Semua perubahan dicatat dan diverifikasi oleh Xendit secara otomatis. Uang langsung masuk ke rekening ini setelah pembayaran.
+              <svg class="i" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="10.5" width="14" height="10" rx="2"/><path d="M8 10.5V7.2a4 4 0 0 1 8 0v3.3"/></svg> <strong>Keamanan:</strong> Perubahan rekening memerlukan konfirmasi password. Semua perubahan dicatat dan diverifikasi oleh Duitku secara otomatis. Uang langsung masuk ke rekening ini setelah pembayaran.
             </div>
 
             <div id="bank-current" style="display:none;background:var(--success-light);border:1px solid #9AE6B4;border-radius:var(--radius-sm);padding:16px;margin-bottom:20px">
@@ -179,7 +179,7 @@
               <div class="form-group">
                 <label class="form-label">Nama Pemilik Rekening *</label>
                 <input type="text" class="form-control" id="bank-holder" placeholder="Sesuai buku tabungan">
-                <div class="form-hint" style="display:flex;align-items:flex-start;gap:5px"><svg class="i" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.6 21.3 20H2.7L12 3.6Z"/><path d="M12 9.8v4.2"/><path d="M12 16.9h.01"/></svg> <span>Nama harus sama persis dengan nama di rekening bank. Xendit akan memverifikasi otomatis.</span></div>
+                <div class="form-hint" style="display:flex;align-items:flex-start;gap:5px"><svg class="i" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.6 21.3 20H2.7L12 3.6Z"/><path d="M12 9.8v4.2"/><path d="M12 16.9h.01"/></svg> <span>Nama harus sama persis dengan nama di rekening bank. Duitku akan memverifikasi otomatis.</span></div>
               </div>
               <div class="form-group">
                 <label class="form-label">Konfirmasi Password Akun *</label>
@@ -590,7 +590,7 @@ async function saveBank() {
     if (authErr) { showToast('Password salah. Perubahan rekening ditolak.', 'error'); setLoading(btn, false); return; }
   } catch(e) { showToast('Verifikasi gagal', 'error'); setLoading(btn, false); return; }
 
-  // Simpan ke database (status pending - menunggu verifikasi Xendit)
+  // Simpan ke database (status pending - menunggu verifikasi Duitku)
   const { error } = await db.from('restaurants').update({
     bank_name: bank, bank_account_number: number, bank_account_name: holder, bank_verified: false
   }).eq('id', restoId);
@@ -603,7 +603,7 @@ async function saveBank() {
   tag.textContent = '⏳ Pending Verifikasi'; tag.className = 'badge badge-warning';
   document.getElementById('bank-password').value = '';
 
-  showToast('Rekening disimpan! Menunggu verifikasi Xendit (1-2 menit)', 'success');
+  showToast('Rekening disimpan! Menunggu verifikasi Duitku (1-2 menit)', 'success');
 }
 
 async function saveFeePayer() {

@@ -527,14 +527,14 @@ async function placeOrder() {
   const orderItems = items.map(i => ({ ...i, order_id: order.id }));
   await db.from('order_items').insert(orderItems);
 
-  // Simulasi Xendit Invoice (dalam produksi ganti dengan API Xendit sungguhan)
+  // Simulasi Duitku Payment (dalam produksi ganti dengan API Duitku sungguhan)
   // Update order ke payment_status = 'pending_payment' dan simpan invoice url
   await db.from('orders').update({
     payment_status: 'pending_payment',
-    xendit_invoice_url: `#simulasi-${order.id}` // Ganti dengan URL Xendit sungguhan
+    duitku_payment_url: `#simulasi-${order.id}` // Ganti dengan URL Duitku sungguhan
   }).eq('id', order.id);
 
-  // Redirect ke Xendit Payment Page (SIMULASI - dalam produksi gunakan Xendit API)
+  // Redirect ke Duitku Payment Page (SIMULASI - dalam produksi gunakan Duitku API)
   showPaymentPage(order, items.length);
 }
 
@@ -625,14 +625,14 @@ function showPaymentConfirm(method) {
 }
 
 async function simulatePayment(method, orderId) {
-  // CATATAN: Ini simulasi. Dalam produksi ganti dengan Xendit Payment API + webhook
+  // CATATAN: Ini simulasi. Dalam produksi ganti dengan Duitku Payment API + webhook
   // Xendit akan otomatis kirim webhook ke endpoint kamu saat pembayaran berhasil
 
   document.getElementById('app').innerHTML = `<div class="result-page"><div class="spinner-lg"></div><p style="color:var(--muted);margin-top:16px">Memproses pembayaran...</p></div>`;
 
   await new Promise(r => setTimeout(r, 2000));
 
-  // Update status order jadi paid (dalam produksi ini dilakukan oleh webhook Xendit)
+  // Update status order jadi paid (dalam produksi ini dilakukan oleh webhook Duitku)
   await db.from('orders').update({
     payment_status: 'paid',
     payment_method: method,
