@@ -267,23 +267,27 @@
     margin-top: 1px;
   }
 
-  /* download apps section */
-  .dl-section { margin-top: 24px; padding-top: 20px; border-top: 1px solid #F0EDE8; }
+  /* download apps section - minimalis, menyatu dengan tampilan */
+  .dl-section { margin-top: 24px; padding-top: 20px; border-top: 1px solid #F0EDE8; text-align: center; }
   .dl-section-title {
-    display: flex; align-items: center; gap: 7px; justify-content: center;
-    font-size: 13px; font-weight: 700; color: #374151; margin-bottom: 12px;
+    font-size: 12px; font-weight: 600; color: #9ca3af; margin-bottom: 16px;
   }
-  .dl-cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
-  .dl-card {
-    border: 1.5px solid #E5E0D8; border-radius: 14px; padding: 14px 8px 12px;
-    text-align: center; background: #FAFAF8;
+  .dl-platforms { display: flex; justify-content: center; gap: 34px; }
+  .dl-platform {
+    display: flex; flex-direction: column; align-items: center; gap: 8px;
+    background: none; border: none; cursor: pointer; font-family: inherit;
+    text-decoration: none; -webkit-tap-highlight-color: transparent;
+    padding: 0; font-size: inherit;
   }
-  .dl-card-icon { width: 34px; height: 34px; object-fit: contain; margin: 0 auto 8px; display: block; }
-  .dl-card-name { font-size: 11.5px; font-weight: 700; color: #374151; margin-bottom: 8px; }
-  .dl-card-btn {
-    display: block; width: 100%; background: #C2531F; color: #fff; text-decoration: none;
-    border-radius: 8px; padding: 7px 4px; font-size: 11px; font-weight: 700;
+  .dl-platform-icon {
+    width: 46px; height: 46px; border-radius: 14px;
+    display: flex; align-items: center; justify-content: center;
+    background: #FAFAF8; border: 1px solid #F0EDE8;
+    transition: transform .15s, background .15s;
   }
+  .dl-platform:active .dl-platform-icon { transform: scale(.93); background: #FFF4EE; }
+  .dl-platform-icon img { width: 26px; height: 26px; object-fit: contain; }
+  .dl-platform span { font-size: 11px; font-weight: 600; color: #6b7280; }
 
   /* ===== RESPONSIVE LEBAR LAYAR (HP, iPad, Tablet, Laptop, Komputer) ===== */
   @media (min-width: 700px) {
@@ -429,28 +433,22 @@
 
   <!-- DOWNLOAD APLIKASI -->
   <div class="dl-section">
-    <div class="dl-section-title">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#C2531F" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v13"/><path d="M8 12l4 4 4-4"/><rect x="3" y="18" width="18" height="3" rx="1"/></svg>
-      Download Aplikasi RestoranKu
+    <div class="dl-section-title">Download Aplikasi RestoranKu</div>
+    <div class="dl-platforms">
+      <a href="download/RestoranKu.apk" download class="dl-platform">
+        <span class="dl-platform-icon"><img src="logo-android.png" alt="Android"></span>
+        <span>Android</span>
+      </a>
+      <a href="download.html?tab=ios" class="dl-platform">
+        <span class="dl-platform-icon"><img src="logo-ios.png" alt="iPhone / iPad"></span>
+        <span>iPhone/iPad</span>
+      </a>
+      <button onclick="installApp()" class="dl-platform" id="btn-install-desktop">
+        <span class="dl-platform-icon"><img src="logo-windows.png" alt="Windows / Mac"></span>
+        <span>Windows/Mac</span>
+      </button>
     </div>
-    <div class="dl-cards">
-      <div class="dl-card">
-        <img src="logo-android.png" alt="Android" class="dl-card-icon">
-        <div class="dl-card-name">Android</div>
-        <a href="download/RestoranKu.apk" download class="dl-card-btn">Download APK</a>
-      </div>
-      <div class="dl-card">
-        <img src="logo-ios.png" alt="iPhone / iPad" class="dl-card-icon">
-        <div class="dl-card-name">iPhone / iPad</div>
-        <a href="download.html?tab=ios" class="dl-card-btn">Cara Install</a>
-      </div>
-      <div class="dl-card">
-        <img src="logo-windows.png" alt="Windows / Mac" class="dl-card-icon">
-        <div class="dl-card-name">Windows / Mac</div>
-        <button onclick="installApp()" class="dl-card-btn" id="btn-install-desktop" style="border:none;cursor:pointer;font-family:inherit">Install</button>
-      </div>
-    </div>
-    <div id="install-note" style="display:none;margin-top:10px;padding:9px 12px;background:#FAFAF8;border:1px solid #E5E0D8;border-radius:10px;font-size:11.5px;color:#6b7280;text-align:center"></div>
+    <div id="install-note" style="display:none;margin-top:14px;padding:9px 12px;background:#FAFAF8;border:1px solid #E5E0D8;border-radius:10px;font-size:11.5px;color:#6b7280;text-align:center"></div>
   </div>
 </div>
 
