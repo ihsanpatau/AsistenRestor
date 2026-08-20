@@ -20,6 +20,24 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:#21262F;color:#fff}
 
 .container{max-width:480px;margin:0 auto;padding:24px 20px calc(40px + env(safe-area-inset-bottom))}
 
+/* ===== RESPONSIVE LEBAR LAYAR (HP, iPad, Tablet, Laptop, Komputer) ===== */
+/* Sama seperti halaman lain: melebar bertahap di layar besar supaya tidak
+   jadi kolom sempit di tengah dengan banyak ruang kosong. */
+@media (min-width: 700px){
+  .container{max-width:640px}
+  .card{padding:26px}
+}
+@media (min-width: 900px){
+  .container{max-width:760px}
+  .card-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;align-items:start}
+}
+@media (min-width: 1200px){
+  .container{max-width:880px}
+}
+@media (min-width: 1600px){
+  .container{max-width:980px}
+}
+
 .card{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);border-radius:16px;padding:20px;margin-bottom:16px}
 .card h2{font-size:15px;font-weight:700;margin-bottom:16px;color:rgba(255,255,255,.9)}
 
@@ -70,6 +88,7 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:#21262F;color:#fff}
     Chat via WhatsApp
   </a>
 
+  <div class="card-grid">
   <div class="card">
     <h2>📞 Hubungi Kami</h2>
     <div class="contact-item">
@@ -125,7 +144,9 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:#21262F;color:#fff}
       <span class="hours-time">Tutup</span>
     </div>
   </div>
+  </div>
 
+  <div class="card-grid">
   <div class="card">
     <h2>❓ Pertanyaan Umum (FAQ)</h2>
     <details class="faq" open>
@@ -164,6 +185,7 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:#21262F;color:#fff}
         <div class="contact-value">1008260035619</div>
       </div>
     </div>
+  </div>
   </div>
 
 </div>
