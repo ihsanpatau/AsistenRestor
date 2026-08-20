@@ -130,21 +130,21 @@
               <label class="form-label">Biaya Layanan (Fee) *</label>
               <div class="alert" style="background:#FFF8E6;border:1px solid #F5D98B;color:#7A5A00;margin-bottom:12px;display:flex;align-items:flex-start;gap:7px">
                 <svg class="i" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;margin-top:1px"><circle cx="12" cy="12" r="9"/><path d="M12 8v5"/><path d="M12 16h.01"/></svg>
-                <span>Setiap transaksi dikenakan fee sebesar <strong>Rp950</strong>. Pilih siapa yang menanggung biaya ini.</span>
+                <span>Setiap transaksi dikenakan fee sebesar <strong>2% dari subtotal</strong>. Pilih siapa yang menanggung biaya ini.</span>
               </div>
               <div style="display:flex;flex-direction:column;gap:10px">
                 <label style="display:flex;align-items:flex-start;gap:10px;border:1px solid var(--border);border-radius:var(--radius-sm);padding:14px;cursor:pointer" id="fee-option-customer">
                   <input type="radio" name="fee-payer" id="fee-payer-customer" value="customer" checked style="margin-top:3px">
                   <span>
                     <div style="font-weight:600">Ditanggung Konsumen</div>
-                    <div style="font-size:12.5px;color:var(--text-muted)">Fee Rp950 ditambahkan ke total tagihan pelanggan. Kamu menerima 100% harga menu.</div>
+                    <div style="font-size:12.5px;color:var(--text-muted)">Fee 2% ditambahkan ke total tagihan pelanggan. Kamu menerima 100% harga menu.</div>
                   </span>
                 </label>
                 <label style="display:flex;align-items:flex-start;gap:10px;border:1px solid var(--border);border-radius:var(--radius-sm);padding:14px;cursor:pointer" id="fee-option-restaurant">
                   <input type="radio" name="fee-payer" id="fee-payer-restaurant" value="restaurant" style="margin-top:3px">
                   <span>
                     <div style="font-weight:600">Ditanggung Restoran</div>
-                    <div style="font-size:12.5px;color:var(--text-muted)">Pelanggan hanya membayar harga menu (tanpa tambahan fee). Rp950 dipotong dari pendapatanmu per transaksi.</div>
+                    <div style="font-size:12.5px;color:var(--text-muted)">Pelanggan hanya membayar harga menu (tanpa tambahan fee). 2% dipotong dari pendapatanmu per transaksi.</div>
                   </span>
                 </label>
               </div>
@@ -569,7 +569,7 @@ async function saveFeePayer() {
   setLoading(btn, false);
   if (error) return showToast('Gagal simpan pengaturan fee', 'error');
   restoData.fee_payer = feePayer;
-  showToast(feePayer === 'restaurant' ? 'Fee Rp950 akan ditanggung restoran' : 'Fee Rp950 akan ditanggung konsumen', 'success');
+  showToast(feePayer === 'restaurant' ? 'Fee 2% akan ditanggung restoran' : 'Fee 2% akan ditanggung konsumen', 'success');
 }
 
 async function saveJam() {

@@ -212,7 +212,8 @@ const params = new URLSearchParams(window.location.search);
 const restoSlug = params.get('resto');
 const mejaNum = parseInt(params.get('meja') || '1');
 
-const PLATFORM_FEE = 950; // fee tetap per transaksi, ditanggung konsumen atau restoran sesuai pengaturan resto
+const PLATFORM_FEE_PERCENT = 0.02; // fee 2% dari subtotal per transaksi, ditanggung konsumen atau restoran sesuai pengaturan resto
+function calcPlatformFee(subtotal) { return Math.round(subtotal * PLATFORM_FEE_PERCENT); }
 let restoData = null, menuItems = [], categories = [], cart = {}, activeCat = 'all';
 
 function formatRp(n) { return new Intl.NumberFormat('id-ID', { style:'currency', currency:'IDR', minimumFractionDigits:0 }).format(n); }
@@ -495,7 +496,7 @@ async function placeOrder() {
   btn.disabled = true; btn.innerHTML = '<span class="spinner-lg" style="width:20px;height:20px;border-width:2px;display:inline-block;margin-right:8px"></span> Memproses...';
 
   const subtotal = items.reduce((s, i) => s + i.subtotal, 0);
-  const platformFee = PLATFORM_FEE;
+  const platformFee = calcPlatformFee(subtotal);
   const feeOnCustomer = (restoData.fee_payer !== 'restaurant');
   const total = feeOnCustomer ? subtotal + platformFee : subtotal;
   const customerName = document.getElementById('cust-name').value.trim();
@@ -563,17 +564,15 @@ function showPaymentPage(order, itemCount) {
         </div>
 
         <div style="background:white;border-radius:14px;padding:20px;margin-bottom:16px;border:1px solid var(--border)">
-          <div style="font-weight:700;margin-bottom:12px">Pilih Metode Bayar</div>
-          <div style="display:flex;flex-direction:column;gap:10px">
-            <button onclick="showPaymentConfirm('QRIS')" style="padding:14px;border:2px solid var(--border);border-radius:10px;background:white;font-family:inherit;font-size:14px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:10px;text-align:left">
-              <svg class="i" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="7" y="2.5" width="10" height="19" rx="2"/><path d="M11 18h2"/></svg> <span><div>QRIS</div><div style="font-size:11px;font-weight:400;color:var(--muted)">GoPay, OVO, Dana, LinkAja, ShopeePay</div></span>
-            </button>
-            <button onclick="showPaymentConfirm('TRANSFER')" style="padding:14px;border:2px solid var(--border);border-radius:10px;background:white;font-family:inherit;font-size:14px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:10px;text-align:left">
-              <svg class="i" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18"/><path d="M4.5 21v-9.5M19.5 21v-9.5"/><path d="M2 11.5 12 5l10 6.5"/><path d="M8.5 21v-6M12 21v-6M15.5 21v-6"/></svg> <span><div>Transfer Bank</div><div style="font-size:11px;font-weight:400;color:var(--muted)">BCA, BRI, BNI, Mandiri, dll</div></span>
-            </button>
+          <div style="font-weight:700;margin-bottom:12px">Metode Bayar</div>
+          <div style="padding:14px;border:2px solid var(--primary);border-radius:10px;background:white;font-size:14px;font-weight:600;display:flex;align-items:center;gap:10px;text-align:left">
+            <svg class="i" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="color:var(--primary);flex-shrink:0"><rect x="7" y="2.5" width="10" height="19" rx="2"/><path d="M11 18h2"/></svg> <span><div>QRIS</div><div style="font-size:11px;font-weight:400;color:var(--muted)">GoPay, OVO, Dana, LinkAja, ShopeePay, m-Banking</div></span>
           </div>
         </div>
 
+        <button onclick="showPaymentConfirm('QRIS')" style="width:100%;padding:16px;background:var(--primary);color:white;border:none;border-radius:12px;font-size:16px;font-weight:700;cursor:pointer;font-family:inherit;margin-bottom:10px">
+          Lanjut Bayar dengan QRIS
+        </button>
         <div style="text-align:center">
           <button onclick="init()" style="background:none;border:2px solid var(--border);color:var(--text);font-size:14.5px;font-weight:700;cursor:pointer;font-family:inherit;padding:12px 20px;border-radius:10px;width:100%">&larr; Kembali ke Menu</button>
         </div>
@@ -585,8 +584,8 @@ function showPaymentConfirm(method) {
   const order = pendingOrder;
   if (!order) return;
   const feeOnCustomer = (restoData.fee_payer !== 'restaurant');
-  const methodLabel = method === 'QRIS' ? 'QRIS' : 'Transfer Bank';
-  const methodDesc = method === 'QRIS' ? 'GoPay, OVO, Dana, LinkAja, ShopeePay' : 'BCA, BRI, BNI, Mandiri, dll';
+  const methodLabel = 'QRIS';
+  const methodDesc = 'GoPay, OVO, Dana, LinkAja, ShopeePay, m-Banking';
 
   document.getElementById('app').innerHTML = `
     <div style="min-height:100vh;background:var(--bg)">
@@ -597,9 +596,7 @@ function showPaymentConfirm(method) {
       </div>
       <div style="padding:20px">
         <div style="background:white;border-radius:14px;padding:16px 20px;margin-bottom:16px;border:1px solid var(--border);display:flex;align-items:center;gap:10px">
-          ${method === 'QRIS'
-            ? `<svg class="i" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="color:var(--primary);flex-shrink:0"><rect x="7" y="2.5" width="10" height="19" rx="2"/><path d="M11 18h2"/></svg>`
-            : `<svg class="i" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="color:var(--primary);flex-shrink:0"><path d="M3 21h18"/><path d="M4.5 21v-9.5M19.5 21v-9.5"/><path d="M2 11.5 12 5l10 6.5"/><path d="M8.5 21v-6M12 21v-6M15.5 21v-6"/></svg>`}
+          <svg class="i" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="color:var(--primary);flex-shrink:0"><rect x="7" y="2.5" width="10" height="19" rx="2"/><path d="M11 18h2"/></svg>
           <div><div style="font-weight:700;font-size:14px">${methodLabel}</div><div style="font-size:11.5px;color:var(--muted)">${methodDesc}</div></div>
         </div>
 
