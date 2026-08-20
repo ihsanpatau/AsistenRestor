@@ -532,7 +532,7 @@ async function placeOrder() {
   // Update order ke payment_status = 'pending_payment' dan simpan invoice url
   await db.from('orders').update({
     payment_status: 'pending_payment',
-    duitku_payment_url: `#simulasi-${order.id}` // Ganti dengan URL Duitku sungguhan
+    duitku_payment_url: null
   }).eq('id', order.id);
 
   // Redirect ke Duitku Payment Page (SIMULASI - dalam produksi gunakan Duitku API)
@@ -545,10 +545,7 @@ function showPaymentPage(order, itemCount) {
   closeCart();
   pendingOrder = order;
   pendingItemCount = itemCount;
-  // Dalam produksi: window.location.href = xenditInvoiceUrl;
-  // Untuk simulasi, tampilkan halaman pembayaran sederhana.
-  // Catatan: total di sini SENGAJA belum menampilkan rincian fee — fee baru
-  // ditampilkan setelah pelanggan memilih metode pembayaran (lihat showPaymentConfirm).
+  // Tampilkan halaman pilih metode pembayaran
   document.getElementById('app').innerHTML = `
     <div style="min-height:100vh;background:var(--bg)">
       <div style="background:var(--primary);padding:20px;text-align:center;color:white">
@@ -622,23 +619,67 @@ function showPaymentConfirm(method) {
 }
 
 async function simulatePayment(method, orderId) {
-  // CATATAN: Ini simulasi. Dalam produksi ganti dengan Duitku Payment API + webhook
-  // Xendit akan otomatis kirim webhook ke endpoint kamu saat pembayaran berhasil
-
   document.getElementById('app').innerHTML = `<div class="result-page"><div class="spinner-lg"></div><p style="color:var(--muted);margin-top:16px">Memproses pembayaran...</p></div>`;
 
-  await new Promise(r => setTimeout(r, 2000));
+  try {
+    // Ambil data order dari Supabase
+    const { data: order } = await db.from('orders')
+      .select('*, order_items(name, price, quantity, subtotal)')
+      .eq('id', orderId).single();
 
-  // Update status order jadi paid (dalam produksi ini dilakukan oleh webhook Duitku)
-  await db.from('orders').update({
-    payment_status: 'paid',
-    payment_method: method,
-    status: 'confirmed',
-    paid_at: new Date().toISOString()
-  }).eq('id', orderId);
+    if (!order) throw new Error('Order tidak ditemukan');
 
-  // Kurangi stok (sudah dilakukan via trigger saat order_items diinsert)
-  showSuccess(orderId);
+    // Ambil email user yang login
+    const { data: { user } } = await db.auth.getUser();
+    const customerEmail = user?.email || 'pelanggan@restoranku.com';
+    const customerName = user?.user_metadata?.full_name || 'Pelanggan';
+
+    // Panggil Edge Function Duitku
+    const response = await fetch(
+      'https://rjxhijozmznqvkxqbywr.supabase.co/functions/v1/duitku-create-payment',
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          orderId: orderId,
+          amount: order.total,
+          customerName: customerName,
+          customerEmail: customerEmail,
+          items: order.order_items.map(i => ({
+            name: i.name,
+            price: i.price,
+            quantity: i.quantity,
+          })),
+        })
+      }
+    );
+
+    const result = await response.json();
+
+    if (result.success && result.paymentUrl) {
+      // Update status order ke pending_payment
+      await db.from('orders').update({
+        payment_status: 'pending_payment',
+        payment_method: method,
+      }).eq('id', orderId);
+
+      // Redirect ke halaman pembayaran Duitku
+      window.location.href = result.paymentUrl;
+    } else {
+      throw new Error(result.error || 'Gagal membuat pembayaran');
+    }
+
+  } catch (error) {
+    document.getElementById('app').innerHTML = `
+      <div class="result-page">
+        <div style="font-size:48px;margin-bottom:16px">❌</div>
+        <h2 style="font-size:18px;margin-bottom:8px">Pembayaran Gagal</h2>
+        <p style="color:var(--muted);font-size:14px;margin-bottom:20px">${error.message}</p>
+        <button onclick="renderPage()" style="padding:14px 24px;background:var(--primary);color:white;border:none;border-radius:12px;font-size:14px;font-weight:700;cursor:pointer">
+          Coba Lagi
+        </button>
+      </div>`;
+  }
 }
 
 async function showSuccess(orderId) {
