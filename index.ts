@@ -2,11 +2,18 @@ import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { crypto } from "https://deno.land/std@0.168.0/crypto/mod.ts";
 
-const MERCHANT_CODE = "DS34373";
-const API_KEY = "1f0fb5822d2c715d0208ec19f706c6a9";
-const DUITKU_URL = "https://sandbox.duitku.com/webapi/api/merchant/v2/inquiry";
-const CALLBACK_URL = "https://rjxhijozmznqvkxqbywr.supabase.co/functions/v1/duitku-callback";
-const RETURN_URL = "https://asistenrestoran.com/payment-success.html";
+// ============================================================
+// PENTING: MERCHANT_CODE dan API_KEY TIDAK BOLEH ditulis langsung
+// di sini. Keduanya diambil dari Supabase Edge Function Secrets
+// supaya tidak ikut ke GitHub / kelihatan publik.
+//
+// Cara set secret-nya: ikuti tutorial yang dikirim terpisah.
+// ============================================================
+const MERCHANT_CODE = Deno.env.get("DUITKU_MERCHANT_CODE") ?? "";
+const API_KEY = Deno.env.get("DUITKU_API_KEY") ?? "";
+const DUITKU_URL = Deno.env.get("DUITKU_URL") ?? "https://sandbox.duitku.com/webapi/api/merchant/v2/inquiry";
+const CALLBACK_URL = Deno.env.get("DUITKU_CALLBACK_URL") ?? "https://rjxhijozmznqvkxqbywr.supabase.co/functions/v1/duitku-callback";
+const RETURN_URL = Deno.env.get("DUITKU_RETURN_URL") ?? "https://asistenrestoran.com/payment-success.html";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -16,6 +23,18 @@ const corsHeaders = {
 serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response("ok", { headers: corsHeaders });
+  }
+
+  // Jaga-jaga kalau secret belum di-set di Supabase, langsung kasih error
+  // yang jelas daripada diam-diam gagal / pakai key kosong.
+  if (!MERCHANT_CODE || !API_KEY) {
+    return new Response(
+      JSON.stringify({
+        success: false,
+        error: "DUITKU_MERCHANT_CODE / DUITKU_API_KEY belum di-set sebagai secret di Supabase.",
+      }),
+      { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+    );
   }
 
   try {
